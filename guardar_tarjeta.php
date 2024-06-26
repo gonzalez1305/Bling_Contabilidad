@@ -41,6 +41,6 @@ if ($resultado) {
  echo "Los datos se han guardado correctamente.";
  header('Location: ventas_list.php'); 
 } else {
-  echo "Error al guardar los datos.";
+ echo "Error al guardar los datos.";
 }
 ?>
