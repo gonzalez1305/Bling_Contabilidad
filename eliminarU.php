@@ -1,8 +1,17 @@
 <?php
-// Verificar si se ha proporcionado el parámetro id_usuario
-if (isset($_GET['id_usuario'])) {
-    $id_usuario = $_GET['id_usuario'];
-    
+if (isset($_POST['id_usuario']) && isset($_POST['adminPassword'])) {
+    $id_usuario = $_POST['id_usuario'];
+    $adminPassword = $_POST['adminPassword'];
+
+    // Verificar la contraseña
+    if ($adminPassword !== 'BLINGADMIN2024') {
+        echo "<script language='javascript'>";
+        echo "alert('Contraseña incorrecta. No se puede eliminar el usuario.');";
+        echo "location.assign('validarusuario.php');";
+        echo "</script>";
+        exit;
+    }
+
     include("conexion.php");
 
     // Eliminar registros dependientes de la tabla 'administrador'
@@ -32,6 +41,6 @@ if (isset($_GET['id_usuario'])) {
 
     mysqli_close($conectar);
 } else {
-    echo "Error: No se proporcionó el ID del usuario a eliminar.";
+    echo "Error: No se proporcionó el ID del usuario o la contraseña.";
 }
 ?>

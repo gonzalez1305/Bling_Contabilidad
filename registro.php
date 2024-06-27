@@ -21,7 +21,10 @@ $queryVerificarCorreo = mysqli_query($conectar, $verificarCorreo);
 $resultadoVerificarCorreo = mysqli_fetch_assoc($queryVerificarCorreo);
 
 if ($resultadoVerificarCorreo['total'] > 0) {
-    echo "El correo ya está registrado. Por favor, elija otro correo.";
+    echo "<script>";
+    echo "alert('El correo ya está registrado. Por favor, elija otro correo.');";
+    echo "window.history.back();";
+    echo "</script>";
 } else {
     // Cifrar la contraseña
     $contraseñaCifrada = password_hash($contraseña, PASSWORD_DEFAULT);
@@ -34,7 +37,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
         $idGeneradousuario = mysqli_insert_id($conectar);
         
         echo "<script>";
-        echo "alert('Usuario registrado exitosamente ID: $idGeneradousuario y tipo de usuario: $tipo_usuario <br><br>');";
+        echo "alert('Usuario registrado exitosamente.');";
         echo "window.location.href = 'menu.html';";
         echo "</script>";
 
@@ -43,17 +46,17 @@ if ($resultadoVerificarCorreo['total'] > 0) {
             $insertVendedor = "INSERT INTO administrador (cod_vendedor,fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
             $queryVendedor = mysqli_query($conectar, $insertVendedor);
             $idGeneradoVendedor = mysqli_insert_id($conectar);
-            //echo "Vendedor registrado correctamente ID: $idGeneradoVendedor <br><br>";
-            //echo "Codigo vendedor: $cod_vendedor <br><br>";
+            
             echo "<script>";
-            echo "alert('Vendedor registrado correctamente ID: $idGeneradoVendedor \\n\\n Codigo vendedor: $cod_vendedor');";
+            echo "alert('Vendedor registrado correctamente.');";
             echo "window.location.href = 'menu.html';";
             echo "</script>";
-        
-
         }
     } else {
-        echo "Error al registrarse ";
+        echo "<script>";
+        echo "alert('Error al registrarse. Por favor, intente nuevamente.');";
+        echo "window.history.back();";
+        echo "</script>";
     }
 }
 ?>
