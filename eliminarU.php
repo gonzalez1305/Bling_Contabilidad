@@ -1,9 +1,13 @@
 <?php
 // Verificar si se ha proporcionado el parámetro id_usuario
-if(isset($_GET['id_usuario'])){
+if (isset($_GET['id_usuario'])) {
     $id_usuario = $_GET['id_usuario'];
     
     include("conexion.php");
+
+    // Eliminar registros dependientes de la tabla 'administrador'
+    $sqlEliminarAdministrador = "DELETE FROM administrador WHERE fk_id_usuario = '".$id_usuario."'";
+    $resultadoEliminarAdministrador = mysqli_query($conectar, $sqlEliminarAdministrador);
 
     // Eliminar registros dependientes de la tabla 'detalles_pedido'
     $sqlEliminarDetallesPedido = "DELETE FROM detalles_pedido WHERE fk_id_pedido IN (SELECT id_pedido FROM pedido WHERE fk_id_usuario = '".$id_usuario."')";
@@ -14,7 +18,7 @@ if(isset($_GET['id_usuario'])){
     $resultadoEliminarUsuario = mysqli_query($conectar, $sqlEliminarUsuario);
 
     // Verificar resultados y mostrar mensajes
-    if($resultadoEliminarDetallesPedido && $resultadoEliminarUsuario){
+    if ($resultadoEliminarAdministrador && $resultadoEliminarDetallesPedido && $resultadoEliminarUsuario) {
         echo "<script language='javascript'>";
         echo "alert('Los datos se eliminaron correctamente');";
         echo "location.assign('validarusuario.php');";
