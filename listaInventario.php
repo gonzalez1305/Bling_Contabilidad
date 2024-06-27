@@ -111,21 +111,22 @@ $resultado = mysqli_query($conectar, $sql_select);
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
+    <nav class="col-md-2 d-none d-md-block sidebar">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="validarusuario.php">Usuarios</a>
+                        <a class="nav-link active" href="validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./dashboard_v.html">Ventas</a>
+                        <a class="nav-link" href="GestionVentas/gestionVlista.php">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="./dashboard_I.html">Inventario</a>
+                        <a class="nav-link" href="listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="validarpedido.php">Pedidos</a>
                     </li>
+
                 </ul>
             </div>
         </nav>
@@ -189,8 +190,16 @@ $resultado = mysqli_query($conectar, $sql_select);
 
             <div class="mt-4">
                 <a href="crearInventario.php" class="btn btn-primary">Agregar Nuevo Inventario</a>
-                <a href="dashboard_i.html" class="btn btn-secondary">Volver al Dashboard</a>
-                <a href="col_pago_list.php" class="btn btn-secondary">Ver Pagos Realizados</a>
+                <a href="menuV.html" class="btn btn-secondary">Volver al Dashboard</a>
+                <div class="REPORTES">
+            <!-- Enlace para imprimir reportes -->
+            <a class="btn" href="reporteI.php">Imprimir Reportes</a>
+        
+            
+            <!-- Botón para generar reporte estadístico con gráfica -->
+            <button class="btn" onclick="window.location.href='reporteGraficoI.html'">Generar Reporte Estadístico con Gráfica</button>
+        </div>
+              
             </div>
         </main>
     </div>

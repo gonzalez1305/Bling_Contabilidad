@@ -1,11 +1,11 @@
 <?php
-require './conexion.php'; // Conexión
+require './conexion.php'; // Incluir archivo de conexión
 
 // Verificar si se ha enviado una solicitud de eliminación
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $id_gestion_venta = $_POST['eliminar_id'];
 
-    // Eliminar el registro de gestión de ventas correspondiente
+    // Consulta para eliminar la gestión de ventas correspondiente
     $sql_delete_gestion_venta = "DELETE FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
     
     if (mysqli_query($conectar, $sql_delete_gestion_venta)) {
@@ -15,150 +15,118 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     }
 }
 
+// Consulta para seleccionar todas las gestiones de ventas
 $sql_select = "SELECT * FROM gestion_ventas";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Listado de Ventas - Bling Compra</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-  <style>
-      body {
-          background-color: #f8f9fa;
-          font-family: Arial, sans-serif;
-      }
-      .navbar {
-          background-color: #007bff;
-      }
-      .navbar-brand {
-          color: #ffffff;
-      }
-      .navbar-nav .nav-link {
-          color: #ffffff;
-      }
-      .sidebar {
-          height: 100vh;
-          background-color: #343a40;
-          padding-top: 20px;
-      }
-      .sidebar a {
-          color: #ffffff;
-          padding: 10px;
-          text-decoration: none;
-          display: block;
-      }
-      .sidebar a:hover {
-          background-color: #007bff;
-      }
-      .content {
-          padding: 20px;
-      }
-      .card {
-          margin-bottom: 20px;
-      }
-      .volver-btn {
-          margin-top: 20px;
-      }
-      .btn-group {
-          display: flex;
-          gap: 10px;
-      }
-  </style>
+    <meta charset="UTF-8">
+    <title>Listado de Ventas</title>
+    <link rel="stylesheet" href="../bling/css/style_pago.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .editar-btn, .eliminar-btn {
+            text-decoration: none;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 3px;
+            color: #fff;
+        }
+        .editar-btn {
+            background-color: #007bff;
+        }
+        .eliminar-btn {
+            background-color: #dc3545;
+        }
+        .crear-btn {
+            display: inline-block;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bling Compra</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="menu.html">Cerrar Sesión</a>
-                </li>
-            </ul>
+<div class="container">
+    <h1>Listado de Ventas</h1>
+
+    <table id="ventasTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID de Gestión de Venta</th>
+                <th>ID de Venta</th>
+                <th>Fecha de Venta</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (mysqli_num_rows($resultado) > 0) {
+                while ($row = mysqli_fetch_assoc($resultado)) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['id_gestion_venta']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['id_venta']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['fecha_venta']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['cantidad']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['precio_unitario']) . "</td>";
+                    echo "<td>";
+                    echo "<a href='editarGestionVentas.php?id=" . $row['id_gestion_venta'] . "' class='editar-btn'>Editar</a>";
+                    echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
+                    echo "<input type='hidden' name='eliminar_id' value='" . $row['id_gestion_venta'] . "'>";
+                    echo "<input type='submit' class='eliminar-btn' value='Eliminar'>";
+                    echo "</form>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6'>No hay ventas registradas</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+    <div class="REPORTES">
+            <!-- Enlace para imprimir reportes -->
+            <a class="btn" href="reportev.php">Imprimir Reportes</a>
+        
+            
+            <!-- Botón para generar reporte estadístico con gráfica -->
+            <button class="btn" onclick="window.location.href='reporteGraficoV.html'">Generar Reporte Estadístico con Gráfica</button>
         </div>
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="validarusuario.php">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="./dashboard_v.html">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./dashboard_I.html">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="validarpedido.php">Pedidos</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <div class="container">
-                <h1 class="h2">Listado de Ventas</h1>
-                <table id="ventasTable" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID de Gestión de Venta</th>
-                            <th>ID de Venta</th>
-                            <th>Fecha de Venta</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        if (mysqli_num_rows($resultado) > 0) {
-                            while ($row = mysqli_fetch_assoc($resultado)) {
-                                echo "<tr>";
-                                echo "<td>" . $row['id_gestion_venta'] . "</td>";
-                                echo "<td>" . $row['id_venta'] . "</td>";
-                                echo "<td>" . $row['fecha_venta'] . "</td>";
-                                echo "<td>" . $row['cantidad'] . "</td>";
-                                echo "<td>" . $row['precio_unitario'] . "</td>";
-                                echo "<td class='btn-group'>";
-                                echo "<a href='editarGestionVentas.php?id=" . $row['id_gestion_venta'] . "' class='btn btn-warning'>Editar</a>";
-                                echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
-                                echo "<input type='hidden' name='eliminar_id' value='" . $row['id_gestion_venta'] . "'>";
-                                echo "<button type='submit' class='btn btn-danger'>Eliminar</button>";
-                                echo "</form>";
-                                echo "</td>";
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='6'>No hay ventas registradas</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-
-                <a href="gestionVentasCrear.php" class="btn btn-primary">Agregar Nueva Venta</a>
-                <a href="dashboard_v.html" class="btn btn-secondary volver-btn">Volver al Dashboard</a>
-                <a href="col_pago_list.php" class="btn btn-secondary volver-btn">Ver Pagos Realizados</a>
-
-            </div>
-        </main>
-    </div>
+    <a href="gestionVentasCrear.php" class="crear-btn">Agregar Nueva Venta</a>
+    <a href="menuV.html" class="volver-btn">Volver al Menú Principal</a>
 </div>
 
-<!-- Scripts de DataTables -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -166,9 +134,10 @@ $resultado = mysqli_query($conectar, $sql_select);
         $('#ventasTable').DataTable();
     });
 </script>
+
 </body>
 </html>
 
 <?php
-mysqli_close($conectar);
+mysqli_close($conectar); // Cerrar conexión
 ?>

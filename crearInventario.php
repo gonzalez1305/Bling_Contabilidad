@@ -109,7 +109,7 @@ mysqli_close($conectar);
                         <a class="nav-link" href="./dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="./dashboard_I.html">Inventario</a>
+                        <a class="nav-link active" href="listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="validarpedido.php">Pedidos</a>
@@ -147,9 +147,8 @@ mysqli_close($conectar);
 
             <div class="mt-4">
                 <a href="listaInventario.php" class="btn btn-secondary">Volver al Listado de Inventario</a>
-                <a href="dashboard_i.html" class="btn btn-secondary">Volver al Dashboard</a>
-                <a href="col_pago_list.php" class="btn btn-secondary">Ver Pagos Realizados</a>
-                <a href="admin_panel.html" class="btn btn-secondary">Volver al Panel de Administrador</a>
+                <a href="menuV.html" class="btn btn-secondary">Volver al Dashboard</a>
+              
             </div>
         </main>
     </div>

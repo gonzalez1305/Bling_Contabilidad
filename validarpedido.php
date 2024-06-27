@@ -5,48 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Pedidos</title>
 
+    <!-- Estilos para DataTables y botones -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.6.0/css/searchBuilder.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.1/css/dataTables.dateTime.min.css">
+
+    <!-- Estilos personalizados -->
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
         .btn {
             display: inline-block;
-            padding: 6px 12px;
-            margin-bottom: 0;
+            padding: 8px 16px;
+            margin: 5px;
             font-size: 14px;
-            font-weight: 400;
-            line-height: 1.42857143;
+            font-weight: bold;
             text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            -ms-touch-action: manipulation;
-                touch-action: manipulation;
             cursor: pointer;
-            -webkit-user-select: none;
-               -moz-user-select: none;
-                -ms-user-select: none;
-                    user-select: none;
-            background-image: none;
-            border: 1px solid transparent;
-            border-radius: 4px;
             text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s;
         }
 
-        .btn-default {
-            color: #333;
-            background-color: #fff;
-            border-color: #ccc;
+        .btn:hover {
+            background-color: #0056b3;
         }
 
-        .btn-default:hover,
-        .btn-default:focus,
-        .btn-default:active,
-        .btn-default.active,
-        .open .dropdown-toggle.btn-default {
-            color: #333;
-            background-color: #e6e6e6;
-            border-color: #adadad;
+        .REPORTES {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .volver-btn {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -62,7 +94,7 @@
         $resultado = mysqli_query($conectar, $sql);
     ?>
 
-    <div class="pedido-container">
+    <div class="container">
         <h1>Lista de Pedidos</h1>
         
         <table id="pedidosTable">
@@ -92,8 +124,9 @@
                         <td><?php echo $filas['unidades'] ?></td>
                         <td><?php echo $filas['precio_total'] ?></td>
                         <td>
-                            <a class="btn btn-default" href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>'>Editar</a>
-                            <a class="btn btn-default" href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' onclick='return confirmar()'>Eliminar</a>
+                            <a class="btn" href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>'>Editar</a>
+                            <a class="btn" href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido']; ?>' onclick='return confirmar()'>Eliminar</a>
+
                         </td>
                     </tr>
                 <?php
@@ -104,61 +137,32 @@
 
         <div class="REPORTES">
             <!-- Enlace para imprimir reportes -->
-            <a class="btn btn-default" href="reporte.php">Imprimir Reportes</a>
-            
-            <!-- Botón para generar PDF estadístico -->
-            <button class="btn btn-default" id="btnGenerarPDF">Generar PDF Estadístico</button>
+            <a class="btn" href="reporte.php">Imprimir Reportes</a>
+        
             
             <!-- Botón para generar reporte estadístico con gráfica -->
-            <button class="btn btn-default" onclick="window.location.href='reporteGrafico.html'">Generar Reporte Estadístico con Gráfica</button>
+            <button class="btn" onclick="window.location.href='reporteGrafico.html'">Generar Reporte Estadístico con Gráfica</button>
         </div>
-
-        <!-- Script para manejar la generación del PDF estadístico -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            document.getElementById('btnGenerarPDF').addEventListener('click', function() {
-                // Captura la gráfica como imagen usando html2canvas
-                html2canvas(document.getElementById('myChart')).then(function(canvas) {
-                    // Genera la imagen como PNG
-                    var imgData = canvas.toDataURL('image/png');
-
-                    // Envía la imagen al servidor para generar el PDF
-                    fetch('generar_pdf.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ image: imgData }),
-                    }).then(function(response) {
-                        // Maneja la respuesta (puede ser descargar el PDF generado)
-                        // Por ejemplo, redirigir a la URL del PDF generado
-                        window.location.href = response.url; // Suponiendo que el servidor devuelve la URL del PDF
-                    });
-                });
-            });
-        </script>
-
         <!-- Volver al menú principal -->
-        <a href="menuV.html">Volver</a><br><br>
-
-        <!-- Scripts de DataTables y configuración -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/dataTables.searchBuilder.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                // Inicialización de DataTables con botones y búsqueda avanzada
-                $('#pedidosTable').DataTable({
-                    dom: 'Bfrtip',
-                    buttons: [
-                        'searchBuilder', 'pageLength'
-                    ]
-                });
-            });
-        </script>
+        <a href="menuV.html" class="volver-btn">Volver al Menú Principal</a>
     </div>
+
+    <!-- Scripts de DataTables y configuración -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/dataTables.searchBuilder.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Inicialización de DataTables con botones y búsqueda avanzada
+            $('#pedidosTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'searchBuilder', 'pageLength'
+                ]
+            });
+        });
+    </script>
 </body>
 </html>
