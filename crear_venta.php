@@ -28,10 +28,10 @@
 <select name="cod_vendedor" id="cod_vendedor">
   <option value="">Seleccione un vendedor</option>
   <?php
-  $conexion = mysqli_connect('localhost:3306', 'root', '', 'bling');
+  $conectar = mysqli_connect('localhost:3306', 'root', '', 'bling');
   // Obtener los datos de los vendedores
   $sql = "SELECT id_vendedor FROM administrador";
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query($conectar, $sql);
 
   while ($registro = mysqli_fetch_assoc($resultado)) {
     echo "<option value=\"{$registro['cod_vendedor']}\">{$registro['nombre']}</option>";
@@ -46,7 +46,7 @@
   $conexion = mysqli_connect('localhost:3307', 'root', '', 'bling');
   // Obtener los datos de los productos
   $sql = "SELECT id_producto, nombre, precio_unitario FROM producto";
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query($conectar, $sql);
 
   while ($registro = mysqli_fetch_assoc($resultado)) {
     echo "<option value=\"{$registro['id_producto']}\">{$registro['nombre']} - {$registro['precio_unitario']}</option>";
