@@ -4,9 +4,9 @@
 $id_pago = $_GET['id_pago'];
 
 // Conectar a la base de datos
-$conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+$conectar = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
 
-if (!$conexion) {
+if (!$conectar) {
 echo "Error: No se pudo conectar a la base de datos.";
 exit;
 }
@@ -15,12 +15,12 @@ exit;
 $sql = "DELETE FROM transacciones WHERE id_pago = $id_pago";
 
 // Ejecutar la consulta
-$resultado = mysqli_query($conexion, $sql);
+$resultado = mysqli_query($conectar, $sql);
 
 // Comprobar si la consulta se ha ejecutado correctamente
 if ($resultado) {
 $sql = "DELETE FROM pago WHERE id_pago = $id_pago";
-$resultado = mysqli_query($conexion, $sql);
+$resultado = mysqli_query($conectar, $sql);
 
 if ($resultado) {
 header('Location: col_pago_list.php');
