@@ -1,8 +1,8 @@
 <?php
 
-$conexion = mysqli_connect('localhost:3306', 'root', '', 'bling');
+$conectar = mysqli_connect('localhost:3306', 'root', '', 'bling');
 
-if (!$conexion) {
+if (!$conectar) {
     echo "Error: No se pudo conectar a la base de datos.";
     exit;
 }
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // Validar el cod_vendedor
   $sql = "SELECT count(*) AS cantidad FROM vendedor WHERE cod_vendedor = '{$cod_vendedor}'";
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query($conectar, $sql);
   $registro = mysqli_fetch_assoc($resultado);
 
   if ($registro['cantidad'] == 0) {
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   $sql = "INSERT INTO venta (estadoV, fecha, Total_cantidad, Total_venta, fk_cod_vendedor)
   VALUES ('{$estadov}', '{$fecha}', {$cantidad_total}, {$total_venta}, {$cod_vendedor})";
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query($conectar, $sql);
 
   if ($resultado) {
     echo "La venta se agregó correctamente.";
