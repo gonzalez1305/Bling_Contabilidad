@@ -20,15 +20,15 @@
 </head>
 <body>
 <?php
-  $conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+  conectar  = mysqli_connect('localhost:3307', 'root', '', 'bling');
 
-  if (!$conexion) {
+  if (!conectar ) {
     echo "Error: No se pudo conectar a la base de datos.";
     exit;
   }
 
   $sql = "SELECT * FROM pago ORDER BY fecha_pago DESC";
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query(conectar , $sql);
 
   if (mysqli_num_rows($resultado) == 0) {
     echo "<h1>No hay pagos realizadas.</>";
