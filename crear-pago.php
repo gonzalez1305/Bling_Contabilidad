@@ -28,7 +28,7 @@ header('Location: col_pago_list.php');
 // Si no hay errores, ejecutar la consulta SQL
 if (empty($_SESSION['error'])) {
 $sql = "INSERT INTO pago (fecha_pago, total, fk_id_venta) VALUES (?, ?, ?)";
-$sentencia = $conexion->prepare($sql);
+$sentencia = $conectar->prepare($sql);
 $sentencia->execute(array($fecha_pago, $total, $id_transaccion));
 // Mensaje de error
 if (!empty($_SESSION['error'])) {
