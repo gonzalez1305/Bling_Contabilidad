@@ -4,10 +4,10 @@
 
 if (isset($_POST['cedula']) && isset($_POST['monto'])) {
   // Conectar a la base de datos
-  $conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+  $conectar = mysqli_connect('localhost:3307', 'root', '', 'bling');
 
 
-  if (!$conexion) {
+  if (!$conectar) {
     echo "Error: No se pudo conectar a la base de datos.";
     exit;
   }
@@ -21,7 +21,7 @@ if (isset($_POST['cedula']) && isset($_POST['monto'])) {
   VALUES ('$cedula', '$monto')";
 
   // Ejecutar la consulta
-  $resultado = mysqli_query($conexion, $sql);
+  $resultado = mysqli_query($conectar, $sql);
 
   if ($resultado) {
     // Redireccionar a la página de lista de pagos
@@ -31,7 +31,7 @@ if (isset($_POST['cedula']) && isset($_POST['monto'])) {
   }
 
   // Cerrar la conexión a la base de datos
-  mysqli_close($conexion);
+  mysqli_close($conectar);
 } else {
   echo "Faltan datos por completar.";
 }
