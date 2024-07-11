@@ -10,7 +10,7 @@
     <div class="container"></div>
 <?php
 
-include("conexion2.php");
+include("conexion.php");
 
 // Obtener los datos del formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -24,7 +24,7 @@ INNER JOIN vendedor ON venta.fk_cod_vendedor = vendedor.cod_vendedor
 INNER JOIN usuario ON vendedor.fk_id_usuario = usuario.id_usuario
 WHERE id_venta LIKE '%$busqueda%' OR estado LIKE '%$busqueda%' OR fecha LIKE '%$busqueda%' OR Total_cantidad LIKE '%$busqueda%' OR Total_venta LIKE '%$busqueda%' OR cod_vendedor LIKE '%$busqueda%' OR nombre LIKE '%$busqueda%'";
 
-$resultado = mysqli_query($conexion, $sql);
+$resultado = mysqli_query($conectar, $sql);
 
 if (mysqli_num_rows($resultado) == 0) {
   echo "<h1>No hay registros encontrados.</>";
