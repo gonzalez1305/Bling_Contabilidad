@@ -17,7 +17,7 @@
       <div class="card-body">
         <?php
         // Connect to the database
-        $mysqli = new mysqli('localhost:3307', 'root', '', 'bling_o');
+        $mysqli = new mysqli('localhost:3307', 'root', '', 'bling');
 
         // Check connection
         if ($mysqli->connect_error) {
