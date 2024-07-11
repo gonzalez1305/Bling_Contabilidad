@@ -1,9 +1,9 @@
 <?php
 // Conexión a la base de datos
 
-$conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+$conectar  = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
 
-if (!$conexion) {
+if (!$conectar ) {
 echo "Error: No se pudo conectar a la base de datos.";
 exit;
 }
