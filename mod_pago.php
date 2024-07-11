@@ -4,9 +4,9 @@ session_start();
 
 // Conexión a la base de datos
 
-$conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+$conectar = mysqli_connect('localhost:3307', 'root', '', 'bling');
 
-if (!$conexion) {
+if (!$conectar) {
      echo "Error: No se pudo conectar a la base de datos.";
      exit;
 }
@@ -20,7 +20,7 @@ if (isset($_POST['fecha_pago']) && isset($_POST['total']) && isset($_POST['id_pa
 
     // Consulta SQL
     $sql = "UPDATE pago SET fecha_pago = '$fecha_pago', total = $total WHERE id_pago = $id_pago";
-    $resultado = mysqli_query($conexion, $sql);
+    $resultado = mysqli_query($conectar, $sql);
 
     // Comprobar si la consulta se ha ejecutado correctamente
     if ($resultado) {
