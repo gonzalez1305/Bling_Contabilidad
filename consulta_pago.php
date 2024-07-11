@@ -13,9 +13,9 @@
 $busqueda = $_GET['busqueda'];
 $fecha_inicio = $_GET['fecha_inicio'];
 $fecha_fin = $_GET['fecha_fin'];
-$conexion = mysqli_connect('localhost:3307', 'root', '', 'bling_o');
+conectar  = mysqli_connect('localhost:3307', 'root', '', 'bling');
 
-if (!$conexion) {
+if (!conectar ) {
 echo "Error: No se pudo conectar a la base de datos.";
 exit;}
 // Consulta SQL
@@ -26,7 +26,7 @@ fecha_pago BETWEEN '{$fecha_inicio}' AND '{$fecha_fin}'
 ORDER BY fecha_pago DESC";
 
 // Ejecutar la consulta
-$resultado = mysqli_query($conexion, $sql);
+$resultado = mysqli_query(conectar , $sql);
 
 // Comprobar si la consulta se ha ejecutado correctamente
 if ($resultado) {
