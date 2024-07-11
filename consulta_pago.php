@@ -13,7 +13,7 @@
 $busqueda = $_GET['busqueda'];
 $fecha_inicio = $_GET['fecha_inicio'];
 $fecha_fin = $_GET['fecha_fin'];
-conectar  = mysqli_connect('localhost:3307', 'root', '', 'bling');
+$conectar  = mysqli_connect('localhost:3307', 'root', '', 'bling');
 
 if (!$conectar ) {
 echo "Error: No se pudo conectar a la base de datos.";
