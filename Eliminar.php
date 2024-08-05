@@ -28,23 +28,25 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                         // No quedan más detalles, eliminar el pedido
                         $eliminar_pedido = "DELETE FROM pedido WHERE id_pedido = $id_pedido";
                         $resultado_eliminar_pedido = mysqli_query($conectar, $eliminar_pedido);
-
+                   
                         if ($resultado_eliminar_pedido) {
-                            header("Location: visualizar.php");
-                            exit();
+                            echo "<script language='javascript'>";
+                            echo "alert('Los datos se eliminaron correctamente');";
+                            echo "location.assign('validarpedido.php');";
+                            echo "</script>";
                         } else {
-                            echo '<div class="alert alert-danger" role="alert">Error al intentar eliminar el pedido.</div>';
+                            echo "<script language='javascript'>";
+                            echo "alert('Los datos NO se eliminaron correctamente');";
+                            echo "location.assign('validarpedido.php');";
+                            echo "</script>";
                         }
-                    } else {
-                        // Solo se eliminó el detalle del pedido
-                        header("Location: visualizar.php");
-                        exit();
-                    }
+                   
                 } 
+                
             } 
-        } 
+        }
     } 
 }
-
+}
 mysqli_close($conectar);
 ?>
