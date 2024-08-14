@@ -1,3 +1,21 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $to = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
+    $subject = "Bling Contabilidad";
+    $message = "Escríbenos si tienes dudas.";
+    $headers = 'From: dannyrojas@gmail.com' . "\r\n" . 'Reply-To: juanma@gmail.com';
+
+    if (filter_var($to, FILTER_VALIDATE_EMAIL)) {
+        if (mail($to, $subject, $message, $headers)) {
+            echo "<p class='success'>El correo enviado a $to fue correcto.</p>";
+        } else {
+            echo "<p class='error'>El correo no se pudo enviar.</p>";
+        }
+    } else {
+        echo "<p class='error'>Correo electrónico no válido.</p>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,8 +26,8 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
-            margin: 15;
-            padding: 10;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -65,23 +83,10 @@
 <body>
     <div class="container">
         <h1>Enviar Correo</h1>
-        <form>
-            <input type="email" name="email" placeholder="Introduce el correo del destinatario" required value="carolg998488@gmail.com">
+        <form method="POST" action="">
+            <input type="email" name="email" placeholder="Introduce el correo del destinatario" required>
             <input type="submit" value="Enviar Correo">
         </form>
-
-        <?php
-        $to = "carolg998488@gmail.com";
-        $subject = "Bling Contabilidad";
-        $message = "Escribenos si tienes dudas";
-        $headers = 'From: dannyrojas@gmail.com' . "\r\n" . 'Reply-to: juanma@gmail.com';
-
-        if (mail($to, $subject, $message, $headers)) {
-            echo "<p class='success'>El correo enviado a $to fue correcto</p>";
-        } else {
-            echo "<p class='error'>El correo no se pudo enviar</p>";
-        }
-        ?>
     </div>
 </body>
 </html>

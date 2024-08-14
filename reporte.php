@@ -3,15 +3,15 @@
 require('pdf/fpdf.php');
 
 // Paso 2: Conectar a la base de datos MySQL
-include("conexion2.php");
+include("conexion.php");
 
 
 // Paso 3: Consulta a la base de datos
 $query = "SELECT id_pedido, fecha, situacion, fk_id_usuario FROM pedido";
-$result = $conexion->query($query);
+$result = $conectar->query($query);
 
 if (!$result) {
-    die("Error en la consulta: " . $conexion->error);
+    die("Error en la consulta: " . $conectar->error);
 }
 
 $pedidos = array();
@@ -41,5 +41,5 @@ foreach ($pedidos as $pedido) {
 $pdf->Output('D', 'reporte_pedidos.pdf'); // Descargar directamente el PDF
 
 // Paso 5: Cerrar la conexión a la base de datos
-$conexion->close();
+$conectar->close();
 ?>

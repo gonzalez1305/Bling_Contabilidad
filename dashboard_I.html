@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario - Bling Compra</title>
+    <link rel="icon" href="imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -66,16 +67,16 @@
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="validarusuario.php">Usuarios</a>
+                        <a class="nav-link active" href="./Usuario/validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./dashboard_v.html">Ventas</a>
+                        <a class="nav-link" href="dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="./dashboard_I.html">Inventario</a>
+                        <a class="nav-link" href="dashboard_I.html">Inventario</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="validarpedido.php">Pedidos</a>
+                        <a class="nav-link" href="./Pedido/validarpedido.php">Pedidos</a>
                     </li>
                 </ul>
             </div>
@@ -94,18 +95,7 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text">Añada nuevos productos al inventario.</p>
-                            <a href="./crearInventario.php" class="btn btn-primary">Registrar producto</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            Modificar Producto
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Edite los detalles de los productos existentes.</p>
-                            <a href="./editarInventario.php" class="btn btn-primary">Modificar producto</a>
+                            <a href="./Inventario/crearInventario.php" class="btn btn-primary">Registrar producto</a>
                         </div>
                     </div>
                 </div>
@@ -116,7 +106,7 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text">Consulte la información de los productos en el inventario.</p>
-                            <a href="listaInventario.php" class="btn btn-primary">Consultar producto</a>
+                            <a href="./Inventario/listaInventario.php" class="btn btn-primary">Consultar producto</a>
                         </div>
                     </div>
                 </div>
