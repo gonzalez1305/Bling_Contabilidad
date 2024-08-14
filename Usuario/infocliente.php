@@ -1,120 +1,141 @@
+<?php
+session_start();
+include("../conexion.php");
+
+// Verificar si el usuario ha iniciado sesión
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Obtener el ID del usuario desde la sesión
+$id_usuario = $_SESSION['id_usuario'];
+
+// Consulta para obtener la información del usuario
+$sql = "SELECT nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, estado, imagen FROM usuario WHERE id_usuario = ?";
+$stmt = $conectar->prepare($sql);
+$stmt->bind_param("i", $id_usuario);
+$stmt->execute();
+$result = $stmt->get_result();
+$usuario = $result->fetch_assoc();
+
+// Verificar si se encontró el usuario
+if (!$usuario) {
+    echo "No se encontró el usuario.";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bling Compra</title>
-    <link rel="icon" href="imgs/logo.png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="icon" href="../imgs/logo.png">
+    <title>Mi Cuenta - Bling Compra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
+            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
-        .navbar-brand h1 {
-            font-size: 1.5rem;
-        }
-        .section-title {
-            margin: 2rem 0;
-            text-align: center;
-            font-size: 2rem;
-            color: #007bff;
+        .container {
+            margin-top: 50px;
         }
         .card {
-            border: none;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
         }
-        .card:hover {
-            transform: translateY(-10px);
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
-        .card-body {
-            text-align: center;
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .profile-image img {
+            width: 100%;
+            height: auto;
+        }
+        .profile-image .bi {
+            font-size: 100px;
+            color: #6c757d;
+        }
+        .info-details {
+            max-width: 600px;
+        }
+        .info-details p {
+            margin: 0;
+            padding: 8px 0;
         }
         footer {
             background-color: #007bff;
             color: white;
             padding: 1rem 0;
             text-align: center;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
         }
         footer p {
             margin: 0;
+        }
+        .btn-custom {
+            margin: 5px;
+        }
+        .social-media .btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .social-media .btn svg {
+            width: 20px;
+            height: 20px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><h1>Bling Compra</h1></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="menu.html">Cerrar Sesión</a>
-                        <a class="nav-link" href="./Usuario/infocliente.php">Mi info</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<div class="container">
+    <div class="card">
+        <div class="profile-info">
+        <div class="profile-image">
+                    <?php if ($usuario['imagen']): ?>
+                        <img src="../usuariofoto/<?php echo htmlspecialchars($usuario['imagen']); ?>" alt="Imagen de perfil">
+                    <?php else: ?>
+                        <i class="bi bi-person-circle"></i>
+                    <?php endif; ?>
+                </div>
+            <div class="info-details">
+                <h1>Mi Cuenta</h1>
+                <p><strong>Nombre:</strong> <?php echo htmlspecialchars($usuario['nombre']); ?></p>
+                <p><strong>Apellido:</strong> <?php echo htmlspecialchars($usuario['apellido']); ?></p>
+                <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($usuario['telefono']); ?></p>
+                <p><strong>Dirección:</strong> <?php echo htmlspecialchars($usuario['direccion']); ?></p>
+                <p><strong>Fecha de Nacimiento:</strong> <?php echo htmlspecialchars($usuario['fecha_de_nacimiento']); ?></p>
+                <p><strong>Correo:</strong> <?php echo htmlspecialchars($usuario['correo']); ?></p>
+                <p><strong>Estado:</strong> <?php echo htmlspecialchars($usuario['estado']); ?></p>
+                <a href="editar_usuario_cliente.php" class="btn btn-primary btn-custom">Editar Información</a>
+                <a href="../MenuC.html" class="btn btn-secondary btn-custom">Volver</a>
+                <a href="confirmar_eliminacion.php" class="btn btn-danger btn-custom">Eliminar Cuenta</a>
 
-    <div class="container mt-4">
-        <h2 class="section-title">Categorías</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <a href="producto/caballero.php" class="text-decoration-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title">Caballero</h3>
-                            <p class="card-text">Explora nuestra colección de zapatos para caballeros.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="producto/dama.php" class="text-decoration-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title">Dama</h3>
-                            <p class="card-text">Descubre nuestra elegante selección de zapatos para damas.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="producto/niño.php" class="text-decoration-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title">Niño</h3>
-                            <p class="card-text">Encuentra los mejores zapatos para niños.</p>
-                        </div>
-                    </div>
-                </a>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="container mt-4">
-        <h2 class="section-title">Acerca de Nosotros</h2>
-        <p class="text-center">Somos una microempresa dedicada a vender todo tipo de zapatillas. Nuestra misión es facilitar y potenciar la experiencia de compra y venta en línea. Estamos comprometidos con nuestros clientes y sus pedidos.</p>
-    </div>
-
-    <div class="container mt-4">
-        <h2 class="section-title">Ayuda</h2>
-        <ul class="list-unstyled text-center">
-            <li>Términos de uso</li>
-            <li>Términos de venta</li>
-            <li>Aviso Legal</li>
-            <li>Política de privacidad y cookies</li>
-        </ul>
-    </div>
-
-    <div class="container mt-4">
-        <h2 class="section-title">Contacto</h2>
-        <p class="text-center">Puedes encontrarnos en las redes sociales:</p>
+<div class="container mt-4">       <div class="d-flex justify-content-center">
+        <h2 class="section-title">Contactactanos por nuestras redes sociales!</h2> </div>
         <div class="d-flex justify-content-center">
             <a href="https://www.instagram.com/blingcontabilidad/" class="btn btn-primary mx-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
@@ -138,7 +159,8 @@
         <p>&copy; 2023 Bling Compra, Inc. Todos los derechos reservados</p>
     </footer>
 
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.js"></script>
 </body>
 </html>
