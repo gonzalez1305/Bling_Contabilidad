@@ -3,17 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD:validarusuario.php
-    <title>Usuarios Registrados - Bling Compra</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-=======
     <title>Lista de Usuarios - Bling Compra</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./css/dash.css">
     <link rel="icon" href="../imgs/logo.png">
->>>>>>> origin/andres_dev:Usuario/validarusuario.php
     <style>
         body {
             background-color: #f8f9fa;
@@ -23,7 +17,10 @@
         .navbar {
             background-color: #007bff;
         }
-        .navbar-brand, .navbar-nav .nav-link {
+        .navbar-brand {
+            color: #ffffff;
+        }
+        .navbar-nav .nav-link {
             color: #ffffff;
         }
         .sidebar {
@@ -45,14 +42,6 @@
             background-color: #007bff;
         }
         .content {
-<<<<<<< HEAD:validarusuario.php
-    padding: 20px;
-    height: calc(100vh - 56px); /* Ajusta la altura según tu diseño de navbar */
-    overflow-y: auto; /* Habilita el scroll vertical cuando sea necesario */
-}
-
-        
-=======
             margin-left: 250px;
             padding: 20px;
             margin-top: 56px;
@@ -60,7 +49,6 @@
         .btn-back {
             margin: 20px 0;
         }
->>>>>>> origin/andres_dev:Usuario/validarusuario.php
         .btn-group .btn {
             margin-right: 5px;
         }
@@ -104,22 +92,13 @@
 
 <div class="container-fluid">
     <div class="row">
-    <nav class="col-md-2 d-none d-md-block sidebar">
+        <nav class="col-md-2 d-none d-md-block sidebar">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" href="validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-<<<<<<< HEAD:validarusuario.php
-                        <a class="nav-link" href="gestionVlista.php">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="listaInventario.php">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="validarpedido.php">Pedidos</a>
-=======
                         <a class="nav-link" href="../dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
@@ -127,21 +106,15 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
->>>>>>> origin/andres_dev:Usuario/validarusuario.php
                     </li>
-
                 </ul>
             </div>
         </nav>
 
-<<<<<<< HEAD:validarusuario.php
-        <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 content">
-=======
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="btn-back">
                 <a class="btn btn-light text-primary" href="../menuv.html" role="button">Volver al Menú</a>
             </div>
->>>>>>> origin/andres_dev:Usuario/validarusuario.php
             <h1 class="h2">Usuarios Registrados</h1>
             
             <?php
@@ -150,22 +123,6 @@
                 $resultado = mysqli_query($conectar, $sql);
             ?>
 
-<<<<<<< HEAD:validarusuario.php
-            <div class="table-responsive">
-                <table id="usuariosTable" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID Usuario</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Teléfono</th>
-                            <th>Dirección</th>
-                            <th>Fecha de Nacimiento</th>
-                            <th>Correo</th>
-                            <th>Estado</th>
-                            <th>Tipo Usuario</th>
-                            <th>Acciones</th>
-=======
             <table id="pedidosTable" class="display">
                 <thead>
                     <tr>
@@ -209,40 +166,10 @@
                                     <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $filas['id_usuario']; ?>)">Eliminar</button>
                                 </div>
                             </td>
->>>>>>> origin/andres_dev:Usuario/validarusuario.php
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($filas = mysqli_fetch_assoc($resultado)) { ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($filas['id_usuario']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['nombre']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['apellido']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['telefono']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['direccion']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['fecha_de_nacimiento']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['correo']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['estado']); ?></td>
-                                <td><?php echo htmlspecialchars($filas['tipo_usuario']); ?></td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href='editarU.php?id_usuario=<?php echo $filas['id_usuario']; ?>' class="btn btn-warning btn-sm">Editar</a>
-                                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $filas['id_usuario']; ?>)">Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-                <div class="REPORTES">
-            <!-- Enlace para imprimir reportes -->
-            <a class="btn" href="reporteU.php">Imprimir Reportes</a>
-        
-            
-            <!-- Botón para generar reporte estadístico con gráfica -->
-            <button class="btn" onclick="window.location.href='reporteGraficoU.html'">Generar Reporte Estadístico con Gráfica</button>
-        </div>
-            </div>
+                    <?php } ?>
+                </tbody>
+            </table>
         </main>
     </div>
 </div>
@@ -273,7 +200,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#usuariosTable').DataTable();
+        $('#pedidosTable').DataTable();
     });
 
     function confirmDelete(id_usuario) {
