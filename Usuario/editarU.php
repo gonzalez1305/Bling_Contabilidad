@@ -120,51 +120,78 @@
                             $correo = $_POST["correo"];
                             $estado = $_POST["estado"];
                             $tipo_usuario = $_POST["tipo_usuario"];
-                            
-                            // Manejo de la imagen
-                            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
-                                $directorio_destino = "../usuariofoto/";
-                                
-                                // Verificar si el directorio existe, y si no, crearlo
-                                if (!is_dir($directorio_destino)) {
-                                    if (!mkdir($directorio_destino, 0755, true)) {
-                                        echo "<script>alert('No se pudo crear el directorio para las imágenes.');</script>";
+                            $imagen = '';
+
+                            // Validación de campos
+                            $errors = [];
+
+                            if (!preg_match("/^[a-zA-Z\s]+$/", $nombre)) {
+                                $errors[] = "El nombre debe contener solo letras.";
+                            }
+
+                            if (!preg_match("/^[a-zA-Z\s]+$/", $apellido)) {
+                                $errors[] = "El apellido debe contener solo letras.";
+                            }
+
+                            if (!preg_match("/^[0-9]{10}$/", $telefono)) {
+                                $errors[] = "El teléfono debe tener 10 dígitos.";
+                            }
+
+                            if (!DateTime::createFromFormat('Y-m-d', $fecha_de_nacimiento)) {
+                                $errors[] = "La fecha de nacimiento no es válida. Debe ser en formato YYYY-MM-DD.";
+                            }
+
+                            if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+                                $errors[] = "El correo electrónico no es válido.";
+                            }
+
+                            if (!empty($errors)) {
+                                foreach ($errors as $error) {
+                                    echo "<div class='alert alert-danger'>$error</div>";
+                                }
+                            } else {
+                                // Manejo de la imagen
+                                if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+                                    $directorio_destino = "../usuariofoto/";
+
+                                    if (!is_dir($directorio_destino)) {
+                                        if (!mkdir($directorio_destino, 0755, true)) {
+                                            echo "<script>alert('No se pudo crear el directorio para las imágenes.');</script>";
+                                            exit();
+                                        }
+                                    }
+
+                                    $archivo_tmp = $_FILES['imagen']['tmp_name'];
+                                    $nombre_archivo_original = basename($_FILES['imagen']['name']);
+                                    $extension = strtolower(pathinfo($nombre_archivo_original, PATHINFO_EXTENSION));
+                                    $nombre_archivo_nuevo = uniqid() . '.' . $extension;
+                                    $ruta_destino = $directorio_destino . $nombre_archivo_nuevo;
+
+                                    $tipos_permitidos = ['image/jpeg', 'image/png'];
+                                    if (!in_array($_FILES['imagen']['type'], $tipos_permitidos)) {
+                                        echo "<script>alert('Tipo de archivo no permitido. Solo se permiten imágenes JPEG y PNG.');</script>";
+                                        exit();
+                                    }
+
+                                    if (move_uploaded_file($archivo_tmp, $ruta_destino)) {
+                                        $imagen = $nombre_archivo_nuevo;
+                                    } else {
+                                        echo "<script>alert('Error al subir la imagen. Verifique el directorio y los permisos.');</script>";
                                         exit();
                                     }
                                 }
 
-                                $archivo_tmp = $_FILES['imagen']['tmp_name'];
-                                $nombre_archivo_original = basename($_FILES['imagen']['name']);
-                                $extension = strtolower(pathinfo($nombre_archivo_original, PATHINFO_EXTENSION));
-                                $nombre_archivo_nuevo = uniqid() . '.' . $extension; // Generar un nombre único para el archivo
-                                $ruta_destino = $directorio_destino . $nombre_archivo_nuevo;
+                                // Actualización en la base de datos
+                                $sql = "UPDATE usuario SET nombre='$nombre', apellido='$apellido', telefono='$telefono', direccion='$direccion', fecha_de_nacimiento='$fecha_de_nacimiento', correo='$correo', estado='$estado', tipo_usuario='$tipo_usuario', imagen='$imagen' WHERE id_usuario='$id_usuario'";
+                                $resultado = mysqli_query($conectar, $sql);
 
-                                // Verificar el tipo de archivo
-                                $tipos_permitidos = ['image/jpeg', 'image/png'];
-                                if (!in_array($_FILES['imagen']['type'], $tipos_permitidos)) {
-                                    echo "<script>alert('Tipo de archivo no permitido. Solo se permiten imágenes JPEG y PNG.');</script>";
-                                    exit();
-                                }
-                                
-                                // Mover el archivo cargado al directorio de destino
-                                if (move_uploaded_file($archivo_tmp, $ruta_destino)) {
-                                    $imagen = $nombre_archivo_nuevo;
+                                if($resultado){
+                                    echo "<script>alert('Los datos se actualizaron correctamente'); location.assign('validarusuario.php');</script>";
                                 } else {
-                                    echo "<script>alert('Error al subir la imagen. Verifique el directorio y los permisos.');</script>";
-                                    exit();
+                                    echo "<script>alert('Los datos NO se actualizaron correctamente'); location.assign('validarusuario.php');</script>";
                                 }
+                                mysqli_close($conectar);
                             }
-
-                            // Actualización en la base de datos
-                            $sql = "UPDATE usuario SET nombre='$nombre', apellido='$apellido', telefono='$telefono', direccion='$direccion', fecha_de_nacimiento='$fecha_de_nacimiento', correo='$correo', estado='$estado', tipo_usuario='$tipo_usuario', imagen='$imagen' WHERE id_usuario='$id_usuario'";
-                            $resultado = mysqli_query($conectar, $sql);
-
-                            if($resultado){
-                                echo "<script>alert('Los datos se actualizaron correctamente'); location.assign('validarusuario.php');</script>";
-                            } else {
-                                echo "<script>alert('Los datos NO se actualizaron correctamente'); location.assign('validarusuario.php');</script>";
-                            }
-                            mysqli_close($conectar);
                         } else {
                             if(isset($_GET['id_usuario'])){
                                 $id_usuario = $_GET['id_usuario'];
@@ -222,7 +249,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="fecha_de_nacimiento" class="form-label">Fecha de Nacimiento:</label>
-                                <input type="text" name="fecha_de_nacimiento" class="form-control" value="<?php echo htmlspecialchars($fecha_de_nacimiento); ?>">
+                                <input type="text" name="fecha_de_nacimiento" class="form-control" value="<?php echo htmlspecialchars($fecha_de_nacimiento); ?>" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo:</label>
@@ -238,7 +265,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="imagen" class="form-label">Imagen:</label>
-                                <input type="file" name="imagen" class="form-control">
+                                <input type="file" name="imagen" class="form-control" accept="image/jpeg, image/png">
                             </div>
                             <div class="d-flex justify-content-between">
                                 <input type="submit" name="enviar" value="Actualizar" class="btn btn-primary">
