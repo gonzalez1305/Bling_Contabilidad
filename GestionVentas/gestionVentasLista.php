@@ -1,5 +1,6 @@
+Nuevo: Combinaciones de teclas … Se actualizaron las combinaciones de teclas de Drive para que puedas navegar con las primeras letras.
 <?php
-require '../conexion.php'; // Conexión
+require '../conexion.php'; // Conexión a la base de datos
 
 // Verificar si se ha enviado una solicitud de eliminación
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
@@ -15,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     }
 }
 
+// Consulta para obtener todos los registros de gestion_ventas
 $sql_select = "SELECT * FROM gestion_ventas";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
@@ -94,7 +96,6 @@ $resultado = mysqli_query($conectar, $sql_select);
     </div>
 </nav>
 
-
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2 d-none d-md-block sidebar">
@@ -123,11 +124,10 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <thead>
                         <tr>
                             <th>ID de Gestión de Venta</th>
-                            <th>ID de Venta</th>
+                            <th>ID de Detalles del Pedido</th>
+                            <th>ID de Vendedor</th>
                             <th>Fecha de Venta</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Imagen</th>
+                            <th>Fecha de Registro</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -137,18 +137,12 @@ $resultado = mysqli_query($conectar, $sql_select);
                             while ($row = mysqli_fetch_assoc($resultado)) {
                                 echo "<tr>";
                                 echo "<td>" . $row['id_gestion_venta'] . "</td>";
-                                echo "<td>" . $row['id_venta'] . "</td>";
+                                echo "<td>" . $row['id_detalles_pedido'] . "</td>";
+                                echo "<td>" . $row['id_vendedor'] . "</td>";
                                 echo "<td>" . $row['fecha_venta'] . "</td>";
-                                echo "<td>" . $row['cantidad'] . "</td>";
-                                echo "<td>" . $row['precio_unitario'] . "</td>";
-                                
-                                // Mostrar imagen
-                                $imagen = $row['imagen'];
-                                $imagen_path = is_file($imagen) ? $imagen : 'ruta/donde/guardar/imagenes/default.png';
-                                echo "<td><img src='$imagen_path' class='img-thumbnail' alt='Imagen'></td>";
-
+                                echo "<td>" . $row['fecha_registro'] . "</td>";
                                 echo "<td class='btn-group'>";
-                                echo "<a href='editarGestionVentas.php?id=" . $row['id_gestion_venta'] . "' class='btn btn-warning'>Editar</a>";
+                                echo "<a href='gestionVentasEditar.php?id=" . $row['id_gestion_venta'] . "' class='btn btn-warning'>Editar</a>";
                                 echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
                                 echo "<input type='hidden' name='eliminar_id' value='" . $row['id_gestion_venta'] . "'>";
                                 echo "<button type='submit' class='btn btn-danger'>Eliminar</button>";
@@ -157,7 +151,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='7'>No hay ventas registradas</td></tr>";
+                            echo "<tr><td colspan='6'>No hay ventas registradas</td></tr>";
                         }
                         ?>
                     </tbody>
