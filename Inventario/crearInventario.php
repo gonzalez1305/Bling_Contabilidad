@@ -1,11 +1,13 @@
 <?php
 require '../conexion.php'; // Conexion
 
+$talla = '';
+$color = '';
 $cantidad = '';
-$fecha = '';
-$cantidad_disponible = '';
-$referencia = '';
-$id_vendedor = '';
+$nombre = '';
+$estado = '';
+$categorias = '';
+$precio_unitario = '';
 $imagen_ruta = '';
 
 // Verifica y crea la carpeta uploads si no existe
@@ -15,11 +17,13 @@ if (!file_exists('uploads')) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
+    $talla = mysqli_real_escape_string($conectar, $_POST['talla']);
+    $color = mysqli_real_escape_string($conectar, $_POST['color']);
     $cantidad = mysqli_real_escape_string($conectar, $_POST['cantidad']);
-    $fecha = mysqli_real_escape_string($conectar, $_POST['fecha']);
-    $cantidad_disponible = mysqli_real_escape_string($conectar, $_POST['cantidad_disponible']);
-    $referencia = mysqli_real_escape_string($conectar, $_POST['referencia']);
-    $id_vendedor = mysqli_real_escape_string($conectar, $_POST['id_vendedor']);
+    $nombre = mysqli_real_escape_string($conectar, $_POST['nombre']);
+    $estado = mysqli_real_escape_string($conectar, $_POST['estado']);
+    $categorias = mysqli_real_escape_string($conectar, $_POST['categorias']);
+    $precio_unitario = mysqli_real_escape_string($conectar, $_POST['precio_unitario']);
     
     // Manejo de la imagen
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
@@ -36,8 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Inserción de los datos 
-    $sql_insert = "INSERT INTO inventario (cantidad, fecha, cantidad_disponible, referencia, id_vendedor, imagen)
-                   VALUES ('$cantidad', '$fecha', '$cantidad_disponible', '$referencia', '$id_vendedor', '$imagen_ruta')";
+    $sql_insert = "INSERT INTO producto (talla, color, cantidad, nombre, estado, categorias, precio_unitario, imagen)
+                   VALUES ('$talla', '$color', '$cantidad', '$nombre', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
 
     if (mysqli_query($conectar, $sql_insert)) {
         
@@ -140,34 +144,42 @@ mysqli_close($conectar);
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <h1 class="h2">Agregar Nuevo Inventario</h1>
+            <h1 class="h2">Agregar Nuevo Producto</h1>
             
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="talla" class="form-label">Talla:</label>
+                    <input type="varchar" id="talla" name="talla" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="color" class="form-label">Color:</label>
+                    <input type="text" id="color" name="color" class="form-control" required>
+                </div>
                 <div class="mb-3">
                     <label for="cantidad" class="form-label">Cantidad:</label>
                     <input type="number" id="cantidad" name="cantidad" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control" required>
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="cantidad_disponible" class="form-label">Cantidad Disponible:</label>
-                    <input type="number" id="cantidad_disponible" name="cantidad_disponible" class="form-control" required>
+                    <label for="estado" class="form-label">Estado:</label>
+                    <input type="text" id="estado" name="estado" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="referencia" class="form-label">Referencia:</label>
-                    <input type="text" id="referencia" name="referencia" class="form-control" required>
+                    <label for="categorias" class="form-label">Categorias:</label>
+                    <input type="text" id="categorias" name="categorias" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="id_vendedor" class="form-label">ID del Vendedor:</label>
-                    <input type="number" id="id_vendedor" name="id_vendedor" class="form-control" required>
+                    <label for="precio_unitario" class="form-label">Precio Unitario:</label>
+                    <input type="text" id="precio_unitario" name="precio_unitario" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="imagen" class="form-label">Imagen:</label>
                     <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
                 </div>
-                <button type="submit" class="btn btn-primary">Registrar Inventario</button>
+                <button type="submit" class="btn btn-primary">Registrar Producto</button>
             </form>
 
             <div class="mt-4">

@@ -1,96 +1,78 @@
 <?php
-require '../conexion.php'; // Conexion
+require '../conexion.php'; // Conexión
 
 // Verifica si se ha enviado una solicitud de eliminación
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
-    $id_inventario = $_POST['eliminar_id'];
+    $id_producto = $_POST['eliminar_id'];
 
-    // Eliminar el registro del inventario 
-    $sql_delete = "DELETE FROM inventario WHERE id_inventario = '$id_inventario'";
+    // Preparar la consulta para eliminar el registro del inventario
+    $stmt_delete = $conectar->prepare("DELETE FROM producto WHERE id_producto = ?");
+    $stmt_delete->bind_param("i", $id_producto);
 
-    if (mysqli_query($conectar, $sql_delete)) {
+    if ($stmt_delete->execute()) {
         echo "<script>alert('Inventario eliminado correctamente');</script>";
     } else {
-        echo "Error al eliminar el inventario: " . mysqli_error($conectar);
+        echo "Error al eliminar el inventario: " . $stmt_delete->error;
     }
+
+    $stmt_delete->close();
 }
 
-// Construir consulta con filtros
-$where_clauses = [];
-if (isset($_GET['cantidad']) && $_GET['cantidad'] !== '') {
-    $cantidad = mysqli_real_escape_string($conectar, $_GET['cantidad']);
-    $where_clauses[] = "cantidad = '$cantidad'";
-}
-if (isset($_GET['fecha']) && $_GET['fecha'] !== '') {
-    $fecha = mysqli_real_escape_string($conectar, $_GET['fecha']);
-    $where_clauses[] = "fecha = '$fecha'";
-}
-if (isset($_GET['referencia']) && $_GET['referencia'] !== '') {
-    $referencia = mysqli_real_escape_string($conectar, $_GET['referencia']);
-    $where_clauses[] = "referencia LIKE '%$referencia%'";
-}
-if (isset($_GET['id_vendedor']) && $_GET['id_vendedor'] !== '') {
-    $id_vendedor = mysqli_real_escape_string($conectar, $_GET['id_vendedor']);
-    $where_clauses[] = "id_vendedor = '$id_vendedor'";
-}
+// Verificar si la variable $where_sql está definida, si no, se define como una cadena vacía
+$where_sql = isset($where_sql) ? $where_sql : "";
 
-$where_sql = '';
-if (count($where_clauses) > 0) {
-    $where_sql = 'WHERE ' . implode(' AND ', $where_clauses);
-}
-
-// Consulta 
-$sql_select = "SELECT * FROM inventario $where_sql";
+// Consulta de selección
+$sql_select = "SELECT * FROM producto $where_sql";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Listado de Inventario - Bling Compra</title>
-  <link rel="icon" href="../imgs/logo.png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: Arial, sans-serif;
-    }
-    .navbar {
-        background-color: #007bff;
-    }
-    .navbar-brand {
-        color: #ffffff;
-    }
-    .navbar-nav .nav-link {
-        color: #ffffff;
-    }
-    .sidebar {
-        height: 100vh;
-        background-color: #343a40;
-        padding-top: 20px;
-    }
-    .sidebar a {
-        color: #ffffff;
-        padding: 10px;
-        text-decoration: none;
-        display: block;
-    }
-    .sidebar a:hover {
-        background-color: #007bff;
-    }
-    .content {
-        padding: 20px;
-    }
-    .card {
-        margin-bottom: 20px;
-    }
-    .volver-btn {
-        margin-bottom: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Inventario - Bling Compra</title>
+    <link rel="icon" href="../imgs/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand {
+            color: #ffffff;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ffffff;
+            padding: 10px;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #007bff;
+        }
+        .content {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .volver-btn {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -103,7 +85,7 @@ $resultado = mysqli_query($conectar, $sql_select);
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
+                    <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
                 </li>
             </ul>
         </div>
@@ -133,51 +115,27 @@ $resultado = mysqli_query($conectar, $sql_select);
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <h1 class="h2">Listado de Inventario</h1>
-            
-            <form method="GET" action="" class="mb-4">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label for="cantidad" class="form-label">Cantidad:</label>
-                        <input type="number" id="cantidad" name="cantidad" class="form-control" value="<?php echo isset($_GET['cantidad']) ? $_GET['cantidad'] : ''; ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="fecha" class="form-label">Fecha:</label>
-                        <input type="date" id="fecha" name="fecha" class="form-control" value="<?php echo isset($_GET['fecha']) ? $_GET['fecha'] : ''; ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="referencia" class="form-label">Referencia:</label>
-                        <input type="text" id="referencia" name="referencia" class="form-control" value="<?php echo isset($_GET['referencia']) ? $_GET['referencia'] : ''; ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="id_vendedor" class="form-label">ID del Vendedor:</label>
-                        <input type="number" id="id_vendedor" name="id_vendedor" class="form-control" value="<?php echo isset($_GET['id_vendedor']) ? $_GET['id_vendedor'] : ''; ?>">
-                    </div>
-                </div>
-                <div class="row g-3 mt-3">
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                    </div>
-                </div>
-            </form>
 
             <?php
             // Verificar si hay registros
             if (mysqli_num_rows($resultado) > 0) {
                 echo "<table class='table table-striped'>";
-                echo "<thead><tr><th>ID</th><th>Cantidad</th><th>Fecha</th><th>Cantidad Disponible</th><th>Referencia</th><th>ID Vendedor</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
+                echo "<thead><tr><th>ID</th><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
                 while ($fila = mysqli_fetch_assoc($resultado)) {
                     echo "<tr>";
-                    echo "<td>" . $fila['id_inventario'] . "</td>";
-                    echo "<td>" . $fila['cantidad'] . "</td>";
-                    echo "<td>" . $fila['fecha'] . "</td>";
-                    echo "<td>" . $fila['cantidad_disponible'] . "</td>";
-                    echo "<td>" . $fila['referencia'] . "</td>";
-                    echo "<td>" . $fila['id_vendedor'] . "</td>";
-                    echo "<td><img src='" . $fila['imagen'] . "' alt='Imagen' style='max-width: 100px;'></td>";
+                    echo "<td>" . htmlspecialchars($fila['id_producto']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['talla']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['color']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['cantidad']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['estado']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['categorias']) . "</td>";
+                    echo "<td>" . htmlspecialchars($fila['precio_unitario']) . "</td>";
+                    echo "<td><img src='" . htmlspecialchars($fila['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
                     echo "<td>";
-                    echo "<a href='editarInventario.php?id=" . $fila['id_inventario'] . "' class='btn btn-warning btn-sm'>Editar</a> ";
+                    echo "<a href='editarInventario.php?id=" . htmlspecialchars($fila['id_producto']) . "' class='btn btn-warning btn-sm'>Editar</a> ";
                     echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
-                    echo "<input type='hidden' name='eliminar_id' value='" . $fila['id_inventario'] . "'>";
+                    echo "<input type='hidden' name='eliminar_id' value='" . htmlspecialchars($fila['id_producto']) . "'>";
                     echo "<input type='submit' value='Eliminar' class='btn btn-danger btn-sm'>";
                     echo "</form>";
                     echo "</td>";
@@ -191,8 +149,6 @@ $resultado = mysqli_query($conectar, $sql_select);
 
             <div class="mt-4">
                 <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Inventario</a>
-
-
             </div>
         </main>
     </div>
