@@ -1,4 +1,4 @@
-lizaron las combinaciones de teclas de Drive para que puedas navegar con las primeras letras.
+
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
