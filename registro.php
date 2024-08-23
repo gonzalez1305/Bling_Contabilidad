@@ -11,8 +11,8 @@ $correo = $_POST["correo"];
 $contraseña = $_POST["contraseña"];
 $cod_vendedor = isset($_POST["cod_vendedor"]) ? $_POST["cod_vendedor"] : "";
 $estado = "Activo";
-$cliente = 2;
-$vendedor = 1;
+$cliente = 2; // Asumiendo que 2 es el ID para clientes en la tabla de roles
+$vendedor = 1; // Asumiendo que 1 es el ID para vendedores en la tabla de roles
 $tipo_usuario = isset($_POST["esVendedor"]) ? $vendedor : $cliente;
 
 // Verificar si el correo ya está registrado
@@ -41,16 +41,22 @@ if ($resultadoVerificarCorreo['total'] > 0) {
         echo "window.location.href = 'menu.html';";
         echo "</script>";
 
-        // Creamos la sentencia SQL para guardar vendedor
-        if ($tipo_usuario == 1) {
-            $insertVendedor = "INSERT INTO administrador (cod_vendedor,fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
+        // Insertar el vendedor si el usuario es un vendedor
+        if ($tipo_usuario == $vendedor) {
+            $insertVendedor = "INSERT INTO administrador (cod_vendedor, fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
             $queryVendedor = mysqli_query($conectar, $insertVendedor);
-            $idGeneradoVendedor = mysqli_insert_id($conectar);
             
-            echo "<script>";
-            echo "alert('Vendedor registrado correctamente.');";
-            echo "window.location.href = 'menu.html';";
-            echo "</script>";
+            if ($queryVendedor) {
+                echo "<script>";
+                echo "alert('Vendedor registrado correctamente.');";
+                echo "window.location.href = 'menu.html';";
+                echo "</script>";
+            } else {
+                echo "<script>";
+                echo "alert('Error al registrar el vendedor. Por favor, intente nuevamente.');";
+                echo "window.history.back();";
+                echo "</script>";
+            }
         }
     } else {
         echo "<script>";

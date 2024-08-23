@@ -27,20 +27,44 @@ if (!$usuario) {
 
 // Manejo del formulario al enviarlo
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nombre = $_POST['nombre'] ?? $usuario['nombre'];
-    $apellido = $_POST['apellido'] ?? $usuario['apellido'];
-    $telefono = $_POST['telefono'] ?? $usuario['telefono'];
-    $direccion = $_POST['direccion'] ?? $usuario['direccion'];
+    // Validar y sanitizar los datos del formulario
+    $nombre = filter_var($_POST['nombre'] ?? $usuario['nombre'], FILTER_SANITIZE_STRING);
+    $apellido = filter_var($_POST['apellido'] ?? $usuario['apellido'], FILTER_SANITIZE_STRING);
+    $telefono = filter_var($_POST['telefono'] ?? $usuario['telefono'], FILTER_SANITIZE_STRING);
+    $direccion = filter_var($_POST['direccion'] ?? $usuario['direccion'], FILTER_SANITIZE_STRING);
     $fecha_de_nacimiento = $_POST['fecha_de_nacimiento'] ?? $usuario['fecha_de_nacimiento'];
-    $correo = $_POST['correo'] ?? $usuario['correo'];
-    $estado = $_POST['estado'] ?? $usuario['estado'];
+    $correo = filter_var($_POST['correo'] ?? $usuario['correo'], FILTER_SANITIZE_EMAIL);
+    $estado = filter_var($_POST['estado'] ?? $usuario['estado'], FILTER_SANITIZE_STRING);
+
+    // Validar la fecha de nacimiento
+    $fecha_de_nacimiento = DateTime::createFromFormat('Y-m-d', $fecha_de_nacimiento);
+    if (!$fecha_de_nacimiento || $fecha_de_nacimiento->format('Y-m-d') != $_POST['fecha_de_nacimiento']) {
+        echo "Fecha de nacimiento inválida.";
+        exit();
+    }
+
+    // Validar el correo electrónico
+    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        echo "Correo electrónico inválido.";
+        exit();
+    }
     
     // Manejo de la imagen
     $imagen = $usuario['imagen'];
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
-        $directorio_destino = "../usuariofoto/";
-        
+        $archivo_tmp = $_FILES['imagen']['tmp_name'];
+        $nombre_archivo = basename($_FILES['imagen']['name']);
+        $ext = strtolower(pathinfo($nombre_archivo, PATHINFO_EXTENSION));
+        $archivos_permitidos = ['jpg', 'jpeg', 'png', 'gif'];
+
+        // Validar el tipo de archivo
+        if (!in_array($ext, $archivos_permitidos)) {
+            echo "Solo se permiten imágenes en formato JPG, JPEG, PNG o GIF.";
+            exit();
+        }
+
         // Verificar si el directorio existe, y si no, crearlo
+        $directorio_destino = "../usuariofoto/";
         if (!is_dir($directorio_destino)) {
             if (!mkdir($directorio_destino, 0755, true)) {
                 echo "No se pudo crear el directorio para las imágenes.";
@@ -48,11 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        $nombre_archivo = basename($_FILES['imagen']['name']);
         $ruta_destino = $directorio_destino . $nombre_archivo;
         
         // Mover el archivo cargado al directorio de destino
-        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
+        if (move_uploaded_file($archivo_tmp, $ruta_destino)) {
             $imagen = $nombre_archivo;
         } else {
             echo "Error al subir la imagen. Verifique el directorio y los permisos.";
@@ -63,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Actualización en la base de datos
     $sql = "UPDATE usuario SET nombre = ?, apellido = ?, telefono = ?, direccion = ?, fecha_de_nacimiento = ?, correo = ?, estado = ?, imagen = ? WHERE id_usuario = ?";
     $stmt = $conectar->prepare($sql);
-    $stmt->bind_param("ssssssssi", $nombre, $apellido, $telefono, $direccion, $fecha_de_nacimiento, $correo, $estado, $imagen, $id_usuario);
+    $stmt->bind_param("ssssssssi", $nombre, $apellido, $telefono, $direccion, $fecha_de_nacimiento->format('Y-m-d'), $correo, $estado, $imagen, $id_usuario);
     
     if ($stmt->execute()) {
         // Redirigir a la página de confirmación
@@ -189,8 +212,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="date" class="form-control" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?php echo htmlspecialchars($usuario['fecha_de_nacimiento']); ?>" required>
                     </div>
                     <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="estado" name="estado" value="<?php echo htmlspecialchars($usuario['estado']); ?>" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen">
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
                     </div>
                     <button type="submit" class="btn btn-primary">Actualizar Información</button>
                     <a href="./infocliente.php" class="btn btn-secondary">Volver</a>
@@ -199,8 +230,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </div>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.js"></script>

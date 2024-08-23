@@ -17,90 +17,109 @@
     }
 
     body {
-        background-color: #007bff;  /* Fondo azul */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        overflow: hidden;
+      background-color: #007bff;  /* Fondo azul */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
     }
 
     /* Estilo para el fondo de partículas */
     #particles-js {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
 
     /* Contenedor del formulario de registro */
     .login-container {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 600px; /* Aumentado para mejor distribución */
-        width: 100%;
-        z-index: 1;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+      z-index: 1;
     }
 
     /* Encabezado del formulario */
     .login-header {
-        background-color: #007bff;
-        color: #ffffff;
-        padding: 15px;
-        border-radius: 10px 10px 0 0;
-        text-align: center;
+      background-color: #007bff;
+      color: #ffffff;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      text-align: center;
     }
 
     /* Estilo del formulario */
     .login-form {
-        padding: 20px;
+      padding: 20px;
     }
 
     /* Estilo de los campos del formulario */
     .login-form .form-control {
-        margin-bottom: 15px;
+      margin-bottom: 15px;
     }
 
     /* Estilo del botón de registro */
     .login-form .btn-primary {
-        width: 100%;
+      width: 100%;
     }
 
     /* Estilo de la casilla de verificación */
     .login-form .form-check {
-        text-align: left;
+      text-align: left;
     }
 
     /* Pie de página del formulario */
     .login-footer {
-        text-align: center;
-        margin-top: 20px;
+      text-align: center;
+      margin-top: 20px;
     }
 
     /* Enlaces del pie de página */
     .login-footer a {
-        color: #007bff;
-        text-decoration: none;
+      color: #007bff;
+      text-decoration: none;
     }
 
     .login-footer a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
     }
 
     /* Mensaje de error */
     .error-message {
-        background-color: #ffffff;
-        color: #ff0000;
-        padding: 10px;
-        border-radius: 5px;
-        text-align: center;
-        margin-bottom: 15px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      color: #ff0000;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-</style>
+
+    /* Estilo del botón para mostrar/ocultar contraseña */
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #007bff;
+    }
+
+    /* Estilo del campo de fecha */
+    .login-form .date-picker {
+      position: relative;
+    }
+    .login-form .date-picker input {
+      padding-right: 40px;
+    }
+  </style>
 </head>
 
 <body>
@@ -115,42 +134,51 @@
     </div>
     
     <!-- Formulario de registro -->
-    <form class="login-form" action="registro.php" method="post">
+    <form class="login-form" action="registro.php" method="post" onsubmit="return validateForm()">
+      <div id="errorMessages" class="error-message" style="display: none;"></div>
+
       <div class="row mb-3">
         <div class="col">
           <label for="nombre" class="form-label">Nombre</label>
-          <input type="text" class="form-control" name="nombre" required>
+          <input type="text" class="form-control" name="nombre" id="nombre" required pattern="[A-Za-z\s]+">
+          <small class="form-text text-muted">Solo se permiten letras.</small>
         </div>
         <div class="col">
           <label for="apellido" class="form-label">Apellido</label>
-          <input type="text" class="form-control" name="apellido" required>
+          <input type="text" class="form-control" name="apellido" id="apellido" required pattern="[A-Za-z\s]+">
+          <small class="form-text text-muted">Solo se permiten letras.</small>
         </div>
       </div>
+
       <div class="row mb-3">
         <div class="col">
           <label for="telefono" class="form-label">Teléfono</label>
-          <input type="text" class="form-control" name="telefono" required>
+          <input type="text" class="form-control" name="telefono" id="telefono" required pattern="\d{10}">
+          <small class="form-text text-muted">Debe ser un número de 10 dígitos.</small>
         </div>
         <div class="col">
           <label for="direccion" class="form-label">Dirección</label>
-          <input type="text" class="form-control" name="direccion" required>
+          <input type="text" class="form-control" name="direccion" id="direccion" required>
         </div>
       </div>
+
       <div class="row mb-3">
-        <div class="col">
+        <div class="col date-picker">
           <label for="fecha" class="form-label">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" name="fecha" required>
+          <input type="date" class="form-control" name="fecha" id="fecha" required>
         </div>
         <div class="col">
           <label for="correo" class="form-label">Correo</label>
-          <input type="email" class="form-control" name="correo" required>
+          <input type="email" class="form-control" name="correo" id="correo" required>
         </div>
       </div>
       
       <!-- Campo para la contraseña -->
-      <div class="mb-3">
+      <div class="mb-3 position-relative">
         <label for="contraseña" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" name="contraseña" required>
+        <input type="password" class="form-control" name="contraseña" id="contraseña" required minlength="8">
+        <span class="password-toggle" onclick="togglePassword()">&#128065;</span>
+        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres.</small>
       </div>
       
       <!-- Campo oculto para el código del vendedor -->
@@ -186,6 +214,69 @@
     particlesJS.load('particles-js', 'particles.json', function() {
       console.log('particles.js loaded - callback');
     });
+
+    function validateForm() {
+      const nombre = document.getElementById('nombre').value;
+      const apellido = document.getElementById('apellido').value;
+      const telefono = document.getElementById('telefono').value;
+      const direccion = document.getElementById('direccion').value;
+      const fecha = document.getElementById('fecha').value;
+      const correo = document.getElementById('correo').value;
+      const contraseña = document.getElementById('contraseña').value;
+      const errorMessages = document.getElementById('errorMessages');
+      let errors = [];
+
+      // Validación de nombre y apellido
+      if (!/^[A-Za-z\s]+$/.test(nombre)) {
+        errors.push('El nombre solo puede contener letras.');
+      }
+      if (!/^[A-Za-z\s]+$/.test(apellido)) {
+        errors.push('El apellido solo puede contener letras.');
+      }
+
+      // Validación de teléfono
+      if (!/^\d{10}$/.test(telefono)) {
+        errors.push('El teléfono debe ser un número de 10 dígitos.');
+      }
+
+      // Validación de fecha de nacimiento
+      if (new Date(fecha) > new Date()) {
+        errors.push('La fecha de nacimiento no puede ser en el futuro.');
+      }
+
+      // Validación de edad
+      const today = new Date();
+      const birthDate = new Date(fecha);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 18) {
+        errors.push('Debe tener al menos 18 años para registrarse.');
+      }
+
+      // Mostrar errores
+      if (errors.length > 0) {
+        errorMessages.innerHTML = errors.join('<br>');
+        errorMessages.style.display = 'block';
+        return false;
+      }
+
+      return true;
+    }
+
+    function togglePassword() {
+      const passwordField = document.getElementById('contraseña');
+      const passwordToggle = document.querySelector('.password-toggle');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+      } else {
+        passwordField.type = 'password';
+        passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+      }
+    }
   </script>
 </body>
 </html>
