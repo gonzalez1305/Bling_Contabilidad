@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $estado = $_POST['estado'];
     $categorias = $_POST['categorias'];
     $precio_unitario = $_POST['precio_unitario'];
+    $fk_id_marca = $_POST['fk_id_marca']; // Obtener el FK de la marca seleccionada
 
     // Manejo de la imagen
     if ($_FILES['imagen']['name']) {
@@ -37,8 +38,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Preparar la consulta para actualizar el registro del inventario
-    $stmt_update = $conectar->prepare("UPDATE producto SET talla = ?, color = ?, cantidad = ?, nombre = ?, estado = ?, categorias = ?, precio_unitario = ?, imagen = ? WHERE id_producto = ?");
-    $stmt_update->bind_param("ssisssdsi", $talla, $color, $cantidad, $nombre, $estado, $categorias, $precio_unitario, $imagen, $id_producto);
+    $stmt_update = $conectar->prepare("UPDATE producto SET talla = ?, color = ?, cantidad = ?, nombre = ?, estado = ?, categorias = ?, precio_unitario = ?, imagen = ?, fk_id_marca = ? WHERE id_producto = ?");
+    
+    // Nota: La cadena de tipo debe tener 10 caracteres (uno para cada parámetro)
+    $stmt_update->bind_param("ssisssdssi", $talla, $color, $cantidad, $nombre, $estado, $categorias, $precio_unitario, $imagen, $fk_id_marca, $id_producto);
 
     if ($stmt_update->execute()) {
         echo "<script>alert('Inventario actualizado correctamente');</script>";
@@ -64,6 +67,41 @@ if (isset($_GET['id'])) {
     echo "ID de producto no válido.";
     exit();
 }
+
+// Obtener la lista de marcas
+$stmt_marca = $conectar->prepare("SELECT * FROM marca");
+$stmt_marca->execute();
+$marcas_resultado = $stmt_marca->get_result();
+$marcas = $marcas_resultado->fetch_all(MYSQLI_ASSOC);
+
+$stmt_marca->close();
+
+mysqli_close($conectar);
+?>
+
+
+// Obtener los detalles del producto a editar
+if (isset($_GET['id'])) {
+    $id_producto = $_GET['id'];
+    $stmt_select = $conectar->prepare("SELECT * FROM producto WHERE id_producto = ?");
+    $stmt_select->bind_param("i", $id_producto);
+    $stmt_select->execute();
+    $resultado = $stmt_select->get_result();
+    $producto = $resultado->fetch_assoc();
+
+    $stmt_select->close();
+} else {
+    echo "ID de producto no válido.";
+    exit();
+}
+
+// Obtener la lista de marcas
+$stmt_marca = $conectar->prepare("SELECT * FROM marca");
+$stmt_marca->execute();
+$marcas_resultado = $stmt_marca->get_result();
+$marcas = $marcas_resultado->fetch_all(MYSQLI_ASSOC);
+
+$stmt_marca->close();
 
 mysqli_close($conectar);
 ?>
@@ -118,6 +156,17 @@ mysqli_close($conectar);
         <div class="mb-3">
             <label for="precio_unitario" class="form-label">Precio Unitario</label>
             <input type="number" step="0.01" class="form-control" id="precio_unitario" name="precio_unitario" value="<?php echo htmlspecialchars($producto['precio_unitario']); ?>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="fk_id_marca" class="form-label">Marca</label>
+            <select class="form-select" id="fk_id_marca" name="fk_id_marca" required>
+                <?php foreach ($marcas as $marca) : ?>
+                    <option value="<?php echo htmlspecialchars($marca['id_marca']); ?>" <?php echo $marca['id_marca'] == $producto['fk_id_marca'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($marca['nombre_marca']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
 
         <div class="mb-3">

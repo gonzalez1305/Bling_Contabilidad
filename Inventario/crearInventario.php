@@ -1,5 +1,5 @@
 <?php
-require '../conexion.php'; // Conexion
+require '../conexion.php'; // Conexión
 
 $talla = '';
 $color = '';
@@ -15,6 +15,10 @@ if (!file_exists('uploads')) {
     mkdir('uploads', 0777, true);
 }
 
+// Obtener las marcas desde la base de datos
+$sql_marcas = "SELECT id_marca, nombre_marca FROM marca";
+$resultado_marcas = mysqli_query($conectar, $sql_marcas);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $talla = mysqli_real_escape_string($conectar, $_POST['talla']);
@@ -24,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $estado = mysqli_real_escape_string($conectar, $_POST['estado']);
     $categorias = mysqli_real_escape_string($conectar, $_POST['categorias']);
     $precio_unitario = mysqli_real_escape_string($conectar, $_POST['precio_unitario']);
+    $fk_id_marca = mysqli_real_escape_string($conectar, $_POST['marca']); // Captura de la marca seleccionada
     
     // Manejo de la imagen
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
@@ -39,23 +44,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Inserción de los datos 
-    $sql_insert = "INSERT INTO producto (talla, color, cantidad, nombre, estado, categorias, precio_unitario, imagen)
-                   VALUES ('$talla', '$color', '$cantidad', '$nombre', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
+    // Inserción de los datos en la tabla producto
+    $sql_insert_producto = "INSERT INTO producto (talla, color, cantidad, nombre, fk_id_marca, estado, categorias, precio_unitario, imagen)
+                            VALUES ('$talla', '$color', '$cantidad', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
 
-    if (mysqli_query($conectar, $sql_insert)) {
-        
-        echo "<script>alert('Inventario registrado correctamente');</script>";
-        echo "<script>window.location.href = 'listaInventario.php';</script>";
-        exit;
+    if (mysqli_query($conectar, $sql_insert_producto)) {
+        // Obtener el ID del nuevo producto
+        $id_producto = mysqli_insert_id($conectar);
+
+        // Insertar en la tabla intermedia marca_producto
+        $sql_insert_marca_producto = "INSERT INTO marca_producto (fk_id_producto, fk_id_marca)
+                                      VALUES ('$id_producto', '$fk_id_marca')";
+
+        if (mysqli_query($conectar, $sql_insert_marca_producto)) {
+            echo "<script>alert('Inventario registrado correctamente');</script>";
+            echo "<script>window.location.href = 'listaInventario.php';</script>";
+            exit;
+        } else {
+            echo "Error al registrar la relación marca-producto: " . mysqli_error($conectar);
+        }
     } else {
-        
         echo "Error al registrar el inventario: " . mysqli_error($conectar);
     }
 }
 
 mysqli_close($conectar);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -149,7 +164,7 @@ mysqli_close($conectar);
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="talla" class="form-label">Talla:</label>
-                    <input type="varchar" id="talla" name="talla" class="form-control" required>
+                    <input type="text" id="talla" name="talla" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="color" class="form-label">Color:</label>
@@ -172,6 +187,17 @@ mysqli_close($conectar);
                     <input type="text" id="categorias" name="categorias" class="form-control" required>
                 </div>
                 <div class="mb-3">
+                    <label for="marca" class="form-label">Marca:</label>
+                    <select id="marca" name="marca" class="form-control" required>
+                        <option value="">Seleccione una marca</option>
+                        <?php while ($fila_marca = mysqli_fetch_assoc($resultado_marcas)) { ?>
+                            <option value="<?php echo $fila_marca['id_marca']; ?>">
+                                <?php echo $fila_marca['nombre_marca']; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="precio_unitario" class="form-label">Precio Unitario:</label>
                     <input type="text" id="precio_unitario" name="precio_unitario" class="form-control" required>
                 </div>
@@ -181,14 +207,14 @@ mysqli_close($conectar);
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar Producto</button>
             </form>
-
-            <div class="mt-4">
-                <a href="../Inventario/listaInventario.php" class="btn btn-secondary">Volver al Listado de Inventario</a>
+            <div class="volver-btn">
+                <a href="listaInventario.php" class="btn btn-secondary">Volver a Inventario</a>
             </div>
         </main>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -21,8 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
 // Verificar si la variable $where_sql está definida, si no, se define como una cadena vacía
 $where_sql = isset($where_sql) ? $where_sql : "";
 
-// Consulta de selección
-$sql_select = "SELECT * FROM producto $where_sql";
+// Consulta de selección para incluir la marca
+$sql_select = "SELECT producto.*, marca.nombre_marca 
+               FROM producto 
+               JOIN marca ON producto.fk_id_marca = marca.id_marca 
+               $where_sql";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
 
@@ -120,7 +123,7 @@ $resultado = mysqli_query($conectar, $sql_select);
             // Verificar si hay registros
             if (mysqli_num_rows($resultado) > 0) {
                 echo "<table class='table table-striped'>";
-                echo "<thead><tr><th>ID</th><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
+                echo "<thead><tr><th>ID</th><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
                 while ($fila = mysqli_fetch_assoc($resultado)) {
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($fila['id_producto']) . "</td>";
@@ -131,6 +134,8 @@ $resultado = mysqli_query($conectar, $sql_select);
                     echo "<td>" . htmlspecialchars($fila['estado']) . "</td>";
                     echo "<td>" . htmlspecialchars($fila['categorias']) . "</td>";
                     echo "<td>" . htmlspecialchars($fila['precio_unitario']) . "</td>";
+                    // Mostrar la marca
+                    echo "<td>" . htmlspecialchars($fila['nombre_marca']) . "</td>";
                     echo "<td><img src='" . htmlspecialchars($fila['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
                     echo "<td>";
                     echo "<a href='editarInventario.php?id=" . htmlspecialchars($fila['id_producto']) . "' class='btn btn-warning btn-sm'>Editar</a> ";
