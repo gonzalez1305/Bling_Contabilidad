@@ -1,6 +1,6 @@
 <?php
 // Configuración del correo
-$to = "blingcontabilidadgaes@gmail.com";
+$to = "juanandresramirezmunoz94@gmail.com";
 $subject = "PQRS";
 
 // Inicializa una variable para controlar el estado del envío

@@ -155,6 +155,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="Registro.html">Registrarse</a>
             <br>
             <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
+            <br>
+            <a href="recuperar_contraseña.php" class="btn btn-custom mt-2">¿Olvidaste tu contraseña?</a>
         </div>
     </div>
 
