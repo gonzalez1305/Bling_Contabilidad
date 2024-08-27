@@ -26,11 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Port = 587;
 
             // Destinatario
-            $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Tu Nombre');
+            $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Bling Contabilidad');
             $mail->addAddress($correo);
 
             // Contenido
             $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8'; // Establece la codificación en UTF-8
             $mail->Subject = 'Código de Recuperación de Contraseña';
             $mail->Body    = 'Tu código de recuperación es: <b>' . $codigoRecuperacion . '</b>';
 
@@ -50,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->close();
 
         } catch (Exception $e) {
-            echo 'Error al enviar el correo: ', $mail->ErrorInfo;
+            echo "<script>alert('Error al enviar el correo: " . $mail->ErrorInfo . "'); window.history.back();</script>";
         }
     } else {
         echo "<script>alert('Dirección de correo inválida.'); window.history.back();</script>";
@@ -109,6 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="email" class="form-control" id="correo" name="correo" required>
       </div>
       <button type="submit" class="btn btn-primary">Enviar Código</button>
+      <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
     </form>
   </div>
 

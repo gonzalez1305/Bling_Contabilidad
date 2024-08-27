@@ -155,9 +155,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <!-- Pie de página del formulario -->
     <div class="verification-footer">
-      <a href="index.php">Iniciar sesión</a>
+
       <br>
       <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
+      <a href="reenviar_codigo.html" class="btn btn-custom mt-2">Volver a enviar codigo</a>
     </div>
   </div>
 

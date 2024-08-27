@@ -2,36 +2,46 @@
 require "conexion.php";
 
 $errorMensaje = "";  // Variable para almacenar el mensaje de error
+$advertencia = "";   // Variable para almacenar el mensaje de advertencia
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["correo"];
     $contraseña = $_POST["contraseña"];
 
-    $consultaUsuario = "SELECT id_usuario, contraseña, tipo_usuario FROM usuario WHERE correo = '$correo'";
+    // Consultar la base de datos para obtener la información del usuario
+    $consultaUsuario = "SELECT id_usuario, contraseña, tipo_usuario, estado FROM usuario WHERE correo = '$correo'";
     $resultadoConsulta = mysqli_query($conectar, $consultaUsuario);
 
     if ($resultadoConsulta) {
         $usuario = mysqli_fetch_assoc($resultadoConsulta);
 
-        if ($usuario && password_verify($contraseña, $usuario["contraseña"])) {
-            // Iniciar sesión
-            session_start();
-            $_SESSION["id_usuario"] = $usuario["id_usuario"];
-            $_SESSION["tipo_usuario"] = $usuario["tipo_usuario"];
+        if ($usuario) {
+            if (password_verify($contraseña, $usuario["contraseña"])) {
+                if ($usuario["estado"] == "Verificado") {
+                    // Iniciar sesión
+                    session_start();
+                    $_SESSION["id_usuario"] = $usuario["id_usuario"];
+                    $_SESSION["tipo_usuario"] = $usuario["tipo_usuario"];
 
-            // Redirigir al menú correspondiente
-            if ($usuario["tipo_usuario"] == 1) {
-                header("Location: menuV.html"); // Redirigir a la interfaz del vendedor
-            } elseif ($usuario["tipo_usuario"] == 2) {
-                header("Location: menuC.html"); // Redirigir a la interfaz del cliente
+                    // Redirigir al menú correspondiente
+                    if ($usuario["tipo_usuario"] == 1) {
+                        header("Location: menuV.html"); // Redirigir a la interfaz del vendedor
+                    } elseif ($usuario["tipo_usuario"] == 2) {
+                        header("Location: menuC.html"); // Redirigir a la interfaz del cliente
+                    } else {
+                        // Manejar otros tipos de usuarios si es necesario
+                        echo "Tipo de usuario no reconocido";
+                    }
+
+                    exit();
+                } else {
+                    $advertencia = "Tu cuenta no está verificada. <a href='reenviar_codigo.html'>Reenviar código de verificación</a>";
+                }
             } else {
-                // Manejar otros tipos de usuarios si es necesario
-                echo "Tipo de usuario no reconocido";
+                $errorMensaje = "Correo o contraseña incorrectos";
             }
-
-            exit();
         } else {
-            $errorMensaje = "Correo o contraseña incorrectos";
+            $errorMensaje = "Correo no encontrado";
         }
     } else {
         $errorMensaje = "Error al realizar la consulta: " . mysqli_error($conectar);
@@ -102,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .login-footer a:hover {
             text-decoration: underline;
         }
-        .error-message {
+        .error-message, .advertencia-message {
             background-color: #ffffff;
             color: #ff0000;
             padding: 10px;
@@ -131,6 +141,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (!empty($errorMensaje)): ?>
             <div class="error-message">
                 <?php echo $errorMensaje; ?>
+            </div>
+        <?php endif; ?>
+        <?php if (!empty($advertencia)): ?>
+            <div class="advertencia-message">
+                <?php echo $advertencia; ?>
             </div>
         <?php endif; ?>
         <form class="login-form" action="" method="post">

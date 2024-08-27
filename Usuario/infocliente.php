@@ -129,6 +129,7 @@ if (!$usuario) {
                 <a href="../MenuC.html" class="btn btn-secondary btn-custom">Volver</a>
                 <a href="confirmar_eliminacion.php" class="btn btn-danger btn-custom">Eliminar Cuenta</a>
 
+
             </div>
         </div>
     </div>

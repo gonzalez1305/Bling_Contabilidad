@@ -62,6 +62,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
 
             // Contenido
             $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8'; // Establece la codificación en UTF-8
             $mail->Subject = 'Código de Verificación';
             $mail->Body    = 'Tu código de verificación es: ' . $codigo_verificacion;
 

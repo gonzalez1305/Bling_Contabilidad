@@ -225,6 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <button type="submit" class="btn btn-primary">Actualizar Información</button>
                     <a href="./infocliente.php" class="btn btn-secondary">Volver</a>
+                    <a href="../recuperar_contraseña.php" class="btn btn-secondary">Recuperar - cambiar contraseña</a>
                 </div>
             </div>
         </form>
