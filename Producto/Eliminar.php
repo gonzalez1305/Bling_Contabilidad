@@ -1,27 +1,52 @@
 <?php
 include("conexion.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $id_producto = $_GET['id'];
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (isset($_GET['id_detalles_pedido'])) {
+        if (is_numeric($_GET['id_detalles_pedido'])) {
+            $id_detalles_pedido = $_GET['id_detalles_pedido'];
 
-    // 1. Eliminar detalles asociados al producto
-    $eliminar_detalles = "DELETE FROM detalles_pedido WHERE fk_id_producto = $id_producto";
-    $resultado_detalles = mysqli_query($conectar, $eliminar_detalles);
+            // Obtener el id_pedido relacionado
+            $sqlObtenerPedido = "SELECT fk_id_pedido FROM detalles_pedido WHERE id_detalles_pedido = $id_detalles_pedido";
+            $resultadoPedido = mysqli_query($conectar, $sqlObtenerPedido);
+            
+            if ($resultadoPedido && mysqli_num_rows($resultadoPedido) > 0) {
+                $filaPedido = mysqli_fetch_assoc($resultadoPedido);
+                $id_pedido = $filaPedido['fk_id_pedido'];
+                
+                // Eliminar el detalle del pedido
+                $eliminar_detalle = "DELETE FROM detalles_pedido WHERE id_detalles_pedido = $id_detalles_pedido";
+                $resultado_eliminar_detalle = mysqli_query($conectar, $eliminar_detalle);
 
-    // 2. Eliminar el producto
-    $eliminar_producto = "DELETE FROM producto WHERE id_producto = $id_producto";
-    $resultado_producto = mysqli_query($conectar, $eliminar_producto);
+                if ($resultado_eliminar_detalle) {
+                    // Verificar si quedan más detalles para el pedido
+                    $sqlVerificarDetalles = "SELECT COUNT(*) as total FROM detalles_pedido WHERE fk_id_pedido = $id_pedido";
+                    $resultadoVerificarDetalles = mysqli_query($conectar, $sqlVerificarDetalles);
+                    $filaDetalles = mysqli_fetch_assoc($resultadoVerificarDetalles);
 
-    if ($resultado_detalles && $resultado_producto) {
-        // Ambas operaciones se realizaron con éxito
-        header("Location: visualizar.php");
-        exit();
-    } else {
-        // Alguna operación falló
-        echo '<div class="alert alert-danger" role="alert">Error al intentar eliminar el producto.</div>';
-    }
-} else {
-    // ID de producto no válido o no se recibió correctamente
-    echo '<div class="alert alert-danger" role="alert">ID de producto no válido.</div>';
+                    if ($filaDetalles['total'] == 0) {
+                        // No quedan más detalles, eliminar el pedido
+                        $eliminar_pedido = "DELETE FROM pedido WHERE id_pedido = $id_pedido";
+                        $resultado_eliminar_pedido = mysqli_query($conectar, $eliminar_pedido);
+                   
+                        if ($resultado_eliminar_pedido) {
+                            echo "<script language='javascript'>";
+                            echo "alert('Los datos se eliminaron correctamente');";
+                            echo "location.assign('validarpedido.php');";
+                            echo "</script>";
+                        } else {
+                            echo "<script language='javascript'>";
+                            echo "alert('Los datos NO se eliminaron correctamente');";
+                            echo "location.assign('validarpedido.php');";
+                            echo "</script>";
+                        }
+                   
+                } 
+                
+            } 
+        }
+    } 
 }
+}
+mysqli_close($conectar);
 ?>

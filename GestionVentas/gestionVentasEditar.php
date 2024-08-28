@@ -8,22 +8,35 @@ $result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
 $query_vendedores = "SELECT id_vendedor FROM administrador";
 $result_vendedores = mysqli_query($conectar, $query_vendedores);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recibir y validar los datos del formulario
+// Verificar si se ha enviado una solicitud de edición
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
+    $id_gestion_venta = $_POST['id_gestion_venta'];
     $id_detalles_pedido = $_POST['id_detalles_pedido'];
     $id_vendedor = $_POST['id_vendedor'];
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
-    // Crear el SQL para insertar el nuevo registro
-    $sql = "INSERT INTO gestion_ventas (id_detalles_pedido, id_vendedor, fecha_venta, fecha_registro)
-            VALUES ('$id_detalles_pedido', '$id_vendedor', '$fecha_venta', '$fecha_registro')";
+    // Actualizar el registro de gestión de ventas
+    $sql_update = "UPDATE gestion_ventas 
+                   SET id_detalles_pedido='$id_detalles_pedido', id_vendedor='$id_vendedor', fecha_venta='$fecha_venta', fecha_registro='$fecha_registro'
+                   WHERE id_gestion_venta='$id_gestion_venta'";
 
-    if (mysqli_query($conectar, $sql)) {
-        echo "<script>alert('Nuevo registro creado exitosamente'); window.location.href='gestionVentasLista.php';</script>";
+    if (mysqli_query($conectar, $sql_update)) {
+        echo "<script>alert('Registro actualizado correctamente'); window.location.href='gestionVentasLista.php';</script>";
     } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conectar);
+        echo "Error: " . $sql_update . "<br>" . mysqli_error($conectar);
     }
+}
+
+// Obtener el ID de gestión de venta a editar
+if (isset($_GET['id'])) {
+    $id_gestion_venta = $_GET['id'];
+    $sql_select = "SELECT * FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
+    $result = mysqli_query($conectar, $sql_select);
+    $venta = mysqli_fetch_assoc($result);
+} else {
+    echo "ID de gestión de venta no proporcionado.";
+    exit;
 }
 ?>
 
@@ -32,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Venta - Bling Compra</title>
+    <title>Editar Venta - Bling Compra</title>
     <link rel="icon" href="../imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -116,41 +129,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="container">
-                <h1 class="h2">Crear Nueva Venta</h1>
+                <h1 class="h2">Editar Venta</h1>
                 <form action="" method="post">
+                    <input type="hidden" name="id_gestion_venta" value="<?php echo $venta['id_gestion_venta']; ?>">
+
                     <div class="mb-3">
                         <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
                         <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
-                            <?php while($row = mysqli_fetch_assoc($result_detalles_pedido)): ?>
-                                <option value="<?php echo $row['id_detalles_pedido']; ?>">
-                                    <?php echo $row['id_detalles_pedido']; ?>
-                                </option>
-                            <?php endwhile; ?>
+                            <?php
+                            // Volver a cargar las opciones y marcar la opción seleccionada
+                            while($row = mysqli_fetch_assoc($result_detalles_pedido)) {
+                                $selected = ($row['id_detalles_pedido'] == $venta['id_detalles_pedido']) ? 'selected' : '';
+                                echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . "</option>";
+                            }
+                            ?>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="id_vendedor" class="form-label">ID Vendedor:</label>
                         <select name="id_vendedor" id="id_vendedor" class="form-select" required>
-                            <?php while($row = mysqli_fetch_assoc($result_vendedores)): ?>
-                                <option value="<?php echo $row['id_vendedor']; ?>">
-                                    <?php echo $row['id_vendedor']; ?>
-                                </option>
-                            <?php endwhile; ?>
+                            <?php
+                            // Volver a cargar las opciones y marcar la opción seleccionada
+                            while($row = mysqli_fetch_assoc($result_vendedores)) {
+                                $selected = ($row['id_vendedor'] == $venta['id_vendedor']) ? 'selected' : '';
+                                echo "<option value='" . $row['id_vendedor'] . "' $selected>" . $row['id_vendedor'] . "</option>";
+                            }
+                            ?>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
-                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" required>
+                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" value="<?php echo $venta['fecha_venta']; ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="fecha_registro" class="form-label">Fecha de Registro:</label>
-                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" required>
+                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" value="<?php echo $venta['fecha_registro']; ?>" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Crear Registro</button>
+                    <button type="submit" class="btn btn-primary">Actualizar Registro</button>
                     <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver al Listado</a>
                 </form>
             </div>

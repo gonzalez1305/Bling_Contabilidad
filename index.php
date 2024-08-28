@@ -111,6 +111,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 15px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -129,9 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="correo" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="correo" name="correo" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="contraseña" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                <span class="password-toggle" onclick="togglePassword()">&#128065;</span>
             </div>
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
@@ -145,6 +155,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="Registro.html">Registrarse</a>
             <br>
             <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
+            <br>
+            <a href="recuperar_contraseña.php" class="btn btn-custom mt-2">¿Olvidaste tu contraseña?</a>
         </div>
     </div>
 
@@ -154,6 +166,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         particlesJS.load('particles-js', 'particles.json', function() {
             console.log('particles.js loaded - callback');
         });
+
+        function togglePassword() {
+            const passwordField = document.getElementById('contraseña');
+            const passwordToggle = document.querySelector('.password-toggle');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+            } else {
+                passwordField.type = 'password';
+                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+            }
+        }
     </script>
 </body>
 </html>
