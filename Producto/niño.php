@@ -1,121 +1,92 @@
 <?php
 session_start();
-  if(isset($_SESSION['id_usuario'])) {
-      $idUsuario = $_SESSION['id_usuario'];
-  }
+if (isset($_SESSION['id_usuario'])) {
+    $idUsuario = $_SESSION['id_usuario'];
+}
+include '../conexion.php'; // Asegúrate de incluir tu archivo de conexión
+
+// Consulta para obtener los productos de la tabla producto
+$query = "SELECT * FROM producto WHERE categorias = 'Zapatos'"; // Filtra según la categoría 'Zapatos'
+$result = mysqli_query($conectar, $query);
 ?>
+
 <!doctype html>
 <html lang="en">
 
-   <head>
+<head>
     <!-- Required meta tags -->
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/estiloCategorias.css">
-
     <link rel="icon" href="../imgs/logo.png">
-   
-    
-    <title>Seccion Niño</title>
+    <title>Sección Niño</title>
+</head>
 
-  </head>
-  
-<body> 
-    
-    <div id="container">
-      <div id="header">
-          <div id="logo-container">
-              <img src="../imgs/logo.jpeg" alt="logo" id="logo">
-          </div>
-          <div id="welcome-text text-center">
-              <h1 class="text-center ">sección de niños</h1>
-              <a href="../menuC.html">volver</a>
-          </div>
-      </div>
-    
-      <div id="zapatos">
-          <!-- Primera fila de productos -->
-          <div class="fila">
-              <!-- Producto 1 -->
-              <div class="producto">
-                  <img src="../imgs/niño1.jpg" alt="Zapato 1">
-                  <br>
-                  <br>
-                  <form action="../prueba.php?idUsuario=<?php echo $idUsuario; ?>&idProducto=9" method="post">
-                    <div class="info">
-                      <p><strong>Nombre del Producto:</strong> Zapatilla casual titanitos</p>
-                      <p><strong>Talla:</strong>22</p>
-                        <p><strong>Precio:</strong> $100.00</p>
-                    
-  
-                      <label for="cantidad1">Cantidad:</label>
-                        <input type="number" id="cantidad1" name="cantidad" min="1"required><br><br>
-                        <input type="submit" value="Añadir al carrito"></input>
-      </div>
-    </form>
-   
-              </div>
-                    
-              <!-- Producto 2 -->
-              <div class="producto">
-                  <img src="../imgs/niño2.jpg" alt="Zapato 2">
-                  <br>
-                  <br>
-                  <form action="../prueba.php?idUsuario=<?php echo $idUsuario; ?>&idProducto=10" method="post">
-                    <div class="info">
-                      <p><strong>Nombre del Producto:</strong> Zapatilla deportiva theelys</p>
-                      <p><strong>Talla:</strong>26</p>
-                        <p><strong>Precio:</strong> $120.00</p>
-                    
-  
-                      <label for="cantidad1">Cantidad:</label>
-                        <input type="number" id="cantidad1" name="cantidad" min="1"required><br><br>
-                        <input type="submit" value="Añadir al carrito"></input>
-      </div>
-    </form>
-   
-              </div>
-                        
-              <!-- Producto 3 -->
-              <div class="producto">
-                  <img src="../imgs/niño3.jpg" alt="Zapato 3">
-                  <br>
-                  <br>
-                  <form action="../prueba.php?idUsuario=<?php echo $idUsuario; ?>&idProducto=11" method="post">
-                    <div class="info">
-                      <p><strong>Nombre del Producto:</strong> Zapatilla deportiva nombre</p>
-                      <p><strong>Talla:</strong>24</p>
-                        <p><strong>Precio:</strong> $100.00</p>
-                    
-  
-                      <label for="cantidad1">Cantidad:</label>
-                        <input type="number" id="cantidad1" name="cantidad" min="1"required><br><br>
-                        <input type="submit" value="Añadir al carrito"></input>
-      </div>
-    </form>
-  </div>
-                    
-              <!-- Producto 4 -->
-              <div class="producto">
-                  <img src="../imgs/niño4.jpg" alt="Zapato 4">
-                  <br>
-                  <br>
-                  <form action="../prueba.php?idUsuario=<?php echo $idUsuario; ?>&idProducto=12" method="post">
-                    <div class="info">
-                      <p><strong>Nombre del Producto:</strong> Zapatilla deportiva panda steps</p>
-                      <p><strong>Talla:</strong>28</p>
-                        <p><strong>Precio:</strong> $140.00</p>
-                    
-  
-                      <label for="cantidad1">Cantidad:</label>
-                        <input type="number" id="cantidad1" name="cantidad" min="1"required><br><br>
-                        <input type="submit" value="Añadir al carrito"></input>
-      </div>
-    </form>     
+<body>
+    <div id="container" class="d-flex">
+        <div id="main-content" class="w-75">
+            <div id="header">
+                <div id="logo-container">
+                    <img src="../imgs/logo.jpeg" alt="logo" id="logo">
+                </div>
+                <div id="welcome-text" class="text-center">
+                    <h1 class="text-center">Sección de niños</h1>
+                    <a href="../menuC.html">Volver</a>
+                </div>
+            </div>
+            <div id="zapatos">
+                <div class="fila">
+                    <?php
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo '<div class="producto">';
+                            echo '<img src="../imgs/' . $row['imagen'] . '" alt="Zapato">';
+                            echo '<form action="../pruebaCarrito.php" method="post">';
+                            echo '<div class="info">';
+                            echo '<p><strong>Nombre del Producto:</strong> ' . htmlspecialchars($row['nombre']) . '</p>';
+                            echo '<p><strong>Talla:</strong> ' . htmlspecialchars($row['talla']) . '</p>';
+                            echo '<p><strong>Precio:</strong> $' . number_format($row['precio_unitario'], 2) . '</p>';
+                            echo '<label for="cantidad' . $row['id_producto'] . '">Cantidad:</label>';
+                            echo '<input type="number" id="cantidad' . $row['id_producto'] . '" name="cantidad" min="1" required>';
+                            echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
+                            echo '<input type="submit" value="Añadir al carrito">';
+                            echo '</div>';
+                            echo '</form>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<p>No hay productos disponibles.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
 
-  </body>
+        <!-- Contenedor Carrito -->
+        <div id="cart-sidebar" class="w-25 p-3 border-start">
+            <h3>Carrito de Compras</h3>
+            <?php
+            // Mostrar productos del carrito
+            if (isset($idUsuario)) {
+                $queryCart = "SELECT c.id_carrito, p.nombre, c.cantidad FROM carrito c 
+                              JOIN producto p ON c.fk_id_producto = p.id_producto 
+                              WHERE c.fk_id_usuario = '$idUsuario'";
+                $resultCart = mysqli_query($conectar, $queryCart);
+
+                if (mysqli_num_rows($resultCart) > 0) {
+                    while ($rowCart = mysqli_fetch_assoc($resultCart)) {
+                        echo "<p>{$rowCart['nombre']} - Cantidad: {$rowCart['cantidad']}</p>";
+                    }
+                } else {
+                    echo "<p>El carrito está vacío.</p>";
+                }
+            }
+            ?>
+            <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
+        </div>
+    </div>
+</body>
+
 </html>
