@@ -187,10 +187,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const passwordToggle = document.querySelector('.password-toggle');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto 1
             } else {
                 passwordField.type = 'password';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado 1
             }
         }
     </script>

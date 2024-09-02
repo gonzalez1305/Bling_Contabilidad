@@ -81,7 +81,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
             echo "</script>";
         }
 
-        // Insertar el vendedor si el usuario es un vendedor
+        // Insertar el vendedor si el usuario es un vendedor de la tienda
         if ($tipo_usuario == $vendedor) {
             $insertVendedor = "INSERT INTO administrador (cod_vendedor, fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
             $queryVendedor = mysqli_query($conectar, $insertVendedor);

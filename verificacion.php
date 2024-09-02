@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       margin-top: 20px;
     }
 
-    /* Enlaces del pie de página */
+    /* Enlaces del pie de página footers*/
     .verification-footer a {
       color: #007bff;
       text-decoration: none;

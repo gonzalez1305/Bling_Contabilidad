@@ -2,7 +2,7 @@
 session_start();
 include("../conexion.php");
 
-// Verificar si el usuario ha iniciado sesión
+// Verificar si el usuario ha iniciado sesión ya
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();

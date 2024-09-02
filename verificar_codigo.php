@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        eyeIcon.textContent = '🙈'; // Cambia el emoji cuando la contraseña es visible
+        eyeIcon.textContent = '🙈'; // Cambia el emoji cuando la contraseña es visible en el codigo
       } else {
         passwordField.type = 'password';
         eyeIcon.textContent = '👁️'; // Cambia el emoji cuando la contraseña está oculta

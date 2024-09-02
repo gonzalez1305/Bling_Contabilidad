@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Generar un nuevo código de verificación
             $nuevo_codigo_verificacion = rand(100000, 999999);
 
-            // Actualizar el código de verificación en la base de datos
+            // Este genera el nuevo codigo en la base de datos
             $updateQuery = "UPDATE usuario SET codigo_verificacion = '$nuevo_codigo_verificacion' WHERE correo = '$correo'";
             mysqli_query($conectar, $updateQuery);
 
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 
-                // Destinatario
+                // Destinatario del correo
                 $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Bling Contabilidad');
                 $mail->addAddress($correo);
 

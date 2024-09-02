@@ -9,50 +9,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = filter_var($_POST['correo'], FILTER_SANITIZE_EMAIL);
 
     if (filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        // Generar un código de recuperación aleatorio
-        $codigoRecuperacion = bin2hex(random_bytes(4)); // Genera un código de 8 caracteres hexadecimales
-
-        // Enviar el código por correo electrónico
-        $mail = new PHPMailer(true);
-
-        try {
-            // Configuración del servidor
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'blingcontabilidadgaes@gmail.com';
-            $mail->Password = 'mgzhlqxhogvdnlnm'; // Usa contraseñas de aplicación si es necesario
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = 587;
-
-            // Destinatario
-            $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Bling Contabilidad');
-            $mail->addAddress($correo);
-
-            // Contenido
-            $mail->isHTML(true);
-            $mail->CharSet = 'UTF-8'; // Establece la codificación en UTF-8
-            $mail->Subject = 'Código de Recuperación de Contraseña';
-            $mail->Body    = 'Tu código de recuperación es: <b>' . $codigoRecuperacion . '</b>';
-
-            $mail->send();
-
-            // Guardar el código de recuperación en la base de datos
-            $stmt = $conectar->prepare("UPDATE usuario SET codigo_recuperacion = ? WHERE correo = ?");
-            if ($stmt === false) {
-                die('Error al preparar la consulta: ' . $conectar->error);
-            }
-            $stmt->bind_param("ss", $codigoRecuperacion, $correo);
-            if ($stmt->execute()) {
-                echo "<script>alert('Código de recuperación enviado a tu correo.'); window.location.href = 'verificar_codigo.php';</script>";
-            } else {
-                echo "<script>alert('Error al actualizar el código de recuperación.'); window.history.back();</script>";
-            }
-            $stmt->close();
-
-        } catch (Exception $e) {
-            echo "<script>alert('Error al enviar el correo: " . $mail->ErrorInfo . "'); window.history.back();</script>";
+        // Verificar si el correo existe en la base de datos
+        $stmt = $conectar->prepare("SELECT id_usuario FROM usuario WHERE correo = ?");
+        if ($stmt === false) {
+            die('Error al preparar la consulta: ' . $conectar->error);
         }
+        $stmt->bind_param("s", $correo);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            // Generar un código de recuperación aleatorio
+            $codigoRecuperacion = bin2hex(random_bytes(4)); // Genera un código de 8 caracteres hexadecimales
+
+            // Enviar el código por correo electrónico
+            $mail = new PHPMailer(true);
+
+            try {
+                // Configuración del servidor
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'blingcontabilidadgaes@gmail.com';
+                $mail->Password = 'mgzhlqxhogvdnlnm'; // Usa contraseñas de aplicación si es necesario
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                // Destinatario
+                $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Bling Contabilidad');
+                $mail->addAddress($correo);
+
+                // Contenido
+                $mail->isHTML(true);
+                $mail->CharSet = 'UTF-8'; // Establece la codificación en UTF-8
+                $mail->Subject = 'Código de Recuperación de Contraseña';
+                $mail->Body    = 'Tu código de recuperación es: <b>' . $codigoRecuperacion . '</b>';
+
+                $mail->send();
+
+                // Guardar el código de recuperación en la base de datos
+                $updateStmt = $conectar->prepare("UPDATE usuario SET codigo_recuperacion = ? WHERE correo = ?");
+                if ($updateStmt === false) {
+                    die('Error al preparar la consulta: ' . $conectar->error);
+                }
+                $updateStmt->bind_param("ss", $codigoRecuperacion, $correo);
+                if ($updateStmt->execute()) {
+                    echo "<script>alert('Código de recuperación enviado a tu correo.'); window.location.href = 'verificar_codigo.php';</script>";
+                } else {
+                    echo "<script>alert('Error al actualizar el código de recuperación.'); window.history.back();</script>";
+                }
+                $updateStmt->close();
+
+            } catch (Exception $e) {
+                echo "<script>alert('Error al enviar el correo: " . $mail->ErrorInfo . "'); window.history.back();</script>";
+            }
+        } else {
+            echo "<script>alert('Correo no encontrado.'); window.history.back();</script>";
+        }
+
+        $stmt->close();
     } else {
         echo "<script>alert('Dirección de correo inválida.'); window.history.back();</script>";
     }
@@ -73,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <style>
     body {
-      background-color: #007bff;  /* Fondo azul */
+      background-color: #007bff;  /* Fondo azul de la pagina */
       display: flex;
       justify-content: center;
       align-items: center;
