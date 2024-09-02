@@ -107,7 +107,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <a class="nav-link" href="../dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="../dashboard_I.html">Inventario</a>
+                        <a class="nav-link active" href="./Inventario/listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>

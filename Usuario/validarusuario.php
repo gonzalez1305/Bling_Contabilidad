@@ -102,7 +102,7 @@
                         <a class="nav-link" href="../dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
+                        <a class="nav-link" href="./Inventario/listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
@@ -139,6 +139,9 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
+                <li class="nav-item">
+                        <a class="nav-link" href="reporteU.php">Pedidos</a>
+                    </li>
                 <tbody>
                     <?php while ($filas = mysqli_fetch_assoc($resultado)) { ?>
                         <tr id="row-<?php echo $filas['id_usuario']; ?>">
@@ -194,6 +197,7 @@
         </div>
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
