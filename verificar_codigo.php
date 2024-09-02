@@ -107,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </span>
       </div>
       <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+      <a href="menu.html">Volver</a>
     </form>
   </div>
 
