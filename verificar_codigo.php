@@ -72,6 +72,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .verification-container .form-control {
       margin-bottom: 15px;
     }
+
+    .eye-icon {
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .form-group {
+      position: relative;
+    }
   </style>
 </head>
 
@@ -87,15 +99,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label for="codigo" class="form-label">Código de Recuperación</label>
         <input type="text" class="form-control" id="codigo" name="codigo" required>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 form-group">
         <label for="nueva_contraseña" class="form-label">Nueva Contraseña</label>
         <input type="password" class="form-control" id="nueva_contraseña" name="nueva_contraseña" required minlength="8">
+        <span class="eye-icon" onclick="togglePassword()">
+          👁️
+        </span>
       </div>
       <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+      <a href="menu.html">Volver</a>
     </form>
   </div>
 
   <!-- Bootstrap Bundle con Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script>
+    function togglePassword() {
+      var passwordField = document.getElementById('nueva_contraseña');
+      var eyeIcon = document.querySelector('.eye-icon');
+
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.textContent = '🙈'; // Cambia el emoji cuando la contraseña es visible en el codigo
+      } else {
+        passwordField.type = 'password';
+        eyeIcon.textContent = '👁️'; // Cambia el emoji cuando la contraseña está oculta
+      }
+    }
+  </script>
 </body>
 </html>

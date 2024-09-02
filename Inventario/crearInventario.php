@@ -1,11 +1,13 @@
 <?php
-require '../conexion.php'; // Conexion
+require '../conexion.php'; // Conexión
 
+$talla = '';
+$color = '';
 $cantidad = '';
-$fecha = '';
-$cantidad_disponible = '';
-$referencia = '';
-$id_vendedor = '';
+$nombre = '';
+$estado = '';
+$categorias = '';
+$precio_unitario = '';
 $imagen_ruta = '';
 
 // Verifica y crea la carpeta uploads si no existe
@@ -13,13 +15,20 @@ if (!file_exists('uploads')) {
     mkdir('uploads', 0777, true);
 }
 
+// Obtener las marcas desde la base de datos
+$sql_marcas = "SELECT id_marca, nombre_marca FROM marca";
+$resultado_marcas = mysqli_query($conectar, $sql_marcas);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
+    $talla = mysqli_real_escape_string($conectar, $_POST['talla']);
+    $color = mysqli_real_escape_string($conectar, $_POST['color']);
     $cantidad = mysqli_real_escape_string($conectar, $_POST['cantidad']);
-    $fecha = mysqli_real_escape_string($conectar, $_POST['fecha']);
-    $cantidad_disponible = mysqli_real_escape_string($conectar, $_POST['cantidad_disponible']);
-    $referencia = mysqli_real_escape_string($conectar, $_POST['referencia']);
-    $id_vendedor = mysqli_real_escape_string($conectar, $_POST['id_vendedor']);
+    $nombre = mysqli_real_escape_string($conectar, $_POST['nombre']);
+    $estado = mysqli_real_escape_string($conectar, $_POST['estado']);
+    $categorias = mysqli_real_escape_string($conectar, $_POST['categorias']);
+    $precio_unitario = mysqli_real_escape_string($conectar, $_POST['precio_unitario']);
+    $fk_id_marca = mysqli_real_escape_string($conectar, $_POST['marca']); // Captura de la marca seleccionada
     
     // Manejo de la imagen
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
@@ -35,23 +44,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Inserción de los datos 
-    $sql_insert = "INSERT INTO inventario (cantidad, fecha, cantidad_disponible, referencia, id_vendedor, imagen)
-                   VALUES ('$cantidad', '$fecha', '$cantidad_disponible', '$referencia', '$id_vendedor', '$imagen_ruta')";
+    // Inserción de los datos en la tabla producto
+    $sql_insert_producto = "INSERT INTO producto (talla, color, cantidad, nombre, fk_id_marca, estado, categorias, precio_unitario, imagen)
+                            VALUES ('$talla', '$color', '$cantidad', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
 
-    if (mysqli_query($conectar, $sql_insert)) {
-        
-        echo "<script>alert('Inventario registrado correctamente');</script>";
-        echo "<script>window.location.href = 'listaInventario.php';</script>";
-        exit;
+    if (mysqli_query($conectar, $sql_insert_producto)) {
+        // Obtener el ID del nuevo producto
+        $id_producto = mysqli_insert_id($conectar);
+
+        // Insertar en la tabla intermedia marca_producto
+        $sql_insert_marca_producto = "INSERT INTO marca_producto (fk_id_producto, fk_id_marca)
+                                      VALUES ('$id_producto', '$fk_id_marca')";
+
+        if (mysqli_query($conectar, $sql_insert_marca_producto)) {
+            echo "<script>alert('Inventario registrado correctamente');</script>";
+            echo "<script>window.location.href = 'listaInventario.php';</script>";
+            exit;
+        } else {
+            echo "Error al registrar la relación marca-producto: " . mysqli_error($conectar);
+        }
     } else {
-        
         echo "Error al registrar el inventario: " . mysqli_error($conectar);
     }
 }
 
 mysqli_close($conectar);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -140,43 +159,62 @@ mysqli_close($conectar);
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <h1 class="h2">Agregar Nuevo Inventario</h1>
+            <h1 class="h2">Agregar Nuevo Producto</h1>
             
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="talla" class="form-label">Talla:</label>
+                    <input type="text" id="talla" name="talla" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="color" class="form-label">Color:</label>
+                    <input type="text" id="color" name="color" class="form-control" required>
+                </div>
                 <div class="mb-3">
                     <label for="cantidad" class="form-label">Cantidad:</label>
                     <input type="number" id="cantidad" name="cantidad" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control" required>
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="cantidad_disponible" class="form-label">Cantidad Disponible:</label>
-                    <input type="number" id="cantidad_disponible" name="cantidad_disponible" class="form-control" required>
+                    <label for="estado" class="form-label">Estado:</label>
+                    <input type="text" id="estado" name="estado" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="referencia" class="form-label">Referencia:</label>
-                    <input type="text" id="referencia" name="referencia" class="form-control" required>
+                    <label for="categorias" class="form-label">Categorias:</label>
+                    <input type="text" id="categorias" name="categorias" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="id_vendedor" class="form-label">ID del Vendedor:</label>
-                    <input type="number" id="id_vendedor" name="id_vendedor" class="form-control" required>
+                    <label for="marca" class="form-label">Marca:</label>
+                    <select id="marca" name="marca" class="form-control" required>
+                        <option value="">Seleccione una marca</option>
+                        <?php while ($fila_marca = mysqli_fetch_assoc($resultado_marcas)) { ?>
+                            <option value="<?php echo $fila_marca['id_marca']; ?>">
+                                <?php echo $fila_marca['nombre_marca']; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="precio_unitario" class="form-label">Precio Unitario:</label>
+                    <input type="text" id="precio_unitario" name="precio_unitario" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="imagen" class="form-label">Imagen:</label>
                     <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
                 </div>
-                <button type="submit" class="btn btn-primary">Registrar Inventario</button>
+                <button type="submit" class="btn btn-primary">Registrar Producto</button>
             </form>
-
-            <div class="mt-4">
-                <a href="../Inventario/listaInventario.php" class="btn btn-secondary">Volver al Listado de Inventario</a>
+            <div class="volver-btn">
+                <a href="listaInventario.php" class="btn btn-secondary">Volver a Inventario</a>
             </div>
         </main>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

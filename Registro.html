@@ -171,14 +171,13 @@
           <label for="correo" class="form-label">Correo</label>
           <input type="email" class="form-control" name="correo" id="correo" required>
         </div>
-      </div>
-      
-      <!-- Campo para la contraseña -->
+      </div>  
       <div class="mb-3 position-relative">
         <label for="contraseña" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" name="contraseña" id="contraseña" required minlength="8">
+        <input type="password" class="form-control" name="contraseña" id="contraseña" required minlength="8" 
+               pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" title="La contraseña debe tener al menos 8 caracteres, una letra y un número.">
         <span class="password-toggle" onclick="togglePassword()">&#128065;</span>
-        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres.</small>
+        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres, una letra, un número y un símbolo especial.</small>
       </div>
       
       <!-- Campo oculto para el código del vendedor -->
@@ -215,6 +214,8 @@
       console.log('particles.js loaded - callback');
     });
 
+    document.getElementById('fecha').max = new Date().toISOString().split("T")[0];
+
     function validateForm() {
       const nombre = document.getElementById('nombre').value;
       const apellido = document.getElementById('apellido').value;
@@ -223,58 +224,51 @@
       const fecha = document.getElementById('fecha').value;
       const correo = document.getElementById('correo').value;
       const contraseña = document.getElementById('contraseña').value;
-      const errorMessages = document.getElementById('errorMessages');
-      let errors = [];
 
-      // Validación de nombre y apellido
-      if (!/^[A-Za-z\s]+$/.test(nombre)) {
-        errors.push('El nombre solo puede contener letras.');
-      }
-      if (!/^[A-Za-z\s]+$/.test(apellido)) {
-        errors.push('El apellido solo puede contener letras.');
-      }
+      const errorMessages = [];
 
-      // Validación de teléfono
-      if (!/^\d{10}$/.test(telefono)) {
-        errors.push('El teléfono debe ser un número de 10 dígitos.');
+      // Validación de la fecha para evitar que el usuario sea menor de 18 años
+      const fechaNacimiento = new Date(fecha);
+      const hoy = new Date();
+      const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
       }
 
-      // Validación de fecha de nacimiento
-      if (new Date(fecha) > new Date()) {
-        errors.push('La fecha de nacimiento no puede ser en el futuro.');
+      if (edad < 18) {
+        errorMessages.push('Debes tener al menos 18 años para registrarte.');
       }
 
-      // Validación de edad
-      const today = new Date();
-      const birthDate = new Date(fecha);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      if (age < 18) {
-        errors.push('Debe tener al menos 18 años para registrarse.');
-      }
 
-      // Mostrar errores
-      if (errors.length > 0) {
-        errorMessages.innerHTML = errors.join('<br>');
-        errorMessages.style.display = 'block';
+      if (errorMessages.length > 0) {
+        document.getElementById('errorMessages').innerHTML = errorMessages.join('<br>');
+        document.getElementById('errorMessages').style.display = 'block';
         return false;
       }
+
+      // Código aleatorio
+      const codigoAleatorio = generarCodigoAleatorio();
+      document.getElementById('codigoInput').value = codigoAleatorio;
 
       return true;
     }
 
+    function generarCodigoAleatorio() {
+      const codigo = Math.floor(Math.random() * 9000) + 1000;
+      return codigo.toString();
+    }
+
+    // Mostrar/ocultar contraseña funcion
     function togglePassword() {
-      const passwordField = document.getElementById('contraseña');
+      const passwordInput = document.getElementById('contraseña');
       const passwordToggle = document.querySelector('.password-toggle');
-      if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordToggle.innerHTML = '&#128065;';
       } else {
-        passwordField.type = 'password';
-        passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+        passwordInput.type = 'password';
+        passwordToggle.innerHTML = '&#128065;';
       }
     }
   </script>

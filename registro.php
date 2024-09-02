@@ -62,6 +62,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
 
             // Contenido
             $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8'; // Establece la codificación en UTF-8
             $mail->Subject = 'Código de Verificación';
             $mail->Body    = 'Tu código de verificación es: ' . $codigo_verificacion;
 
@@ -80,7 +81,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
             echo "</script>";
         }
 
-        // Insertar el vendedor si el usuario es un vendedor
+        // Insertar el vendedor si el usuario es un vendedor de la tienda
         if ($tipo_usuario == $vendedor) {
             $insertVendedor = "INSERT INTO administrador (cod_vendedor, fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
             $queryVendedor = mysqli_query($conectar, $insertVendedor);
