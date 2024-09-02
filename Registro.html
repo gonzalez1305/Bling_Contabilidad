@@ -171,14 +171,13 @@
           <label for="correo" class="form-label">Correo</label>
           <input type="email" class="form-control" name="correo" id="correo" required>
         </div>
-      </div>
-      
-      <!-- Campo para la contraseña -->
+      </div>  
       <div class="mb-3 position-relative">
         <label for="contraseña" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" name="contraseña" id="contraseña" required minlength="8">
+        <input type="password" class="form-control" name="contraseña" id="contraseña" required minlength="8" 
+               pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" title="La contraseña debe tener al menos 8 caracteres, una letra y un número.">
         <span class="password-toggle" onclick="togglePassword()">&#128065;</span>
-        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres.</small>
+        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres, una letra, un número y un símbolo especial.</small>
       </div>
       
       <!-- Campo oculto para el código del vendedor -->
@@ -241,6 +240,7 @@
         errorMessages.push('Debes tener al menos 18 años para registrarte.');
       }
 
+
       if (errorMessages.length > 0) {
         document.getElementById('errorMessages').innerHTML = errorMessages.join('<br>');
         document.getElementById('errorMessages').style.display = 'block';
@@ -259,7 +259,7 @@
       return codigo.toString();
     }
 
-    // Mostrar/ocultar contraseña
+    // Mostrar/ocultar contraseña funcion
     function togglePassword() {
       const passwordInput = document.getElementById('contraseña');
       const passwordToggle = document.querySelector('.password-toggle');

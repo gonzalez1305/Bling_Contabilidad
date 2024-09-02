@@ -2,7 +2,7 @@
 session_start();
 include("../conexion.php");
 
-// Verificar si el usuario ha iniciado sesión
+// Verificar si el usuario ha iniciado sesión ya
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
@@ -128,6 +128,7 @@ if (!$usuario) {
                 <a href="editar_usuario_cliente.php" class="btn btn-primary btn-custom">Editar Información</a>
                 <a href="../MenuC.html" class="btn btn-secondary btn-custom">Volver</a>
                 <a href="confirmar_eliminacion.php" class="btn btn-danger btn-custom">Eliminar Cuenta</a>
+
 
             </div>
         </div>
