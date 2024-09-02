@@ -37,7 +37,7 @@ if ($resultadoVerificarCorreo['total'] > 0) {
     $codigo_verificacion = rand(100000, 999999);
 
     // Insertar el usuario si el correo no está registrado
-    $insertusuario = "INSERT INTO usuario (nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, contraseña, estado, tipo_usuario, fk_id_rol, codigo_verificacion) VALUES ('$nombre', '$apellido', '$telefono', '$direccion', '$fecha_de_nacimiento', '$correo', '$contraseñaCifrada', '$estado', '$tipo_usuario','$tipo_usuario', '$codigo_verificacion')";
+    $insertusuario = "INSERT INTO usuario (nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, contraseña, estado, tipo_usuario, fk_id_rol, codigo_verificacion) VALUES ('$nombre', '$apellido', '$telefono', '$direccion', '$fecha_de_nacimiento', '$correo', '$contraseñaCifrada', '$estado', '$tipo_usuario', '$tipo_usuario', '$codigo_verificacion')";
     $queryusuario = mysqli_query($conectar, $insertusuario);
 
     if ($queryusuario) {
