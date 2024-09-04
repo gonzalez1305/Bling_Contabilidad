@@ -29,12 +29,22 @@ if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
         $idPedido = mysqli_insert_id($conectar);
     }
 
-    // Insertar el producto en el carrito
-    $insertCarrito = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES ('$idProducto', '$cantidad', '$idUsuario')";
-    mysqli_query($conectar, $insertCarrito);
+    // Verificar si el producto ya está en el carrito
+    $consultaCarrito = "SELECT * FROM carrito WHERE fk_id_producto = '$idProducto' AND fk_id_usuario = '$idUsuario'";
+    $resultadoCarrito = mysqli_query($conectar, $consultaCarrito);
 
-    echo "<script>alert('Producto añadido al pedido en proceso.');</script>";
-    echo "<script>window.location.href = 'verPedido.php';</script>";
+    if (mysqli_num_rows($resultadoCarrito) > 0) {
+        // Si el producto ya está en el carrito, actualizar la cantidad
+        $updateCarrito = "UPDATE carrito SET cantidad = cantidad + $cantidad WHERE fk_id_producto = '$idProducto' AND fk_id_usuario = '$idUsuario'";
+        mysqli_query($conectar, $updateCarrito);
+    } else {
+        // Si no, insertar el nuevo producto en el carrito
+        $insertCarrito = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES ('$idProducto', '$cantidad', '$idUsuario')";
+        mysqli_query($conectar, $insertCarrito);
+    }
+
+    echo "<script>alert('Producto añadido al carrito.');</script>";
+    echo "<script>window.history.back();</script>"; // Redirige de vuelta a la página anterior
 } else {
     echo "<script>alert('Información incompleta. Por favor, intente nuevamente.');</script>";
     echo "<script>window.history.back();</script>";
