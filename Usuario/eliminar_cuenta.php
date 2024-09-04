@@ -10,14 +10,18 @@ if (!isset($_SESSION['id_usuario'])) {
 
 // Obtener el ID del usuario desde la sesión
 $id_usuario = $_SESSION['id_usuario'];
+// Eliminar los registros relacionados en carrito
+$sql_delete_carrito = "DELETE FROM carrito WHERE fk_id_usuario = ?";
+$stmt_carrito = $conectar->prepare($sql_delete_carrito);
+$stmt_carrito->bind_param("i", $id_usuario);
+$stmt_carrito->execute();
 
-// Consulta para eliminar al usuario
+// Luego, eliminar el usuario
 $sql = "DELETE FROM usuario WHERE id_usuario = ?";
 $stmt = $conectar->prepare($sql);
 $stmt->bind_param("i", $id_usuario);
 
 if ($stmt->execute()) {
-    // Cerrar sesión y redirigir al menú
     session_destroy();
     header("Location: ../Menu.html");
     exit();

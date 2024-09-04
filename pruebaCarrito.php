@@ -34,7 +34,7 @@ if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
     mysqli_query($conectar, $insertCarrito);
 
     echo "<script>alert('Producto añadido al pedido en proceso.');</script>";
-    echo "<script>window.location.href = 'verPedido.php';</script>";
+    echo "<script>window.location.href = 'Pedido/verPedido.php';</script>";
 } else {
     echo "<script>alert('Información incompleta. Por favor, intente nuevamente.');</script>";
     echo "<script>window.history.back();</script>";

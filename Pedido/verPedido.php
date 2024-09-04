@@ -1,5 +1,5 @@
 <?php
-include '../conexion.php'; // Incluye tu archivo de conexión
+include '../conexion.php'; 
 
 $query = "SELECT p.id_pedido, p.fecha, p.situacion, u.nombre as usuario 
           FROM pedido p 
