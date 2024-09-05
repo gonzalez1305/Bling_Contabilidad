@@ -37,6 +37,7 @@ $resultado = mysqli_query($conectar, $sql_select);
     <title>Listado de Inventario - Bling Compra</title>
     <link rel="icon" href="../imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
@@ -104,10 +105,10 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_v.html">Ventas</a>
+                        <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="./Inventario/listaInventario.php">Inventario</a>
+                        <a class="nav-link active" href="./listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
@@ -122,7 +123,7 @@ $resultado = mysqli_query($conectar, $sql_select);
             <?php
             // Verificar si hay registros
             if (mysqli_num_rows($resultado) > 0) {
-                echo "<table class='table table-striped'>";
+                echo "<table id='tablaInventario' class='table table-striped'>";
                 echo "<thead><tr><th>ID</th><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
                 while ($fila = mysqli_fetch_assoc($resultado)) {
                     echo "<tr>";
@@ -160,6 +161,38 @@ $resultado = mysqli_query($conectar, $sql_select);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tablaInventario').DataTable({
+            "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
 

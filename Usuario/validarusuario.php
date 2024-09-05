@@ -141,10 +141,10 @@
                         <a class="nav-link active" href="validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_v.html">Ventas</a>
+                        <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./Inventario/listaInventario.php">Inventario</a>
+                        <a class="nav-link" href="../Inventario/listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
@@ -158,6 +158,12 @@
                 <a class="btn btn-light text-primary" href="../menuv.html" role="button">Volver al Menú</a>
             </div>
             <h1 class="h2">Usuarios Registrados</h1>
+
+            
+                <a class="btn btn-success" href="../reporteU.php" role="button">Reporte Usuarios</a>
+       
+                <a class="btn btn-success" href="../reporteGraficoU.html" role="button">Reporte Usuarios Grafico</a>
+        
             
             <?php
                 include("../conexion.php");
@@ -211,6 +217,7 @@
                         <?php } ?>
                     </tbody>
                 </table>
+        
             </div>
         </main>
     </div>
