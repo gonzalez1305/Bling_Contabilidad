@@ -16,6 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
+    // Validar fechas
+    $today = date('Y-m-d');
+    if ($fecha_venta > $today || $fecha_registro > $today) {
+        echo "<script>alert('Las fechas no pueden ser futuras.'); window.history.back();</script>";
+        exit;
+    }
+
     // Actualizar el registro de gestión de ventas
     $sql_update = "UPDATE gestion_ventas 
                    SET id_detalles_pedido='$id_detalles_pedido', id_vendedor='$id_vendedor', fecha_venta='$fecha_venta', fecha_registro='$fecha_registro'
@@ -161,12 +168,12 @@ if (isset($_GET['id'])) {
 
                     <div class="mb-3">
                         <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
-                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" value="<?php echo $venta['fecha_venta']; ?>" required>
+                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" value="<?php echo $venta['fecha_venta']; ?>" max="<?php echo date('Y-m-d'); ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="fecha_registro" class="form-label">Fecha de Registro:</label>
-                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" value="<?php echo $venta['fecha_registro']; ?>" required>
+                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" value="<?php echo $venta['fecha_registro']; ?>" max="<?php echo date('Y-m-d'); ?>" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Actualizar Registro</button>

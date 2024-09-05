@@ -15,14 +15,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
-    // Crear el SQL para insertar el nuevo registro
-    $sql = "INSERT INTO gestion_ventas (id_detalles_pedido, id_vendedor, fecha_venta, fecha_registro)
-            VALUES ('$id_detalles_pedido', '$id_vendedor', '$fecha_venta', '$fecha_registro')";
-
-    if (mysqli_query($conectar, $sql)) {
-        echo "<script>alert('Nuevo registro creado exitosamente'); window.location.href='gestionVentasLista.php';</script>";
+    // Validar fechas
+    $fecha_actual = date('Y-m-d');
+    if ($fecha_venta > $fecha_actual || $fecha_registro > $fecha_actual) {
+        echo "<script>alert('La fecha de venta y la fecha de registro deben ser menores o iguales a la fecha actual.');</script>";
     } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conectar);
+        // Crear el SQL para insertar el nuevo registro
+        $sql = "INSERT INTO gestion_ventas (id_detalles_pedido, id_vendedor, fecha_venta, fecha_registro)
+                VALUES ('$id_detalles_pedido', '$id_vendedor', '$fecha_venta', '$fecha_registro')";
+
+        if (mysqli_query($conectar, $sql)) {
+            echo "<script>alert('Nuevo registro creado exitosamente'); window.location.href='gestionVentasLista.php';</script>";
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conectar);
+        }
     }
 }
 ?>
@@ -73,6 +79,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 20px;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha_venta').setAttribute('max', today);
+            document.getElementById('fecha_registro').setAttribute('max', today);
+        });
+    </script>
 </head>
 <body>
 
