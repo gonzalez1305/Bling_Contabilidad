@@ -2,53 +2,106 @@
 session_start();
 include 'conexion.php';
 
-if (isset($_SESSION['id_usuario'])) {
-    $idUsuario = $_SESSION['id_usuario'];
-} else {
-    echo "<script>alert('Por favor, inicie sesión para continuar.');</script>";
-    echo "<script>window.location.href = 'index.php';</script>";
+if (!$conectar) {
+    echo json_encode(['status' => 'error', 'message' => 'Error en la conexión a la base de datos.']);
     exit();
 }
 
-if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
-    $idProducto = $_POST['idProducto'];
-    $cantidad = $_POST['cantidad'];
-
-    // Verificar si ya existe un pedido "en proceso" para el usuario
-    $consultaPedido = "SELECT id_pedido FROM Pedido WHERE fk_id_usuario = '$idUsuario' AND situacion = 'en proceso'";
-    $resultadoPedido = mysqli_query($conectar, $consultaPedido);
-
-    if (mysqli_num_rows($resultadoPedido) > 0) {
-        // Si existe un pedido en proceso, obtener su id
-        $pedidoExistente = mysqli_fetch_assoc($resultadoPedido);
-        $idPedido = $pedidoExistente['id_pedido'];
-    } else {
-        // Si no existe, crear un nuevo pedido en proceso
-        $insertPedido = "INSERT INTO Pedido (fecha, situacion, fk_id_usuario) VALUES (NOW(), 'en proceso', '$idUsuario')";
-        mysqli_query($conectar, $insertPedido);
-        $idPedido = mysqli_insert_id($conectar);
-    }
-
-    // Verificar si el producto ya está en el carrito
-    $consultaCarrito = "SELECT * FROM carrito WHERE fk_id_producto = '$idProducto' AND fk_id_usuario = '$idUsuario'";
-    $resultadoCarrito = mysqli_query($conectar, $consultaCarrito);
-
-    if (mysqli_num_rows($resultadoCarrito) > 0) {
-        // Si el producto ya está en el carrito, actualizar la cantidad
-        $updateCarrito = "UPDATE carrito SET cantidad = cantidad + $cantidad WHERE fk_id_producto = '$idProducto' AND fk_id_usuario = '$idUsuario'";
-        mysqli_query($conectar, $updateCarrito);
-    } else {
-        // Si no, insertar el nuevo producto en el carrito
-        $insertCarrito = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES ('$idProducto', '$cantidad', '$idUsuario')";
-        mysqli_query($conectar, $insertCarrito);
-    }
-
-    echo "<script>alert('Producto añadido al pedido en proceso.');</script>";
-    echo "<script>window.location.href = 'Pedido/verPedido.php';</script>";
-    echo "<script>alert('Producto añadido al carrito.');</script>";
-    echo "<script>window.history.back();</script>"; // Redirige de vuelta a la página anterior
-} else {
-    echo "<script>alert('Información incompleta. Por favor, intente nuevamente.');</script>";
-    echo "<script>window.history.back();</script>";
+if (!isset($_SESSION['id_usuario'])) {
+    echo json_encode(['status' => 'error', 'message' => 'No estás autenticado.']);
+    exit();
 }
+
+$idUsuario = $_SESSION['id_usuario'];
+
+if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
+    $idProducto = intval($_POST['idProducto']);
+    $cantidad = intval($_POST['cantidad']);
+
+    if ($cantidad > 0) {
+        $productQuery = "SELECT * FROM producto WHERE id_producto = ? AND estado = 'disponible'";
+        if ($stmt = $conectar->prepare($productQuery)) {
+            $stmt->bind_param('i', $idProducto);
+            if ($stmt->execute()) {
+                $productResult = $stmt->get_result();
+                if ($productResult->num_rows > 0) {
+                    $product = $productResult->fetch_assoc();
+                    if ($cantidad <= $product['cantidad']) {
+                        $checkCartQuery = "SELECT * FROM carrito WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                        if ($stmt = $conectar->prepare($checkCartQuery)) {
+                            $stmt->bind_param('ii', $idProducto, $idUsuario);
+                            if ($stmt->execute()) {
+                                $cartResult = $stmt->get_result();
+                                if ($cartResult->num_rows > 0) {
+                                    $updateCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                                    if ($stmt = $conectar->prepare($updateCartQuery)) {
+                                        $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
+                                        if ($stmt->execute()) {
+                                            $response = ['status' => 'success', 'message' => 'Producto actualizado en el carrito.'];
+                                        } else {
+                                            $response = ['status' => 'error', 'message' => 'Error al actualizar el carrito.'];
+                                        }
+                                    } else {
+                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de actualización.'];
+                                    }
+                                } else {
+                                    $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES (?, ?, ?)";
+                                    if ($stmt = $conectar->prepare($insertCartQuery)) {
+                                        $stmt->bind_param('iii', $idProducto, $cantidad, $idUsuario);
+                                        if ($stmt->execute()) {
+                                            $response = ['status' => 'success', 'message' => 'Producto añadido al carrito.'];
+                                        } else {
+                                            $response = ['status' => 'error', 'message' => 'Error al añadir el producto al carrito.'];
+                                        }
+                                    } else {
+                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de inserción.'];
+                                    }
+                                }
+
+                                // Obtener detalles del carrito
+                                $cartDetailsQuery = "SELECT p.nombre, c.cantidad, (p.precio_unitario * c.cantidad) AS precio_total 
+                                                     FROM carrito c
+                                                     JOIN producto p ON c.fk_id_producto = p.id_producto
+                                                     WHERE c.fk_id_usuario = ?";
+                                if ($stmt = $conectar->prepare($cartDetailsQuery)) {
+                                    $stmt->bind_param('i', $idUsuario);
+                                    if ($stmt->execute()) {
+                                        $cartResult = $stmt->get_result();
+                                        $carrito = [];
+                                        while ($row = $cartResult->fetch_assoc()) {
+                                            $carrito[] = $row;
+                                        }
+                                        $response['carrito'] = $carrito;
+                                    } else {
+                                        $response['message'] = 'Error al obtener los detalles del carrito.';
+                                    }
+                                } else {
+                                    $response['message'] = 'Error en la consulta de detalles del carrito.';
+                                }
+                            } else {
+                                $response = ['status' => 'error', 'message' => 'Error en la consulta de carrito.'];
+                            }
+                        } else {
+                            $response = ['status' => 'error', 'message' => 'Error en la consulta de verificación del carrito.'];
+                        }
+                    } else {
+                        $response = ['status' => 'error', 'message' => 'La cantidad solicitada excede la cantidad disponible.'];
+                    }
+                } else {
+                    $response = ['status' => 'error', 'message' => 'El producto no está disponible.'];
+                }
+            } else {
+                $response = ['status' => 'error', 'message' => 'Error al ejecutar la consulta del producto.'];
+            }
+        } else {
+            $response = ['status' => 'error', 'message' => 'Error en la consulta del producto.'];
+        }
+    } else {
+        $response = ['status' => 'error', 'message' => 'Cantidad inválida.'];
+    }
+} else {
+    $response = ['status' => 'error', 'message' => 'Datos incompletos.'];
+}
+
+echo json_encode($response);
 ?>
