@@ -1,52 +1,95 @@
 <?php
-include '../conexion.php'; 
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: ../login.php");
+    exit();
+}
 
-$query = "SELECT p.id_pedido, p.fecha, p.situacion, u.nombre as usuario 
-          FROM pedido p 
-          JOIN usuario u ON p.fk_id_usuario = u.id_usuario";
-$result = mysqli_query($conectar, $query);
+include '../conexion.php';
+$idUsuario = $_SESSION['id_usuario'];
+
+// Consulta para obtener los pedidos del usuario
+$query = "SELECT * FROM pedido WHERE fk_id_usuario = ?";
+$stmt = $conectar->prepare($query);
+$stmt->bind_param('i', $idUsuario);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" href="../imgs/logo.png">
     <title>Ver Pedidos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        #header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        #header img {
+            width: 150px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border: none;
+        }
+        .btn-info:hover {
+            background-color: #117a8b;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Lista de Pedidos</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID Pedido</th>
-                <th>Fecha</th>
-                <th>Situación</th>
-                <th>Usuario</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container mt-5">
+        <div id="header" class="bg-primary text-white text-center p-3 rounded">
+            <img src="../imgs/logo.jpeg" alt="logo" id="logo" class="mb-2">
+            <h1>Mis Pedidos</h1>
+            <a href="../menuC.html" class="btn btn-light">Volver</a>
+        </div>
+
+        <div class="mt-4">
             <?php
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['id_pedido']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['fecha']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['situacion']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['usuario']) . "</td>";
-                    echo "<td>
-                            <a href='editarPedido.php?id=" . $row['id_pedido'] . "'>Editar</a> | 
-                            <a href='eliminarPedido.php?id=" . $row['id_pedido'] . "' onclick='return confirm(\"¿Estás seguro?\")'>Eliminar</a>
-                          </td>";
-                    echo "</tr>";
+            if ($result->num_rows > 0) {
+                echo '<table class="table table-striped">';
+                echo '<thead><tr><th>ID Pedido</th><th>Fecha</th><th>Situación</th></tr></thead>';
+                echo '<tbody>';
+                while ($row = $result->fetch_assoc()) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($row['id_pedido']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['fecha']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['situacion']) . '</td>';
+                    echo '</tr>';
                 }
+                echo '</tbody>';
+                echo '</table>';
             } else {
-                echo "<tr><td colspan='5'>No hay pedidos registrados</td></tr>";
+                echo '<p>No tienes pedidos.</p>';
             }
             ?>
-        </tbody>
-    </table>
-    <a href="crearPedido.php">Crear Nuevo Pedido</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

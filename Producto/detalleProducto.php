@@ -200,17 +200,56 @@ if ($idProducto && isset($product)) {
                     }
                     echo "<hr><p><strong>Total Carrito:</strong> $" . number_format($total, 2) . "</p>";
                 } else {
-                    echo "<p>El carrito está vacío.</p>";
+                    echo "<p>No hay productos en el carrito.</p>";
                 }
             }
             ?>
-            <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
-            <div id="cart-image">
-                <img src="../imgs/blingLogo.png" alt="Imagen del Carrito">
-            </div>
+            <form method="post" action="">
+                <button type="submit" name="confirmarPedido" class="btn btn-primary">Confirmar Pedido</button>
+            </form>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 </body>
-
 </html>
+
+<?php
+// Confirmar el pedido y vaciar el carrito
+if (isset($_POST['confirmarPedido'])) {
+    // Verificar si hay productos en el carrito
+    $queryCheckCart = "SELECT * FROM carrito WHERE fk_id_usuario = '$idUsuario'";
+    $resultCheckCart = mysqli_query($conectar, $queryCheckCart);
+
+    if (mysqli_num_rows($resultCheckCart) > 0) {
+        // Insertar un nuevo pedido
+        $queryInsertPedido = "INSERT INTO pedido (fecha, situacion, fk_id_usuario) VALUES (NOW(), 'en proceso', '$idUsuario')";
+        $resultInsertPedido = mysqli_query($conectar, $queryInsertPedido);
+        $idPedido = mysqli_insert_id($conectar); // Obtener el ID del pedido recién insertado
+
+        // Insertar detalles del pedido
+        $queryCartDetails = "SELECT c.fk_id_producto, c.cantidad, (c.cantidad * p.precio_unitario) AS precio_total 
+                             FROM carrito c 
+                             JOIN producto p ON c.fk_id_producto = p.id_producto 
+                             WHERE c.fk_id_usuario = '$idUsuario'";
+        $resultCartDetails = mysqli_query($conectar, $queryCartDetails);
+
+        while ($rowCart = mysqli_fetch_assoc($resultCartDetails)) {
+            $queryInsertDetalles = "INSERT INTO detalles_pedido (fk_id_producto, fk_id_pedido, unidades, precio_total) 
+                                    VALUES ('{$rowCart['fk_id_producto']}', '$idPedido', '{$rowCart['cantidad']}', '{$rowCart['precio_total']}')";
+            mysqli_query($conectar, $queryInsertDetalles);
+        }
+
+        // Vaciar el carrito después de insertar los detalles
+        $queryDeleteCart = "DELETE FROM carrito WHERE fk_id_usuario = '$idUsuario'";
+        mysqli_query($conectar, $queryDeleteCart);
+
+        // Redirigir al usuario a una página de éxito
+        header('Location: ../exito.php');
+        exit();
+    } else {
+        echo '<script>alert("No hay productos en el carrito para confirmar el pedido.");</script>';
+    }
+}
+?>
