@@ -27,62 +27,77 @@ if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
                 if ($productResult->num_rows > 0) {
                     $product = $productResult->fetch_assoc();
                     if ($cantidad <= $product['cantidad']) {
-                        $checkCartQuery = "SELECT * FROM carrito WHERE fk_id_producto = ? AND fk_id_usuario = ?";
-                        if ($stmt = $conectar->prepare($checkCartQuery)) {
-                            $stmt->bind_param('ii', $idProducto, $idUsuario);
-                            if ($stmt->execute()) {
-                                $cartResult = $stmt->get_result();
-                                if ($cartResult->num_rows > 0) {
-                                    $updateCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
-                                    if ($stmt = $conectar->prepare($updateCartQuery)) {
-                                        $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
-                                        if ($stmt->execute()) {
-                                            $response = ['status' => 'success', 'message' => 'Producto actualizado en el carrito.'];
+                        // Iniciar la transacción
+                        $conectar->begin_transaction();
+                        
+                        try {
+                            // Verificar si el producto ya está en el carrito
+                            $checkCartQuery = "SELECT * FROM carrito WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                            if ($stmt = $conectar->prepare($checkCartQuery)) {
+                                $stmt->bind_param('ii', $idProducto, $idUsuario);
+                                if ($stmt->execute()) {
+                                    $cartResult = $stmt->get_result();
+                                    if ($cartResult->num_rows > 0) {
+                                        // Actualizar cantidad en el carrito
+                                        $updateCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                                        if ($stmt = $conectar->prepare($updateCartQuery)) {
+                                            $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
+                                            $stmt->execute();
                                         } else {
-                                            $response = ['status' => 'error', 'message' => 'Error al actualizar el carrito.'];
+                                            throw new Exception('Error en la consulta de actualización del carrito.');
                                         }
                                     } else {
-                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de actualización.'];
-                                    }
-                                } else {
-                                    $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES (?, ?, ?)";
-                                    if ($stmt = $conectar->prepare($insertCartQuery)) {
-                                        $stmt->bind_param('iii', $idProducto, $cantidad, $idUsuario);
-                                        if ($stmt->execute()) {
-                                            $response = ['status' => 'success', 'message' => 'Producto añadido al carrito.'];
+                                        // Insertar nuevo producto en el carrito
+                                        $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES (?, ?, ?)";
+                                        if ($stmt = $conectar->prepare($insertCartQuery)) {
+                                            $stmt->bind_param('iii', $idProducto, $cantidad, $idUsuario);
+                                            $stmt->execute();
                                         } else {
-                                            $response = ['status' => 'error', 'message' => 'Error al añadir el producto al carrito.'];
+                                            throw new Exception('Error en la consulta de inserción del carrito.');
                                         }
-                                    } else {
-                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de inserción.'];
                                     }
-                                }
 
-                                // Obtener detalles del carrito
-                                $cartDetailsQuery = "SELECT p.nombre, c.cantidad, (p.precio_unitario * c.cantidad) AS precio_total 
-                                                     FROM carrito c
-                                                     JOIN producto p ON c.fk_id_producto = p.id_producto
-                                                     WHERE c.fk_id_usuario = ?";
-                                if ($stmt = $conectar->prepare($cartDetailsQuery)) {
-                                    $stmt->bind_param('i', $idUsuario);
-                                    if ($stmt->execute()) {
-                                        $cartResult = $stmt->get_result();
-                                        $carrito = [];
-                                        while ($row = $cartResult->fetch_assoc()) {
-                                            $carrito[] = $row;
-                                        }
-                                        $response['carrito'] = $carrito;
+                                    // Descontar la cantidad en la tabla producto
+                                    $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
+                                    if ($stmt = $conectar->prepare($updateProductQuery)) {
+                                        $stmt->bind_param('ii', $cantidad, $idProducto);
+                                        $stmt->execute();
                                     } else {
-                                        $response['message'] = 'Error al obtener los detalles del carrito.';
+                                        throw new Exception('Error en la consulta de actualización del producto.');
+                                    }
+
+                                    // Confirmar la transacción
+                                    $conectar->commit();
+
+                                    // Obtener detalles del carrito
+                                    $cartDetailsQuery = "SELECT p.nombre, c.cantidad, (p.precio_unitario * c.cantidad) AS precio_total 
+                                                         FROM carrito c
+                                                         JOIN producto p ON c.fk_id_producto = p.id_producto
+                                                         WHERE c.fk_id_usuario = ?";
+                                    if ($stmt = $conectar->prepare($cartDetailsQuery)) {
+                                        $stmt->bind_param('i', $idUsuario);
+                                        if ($stmt->execute()) {
+                                            $cartResult = $stmt->get_result();
+                                            $carrito = [];
+                                            while ($row = $cartResult->fetch_assoc()) {
+                                                $carrito[] = $row;
+                                            }
+                                            $response = ['status' => 'success', 'message' => 'Producto añadido al carrito.', 'carrito' => $carrito];
+                                        } else {
+                                            $response = ['status' => 'error', 'message' => 'Error al obtener los detalles del carrito.'];
+                                        }
+                                    } else {
+                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de detalles del carrito.'];
                                     }
                                 } else {
-                                    $response['message'] = 'Error en la consulta de detalles del carrito.';
+                                    $response = ['status' => 'error', 'message' => 'Error en la consulta de carrito.'];
                                 }
                             } else {
-                                $response = ['status' => 'error', 'message' => 'Error en la consulta de carrito.'];
+                                $response = ['status' => 'error', 'message' => 'Error en la consulta de verificación del carrito.'];
                             }
-                        } else {
-                            $response = ['status' => 'error', 'message' => 'Error en la consulta de verificación del carrito.'];
+                        } catch (Exception $e) {
+                            $conectar->rollback();
+                            $response = ['status' => 'error', 'message' => $e->getMessage()];
                         }
                     } else {
                         $response = ['status' => 'error', 'message' => 'La cantidad solicitada excede la cantidad disponible.'];
