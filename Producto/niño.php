@@ -26,6 +26,7 @@ $result = mysqli_query($conectar, $query);
             background-color: #f4f4f4;
             color: #333;
         }
+
         #header {
             background-color: #007bff;
             color: #fff;
@@ -33,15 +34,19 @@ $result = mysqli_query($conectar, $query);
             text-align: center;
             border-radius: 5px;
         }
+
         #header img {
             width: 150px;
         }
+
         #productos {
             margin-top: 20px;
         }
+
         .card {
             margin-bottom: 20px;
         }
+
         .notification {
             position: fixed;
             top: 10px;
@@ -49,26 +54,37 @@ $result = mysqli_query($conectar, $query);
             z-index: 9999;
             display: none;
         }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
         }
+
         .btn-primary:hover {
             background-color: #0056b3;
         }
+
         .btn-info {
             background-color: #17a2b8;
             border: none;
         }
+
         .btn-info:hover {
             background-color: #117a8b;
         }
+
         .btn-danger {
             background-color: #dc3545;
             border: none;
         }
+
         .btn-danger:hover {
             background-color: #c82333;
+        }
+
+        #cart-sidebar {
+            position: sticky;
+            top: 20px;
         }
     </style>
 </head>
@@ -76,140 +92,142 @@ $result = mysqli_query($conectar, $query);
 <body>
     <div class="container mt-5">
         <div id="header" class="bg-primary text-white text-center p-3 rounded">
-            <img src="../imgs/logo.jpeg" alt="logo" id="logo" class="mb-2">
+            <img src="../imgs/logo.png" alt="logo" id="logo" class="mb-2">
             <h1>Sección de Niño</h1>
             <a href="../menuC.html" class="btn btn-light">Volver</a>
         </div>
 
-        <div id="productos" class="row mt-4">
-            <?php
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo '<div class="col-md-4 mb-4">';
-                    echo '<div class="card">';
-                    echo '<img src="../imgs/' . htmlspecialchars($row['imagen']) . '" class="card-img-top" alt="Producto">';
-                    echo '<div class="card-body">';
-                    echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
-                    echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
-                    echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2) . '</p>';
-                    echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
-                    echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
-                    echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
-                    echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
-                    echo '<div class="mb-3">';
-                    echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                    echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
-                    echo '</div>';
-                    echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
-                    echo '<a href="detalleProducto.php?id=' . htmlspecialchars($row['id_producto']) . '" class="btn btn-info mt-2">Ver Detalles</a>';
-                    echo '</form>';
-                    echo '</div>';
-                    echo '</div>';
-                    echo '</div>';
-                }
-            } else {
-                echo '<p>No hay productos disponibles.</p>';
-            }
-            ?>
-        </div>
-        <!-- Botón Ver Pedido -->
-        <div class="mt-5">
-            <a href="../Pedido/verPedido.php" class="btn btn-danger">Ver Pedido</a>
-        </div>
-
-        <!-- Contenedor Carrito -->
-        <div id="cart-sidebar" class="mt-5">
-            <h3>Carrito de Compras</h3>
-            <div id="cart-details" class="card p-3">
-                <?php
-                // Consulta para obtener los detalles del carrito
-                $cartQuery = "SELECT p.nombre, c.cantidad, p.precio_unitario 
-                              FROM carrito c
-                              JOIN producto p ON c.fk_id_producto = p.id_producto
-                              WHERE c.fk_id_usuario = ?";
-                $stmt = $conectar->prepare($cartQuery);
-                $stmt->bind_param('i', $idUsuario);
-                $stmt->execute();
-                $cartResult = $stmt->get_result();
-
-                $total = 0; // Inicializar el total del carrito
-
-                if ($cartResult->num_rows > 0) {
-                    while ($row = $cartResult->fetch_assoc()) {
-                        $subtotal = $row['precio_unitario'] * $row['cantidad'];
-                        $total += $subtotal; // Sumar al total
-                        echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2) . '</p>';
+        <div class="row mt-4">
+            <!-- Contenedor de productos -->
+            <div id="productos" class="col-md-8">
+                <div class="row">
+                    <?php
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo '<div class="col-md-6 mb-4">';
+                            echo '<div class="card">';
+                            echo '<img src="../imgs/' . htmlspecialchars($row['imagen']) . '" class="card-img-top" alt="Producto">';
+                            echo '<div class="card-body">';
+                            echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
+                            echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
+                            echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2) . '</p>';
+                            echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
+                            echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
+                            echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
+                            echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
+                            echo '<div class="mb-3">';
+                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
+                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
+                            echo '</div>';
+                            echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
+                            echo '</form>';
+                            echo '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<p>No hay productos disponibles.</p>';
                     }
-                    echo '<h4>Total: $' . number_format($total, 2) . '</h4>'; // Mostrar el total
-                } else {
-                    echo '<p>Tu carrito está vacío.</p>';
-                }
-                ?>
+                    ?>
+                </div>
             </div>
-            <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
+
+            <!-- Contenedor Carrito en el lado derecho -->
+            <div class="col-md-4">
+                <div id="cart-sidebar" class="mt-5">
+                    <h3>Carrito de Compras</h3>
+                    <div id="cart-details" class="card p-3">
+                        <?php
+                        // Consulta para obtener los detalles del carrito
+                        $cartQuery = "SELECT p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario 
+                                      FROM carrito c
+                                      JOIN producto p ON c.fk_id_producto = p.id_producto
+                                      WHERE c.fk_id_usuario = ?
+                                      GROUP BY p.id_producto";
+                        $stmt = $conectar->prepare($cartQuery);
+                        $stmt->bind_param('i', $idUsuario);
+                        $stmt->execute();
+                        $cartResult = $stmt->get_result();
+
+                        $total = 0; // Inicializar el total del carrito
+
+                        if ($cartResult->num_rows > 0) {
+                            while ($row = $cartResult->fetch_assoc()) {
+                                $subtotal = $row['precio_unitario'] * $row['cantidad'];
+                                $total += $subtotal; // Sumar al total
+                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2) . '</p>';
+                            }
+                            echo '<h4>Total: $' . number_format($total, 2) . '</h4>';
+                        } else {
+                            echo '<p>El carrito está vacío.</p>';
+                        }
+
+                        $stmt->close();
+                        ?>
+                    </div>
+                    <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
+                    <a href="../Pedido/verPedido.php" class="btn btn-danger mt-3">Confirmar Pedido</a>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="notification" class="notification alert" role="alert" style="display: none;"></div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Manejo de notificación de éxito o error al agregar al carrito
-        document.querySelectorAll('.add-to-cart-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault(); // Prevenir la acción por defecto del formulario
-                const formData = new FormData(this);
+        $(document).ready(function() {
+            // Manejo del envío del formulario
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
 
-                fetch('../pruebaCarrito.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const notification = document.getElementById('notification');
-                    if (data.status === 'success') {
-                        updateCartDetails(data.carrito);
-                        notification.textContent = data.message;
-                        notification.className = 'notification alert alert-success';
-                    } else {
-                        notification.textContent = data.message;
-                        notification.className = 'notification alert alert-danger';
+                $.ajax({
+                    type: 'POST',
+                    url: '../pruebaCarrito.php',
+                    data: formData,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
+                            setTimeout(function() {
+                                $('#notification').fadeOut();
+                            }, 2000);
+
+                            // Actualizar los detalles del carrito
+                            updateCartDetails(response.carrito);
+                        } else {
+                            $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
+                            setTimeout(function() {
+                                $('#notification').fadeOut();
+                            }, 2000);
+                        }
                     }
-                    notification.style.display = 'block';
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                    }, 5000); // Ocultar la notificación después de 5 segundos
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    const notification = document.getElementById('notification');
-                    notification.textContent = 'Error en la solicitud al servidor.';
-                    notification.className = 'notification alert alert-danger';
-                    notification.style.display = 'block';
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                    }, 5000);
                 });
             });
-        });
 
-        function updateCartDetails(carrito) {
-            const cartDetails = document.getElementById('cart-details');
-            cartDetails.innerHTML = '';
+            // Función para actualizar los detalles del carrito
+            function updateCartDetails(carrito) {
+                var cartDetails = $('#cart-details');
+                cartDetails.empty();
 
-            let total = 0;
+                var total = 0;
 
-            if (carrito.length > 0) {
-                carrito.forEach(item => {
-                    const subtotal = item.precio_unitario * item.cantidad;
-                    total += subtotal;
-                    cartDetails.innerHTML += `<p>${item.nombre} - Cantidad: ${item.cantidad} - Precio Total: $${subtotal.toFixed(2)}</p>`;
-                });
-                cartDetails.innerHTML += `<h4>Total: $${total.toFixed(2)}</h4>`;
-            } else {
-                cartDetails.innerHTML = '<p>El carrito está vacío.</p>';
+                if (carrito.length > 0) {
+                    carrito.forEach(function(item) {
+                        var subtotal = item.precio_unitario * item.cantidad;
+                        total += subtotal;
+                        cartDetails.append(
+                            '<p>' + item.nombre + ' - Cantidad: ' + item.cantidad + ' - Precio Total: $' + subtotal.toFixed(2) + '</p>'
+                        );
+                    });
+                    cartDetails.append('<h4>Total: $' + total.toFixed(2) + '</h4>');
+                } else {
+                    cartDetails.append('<p>Tu carrito está vacío.</p>');
+                }
             }
-        }
+        });
     </script>
 </body>
 
