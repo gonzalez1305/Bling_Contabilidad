@@ -105,10 +105,10 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="../dashboard_v.html">Ventas</a>
+                        <a class="nav-link active" href="./gestionVentasLista.php">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
+                        <a class="nav-link" href="../Inventario/listaInventario.php">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
@@ -158,7 +158,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                 </table>
 
                 <a href="gestionVentasCrear.php" class="btn btn-primary">Agregar Nueva Venta</a>
-                <a href="../dashboard_v.html" class="btn btn-secondary volver-btn">Volver al Dashboard</a>
+               
              
 
             </div>

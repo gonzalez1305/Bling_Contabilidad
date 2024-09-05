@@ -3,7 +3,11 @@
 require('pdf/fpdf.php');
 
 // Paso 2: Conectar a la base de datos MySQL
-include("conexion2.php");
+$conexion = new mysqli("localhost", "root", "", "blingC");
+
+if ($conexion->connect_error) {
+    die("Conexión fallida: " . $conexion->connect_error);
+}
 
 
 // Paso 3: Consulta a la base de datos
