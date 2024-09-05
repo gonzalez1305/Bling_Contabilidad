@@ -20,12 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($usuario["estado"] == "Verificado") {
                     // Iniciar sesión
                     session_start();
-                    
-                    // Verificar si el usuario ha cambiado y limpiar el carrito
-                    if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_usuario"] !== $usuario["id_usuario"]) {
-                        $_SESSION["carrito"] = []; // Limpiar el carrito
-                    }
-
                     $_SESSION["id_usuario"] = $usuario["id_usuario"];
                     $_SESSION["tipo_usuario"] = $usuario["tipo_usuario"];
 
@@ -193,10 +187,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const passwordToggle = document.querySelector('.password-toggle');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto 1
             } else {
                 passwordField.type = 'password';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado 1
             }
         }
     </script>

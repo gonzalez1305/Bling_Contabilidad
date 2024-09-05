@@ -19,43 +19,30 @@ if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
     $cantidad = intval($_POST['cantidad']);
 
     if ($cantidad > 0) {
-        // Obtener la cantidad disponible del producto
-        $productQuery = "SELECT cantidad FROM producto WHERE id_producto = ? AND estado = 'disponible'";
+        $productQuery = "SELECT * FROM producto WHERE id_producto = ? AND estado = 'disponible'";
         if ($stmt = $conectar->prepare($productQuery)) {
             $stmt->bind_param('i', $idProducto);
             if ($stmt->execute()) {
                 $productResult = $stmt->get_result();
                 if ($productResult->num_rows > 0) {
                     $product = $productResult->fetch_assoc();
-                    $cantidadDisponible = $product['cantidad'];
-
-                    // Verificar si la cantidad solicitada excede la cantidad disponible
-                    if ($cantidad <= $cantidadDisponible) {
-                        // Verificar si el producto ya está en el carrito
-                        $checkCartQuery = "SELECT cantidad FROM carrito WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                    if ($cantidad <= $product['cantidad']) {
+                        $checkCartQuery = "SELECT * FROM carrito WHERE fk_id_producto = ? AND fk_id_usuario = ?";
                         if ($stmt = $conectar->prepare($checkCartQuery)) {
                             $stmt->bind_param('ii', $idProducto, $idUsuario);
                             if ($stmt->execute()) {
                                 $cartResult = $stmt->get_result();
                                 if ($cartResult->num_rows > 0) {
-                                    $cartItem = $cartResult->fetch_assoc();
-                                    $cantidadEnCarrito = $cartItem['cantidad'];
-
-                                    // Verificar si agregar la nueva cantidad supera la disponible
-                                    if (($cantidadEnCarrito + $cantidad) <= $cantidadDisponible) {
-                                        $updateCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
-                                        if ($stmt = $conectar->prepare($updateCartQuery)) {
-                                            $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
-                                            if ($stmt->execute()) {
-                                                $response = ['status' => 'success', 'message' => 'Producto actualizado en el carrito.'];
-                                            } else {
-                                                $response = ['status' => 'error', 'message' => 'Error al actualizar el carrito.'];
-                                            }
+                                    $updateCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
+                                    if ($stmt = $conectar->prepare($updateCartQuery)) {
+                                        $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
+                                        if ($stmt->execute()) {
+                                            $response = ['status' => 'success', 'message' => 'Producto actualizado en el carrito.'];
                                         } else {
-                                            $response = ['status' => 'error', 'message' => 'Error en la consulta de actualización.'];
+                                            $response = ['status' => 'error', 'message' => 'Error al actualizar el carrito.'];
                                         }
                                     } else {
-                                        $response = ['status' => 'error', 'message' => 'La cantidad total en el carrito excede la cantidad disponible.'];
+                                        $response = ['status' => 'error', 'message' => 'Error en la consulta de actualización.'];
                                     }
                                 } else {
                                     $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES (?, ?, ?)";
@@ -113,7 +100,7 @@ if (isset($_POST['idProducto']) && isset($_POST['cantidad'])) {
         $response = ['status' => 'error', 'message' => 'Cantidad inválida.'];
     }
 } else {
-    $response = ['status' => 'error', 'message' => 'Datos de entrada inválidos.'];
+    $response = ['status' => 'error', 'message' => 'Datos incompletos.'];
 }
 
 echo json_encode($response);

@@ -19,14 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
-        // Eliminar registros dependientes (ajustar tabla y columna según sea necesario)
-        $sql = "DELETE FROM producto WHERE fk_id_usuario = ?";
-        $stmt = $conectar->prepare($sql);
-        if ($stmt === false) {
-            die("Error en la preparación de la consulta: " . $conectar->error);
-        }
-        $stmt->bind_param("i", $id_usuario);
-        $stmt->execute();
+     
 
         // Eliminar el usuario de la base de datos
         $sql = "DELETE FROM usuario WHERE id_usuario = ?";

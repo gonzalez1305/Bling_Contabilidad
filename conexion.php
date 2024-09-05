@@ -4,7 +4,7 @@
 $host = "localhost";
 $user = "root";
 $clave = "";
-$bd = "BlingC";
+$bd = "blingC";
 
 $conectar = mysqli_connect($host, $user, $clave, $bd);
 if (!$conectar){
