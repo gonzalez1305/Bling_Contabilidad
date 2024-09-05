@@ -123,7 +123,7 @@ $result = mysqli_query($conectar, $query);
                     notification.style.display = 'block';
                     setTimeout(() => {
                         notification.style.display = 'none';
-                    }, 3000); // Ocultar la notificación después de 3 segundos
+                    }, 5000); // Ocultar la notificación después de 3 segundos
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -133,7 +133,7 @@ $result = mysqli_query($conectar, $query);
                     notification.style.display = 'block';
                     setTimeout(() => {
                         notification.style.display = 'none';
-                    }, 3000);
+                    }, 5000);
                 });
             });
         });
