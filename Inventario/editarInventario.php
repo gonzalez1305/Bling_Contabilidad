@@ -68,16 +68,7 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-// Obtener la lista de marcas
-$stmt_marca = $conectar->prepare("SELECT * FROM marca");
-$stmt_marca->execute();
-$marcas_resultado = $stmt_marca->get_result();
-$marcas = $marcas_resultado->fetch_all(MYSQLI_ASSOC);
 
-$stmt_marca->close();
-
-mysqli_close($conectar);
-?>
 
 
 // Obtener los detalles del producto a editar
