@@ -5,8 +5,8 @@ if (isset($_SESSION['id_usuario'])) {
 }
 include '../conexion.php';
 
-// Consulta para obtener los productos de la categoría 'caballero' y que estén disponibles
-$query = "SELECT * FROM producto WHERE categorias = 'caballero' AND estado = 'disponible'";
+// Consulta para obtener los productos de la categoría 'dama' y que estén disponibles
+$query = "SELECT * FROM producto WHERE categorias = 'dama' AND estado = 'disponible'";
 $result = mysqli_query($conectar, $query);
 ?>
 
@@ -19,7 +19,7 @@ $result = mysqli_query($conectar, $query);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon" href="../imgs/logo.png">
-    <title>Productos Caballero</title>
+    <title>Productos Dama</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,7 +93,7 @@ $result = mysqli_query($conectar, $query);
     <div class="container mt-5">
         <div id="header" class="bg-primary text-white text-center p-3 rounded">
             <img src="../imgs/logo.png" alt="logo" id="logo" class="mb-2">
-            <h1>Sección de Caballero</h1>
+            <h1>Sección de Dama</h1>
             <a href="../menuC.html" class="btn btn-light">Volver</a>
         </div>
 
@@ -106,7 +106,7 @@ $result = mysqli_query($conectar, $query);
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo '<div class="col-md-6 mb-4">';
                             echo '<div class="card">';
-                            echo '<img src="../imgs/' . htmlspecialchars($row['imagen']) . '" class="card-img-top" alt="Producto">';
+                            echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
                             echo '<div class="card-body">';
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
@@ -216,14 +216,6 @@ $result = mysqli_query($conectar, $query);
                         }
                     }
                 });
-            });
-
-            // Manejo del botón de confirmar pedido
-            $('#confirm-order').on('click', function() {
-                if (confirm('¿Estás seguro de que deseas confirmar el pedido?')) {
-                    alert('El pedido fue realizado');
-                    window.location.href = '../menuC.html';
-                }
             });
         });
     </script>

@@ -106,7 +106,7 @@ $result = mysqli_query($conectar, $query);
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo '<div class="col-md-6 mb-4">';
                             echo '<div class="card">';
-                            echo '<img src="../imgs/' . htmlspecialchars($row['imagen']) . '" class="card-img-top" alt="Producto">';
+                            echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
                             echo '<div class="card-body">';
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';

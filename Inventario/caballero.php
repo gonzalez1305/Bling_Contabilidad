@@ -5,8 +5,8 @@ if (isset($_SESSION['id_usuario'])) {
 }
 include '../conexion.php';
 
-// Consulta para obtener los productos de la categoría 'dama' y que estén disponibles
-$query = "SELECT * FROM producto WHERE categorias = 'dama' AND estado = 'disponible'";
+// Consulta para obtener los productos de la categoría 'caballero' y que estén disponibles
+$query = "SELECT * FROM producto WHERE categorias = 'caballero' AND estado = 'disponible'";
 $result = mysqli_query($conectar, $query);
 ?>
 
@@ -19,7 +19,7 @@ $result = mysqli_query($conectar, $query);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon" href="../imgs/logo.png">
-    <title>Productos Dama</title>
+    <title>Productos Caballero</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,44 +93,50 @@ $result = mysqli_query($conectar, $query);
     <div class="container mt-5">
         <div id="header" class="bg-primary text-white text-center p-3 rounded">
             <img src="../imgs/logo.png" alt="logo" id="logo" class="mb-2">
-            <h1>Sección de Dama</h1>
+            <h1>Sección de Caballero</h1>
             <a href="../menuC.html" class="btn btn-light">Volver</a>
         </div>
 
         <div class="row mt-4">
             <!-- Contenedor de productos -->
             <div id="productos" class="col-md-8">
-                <div class="row">
-                    <?php
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo '<div class="col-md-6 mb-4">';
-                            echo '<div class="card">';
-                            echo '<img src="../imgs/' . htmlspecialchars($row['imagen']) . '" class="card-img-top" alt="Producto">';
-                            echo '<div class="card-body">';
-                            echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
-                            echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
-                            echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2) . '</p>';
-                            echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
-                            echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
-                            echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
-                            echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
-                            echo '<div class="mb-3">';
-                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
-                            echo '</div>';
-                            echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
-                            echo '</form>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<p>No hay productos disponibles.</p>';
-                    }
-                    ?>
-                </div>
-            </div>
+    <div class="row">
+        
+        <?php
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo '<div class="col-md-6 mb-4">';
+                echo '<div class="card">';
+
+                echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
+                echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
+                echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2) . '</p>';
+                echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
+                echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
+                echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
+                echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
+                echo '<div class="mb-3">';
+                echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
+                echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
+                echo '</div>';
+                echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
+                echo '</form>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+            }
+        } else {
+            echo '<p>No hay productos disponibles.</p>';
+        }
+        ?>
+
+        
+    </div>
+</div>
+
+          
 
             <!-- Contenedor Carrito en el lado derecho -->
             <div class="col-md-4">
@@ -165,6 +171,7 @@ $result = mysqli_query($conectar, $query);
                         $stmt->close();
                         ?>
                     </div>
+
                     <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
                     <a href="../Pedido/verPedido.php" class="btn btn-danger mt-3">Confirmar Pedido</a>
                 </div>
@@ -216,6 +223,14 @@ $result = mysqli_query($conectar, $query);
                         }
                     }
                 });
+            });
+
+            // Manejo del botón de confirmar pedido
+            $('#confirm-order').on('click', function() {
+                if (confirm('¿Estás seguro de que deseas confirmar el pedido?')) {
+                    alert('El pedido fue realizado');
+                    window.location.href = '../menuC.html';
+                }
             });
         });
     </script>

@@ -141,7 +141,7 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
                 <h1 class="h2">Lista de Pedidos</h1>
                 <a class="btn btn-success" href="../reportePedido.php" role="button">Reporte Pedidos</a>
-                <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Pedidos Gráfico</a>
+                <a class="btn btn-success" href="../reporteGraficoPedidos.html" role="button">Reporte Pedidos Gráfico</a>
 
                 <div class="pedido-container">
                     <table id="pedidosTable">
@@ -175,9 +175,8 @@
                                     <td><?php echo $filas['unidades'] ?></td>
                                     <td><?php echo $filas['precio_total'] ?></td>
                                     <td>
-                                        <?php echo "<a href='editar.php?id_detalles_pedido=" . $filas['id_detalles_pedido'] . "'>Editar</a>"; ?>
-                                        -
-                                        <?php echo "<a href='eliminar.php?id_detalles_pedido=" . $filas['id_detalles_pedido'] . "' onclick='return confirmar()'>Eliminar</a>"; ?>
+                                        <a href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-warning btn-sm'>Editar</a>
+                                        <a href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-danger btn-sm' onclick='return confirmar()'>Eliminar</a>
                                     </td>
                                 </tr>
                             <?php
@@ -207,35 +206,19 @@
                     'searchBuilder', 'pageLength' // Botones disponibles
                 ],
                 language: {
-                    "decimal": "",
-                    "emptyTable": "No hay datos disponibles en la tabla",
-                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                    "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrando página _PAGE_ de _PAGES_",
+                    "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "Mostrar _MENU_ registros",
-                    "loadingRecords": "Cargando...",
-                    "processing": "Procesando...",
-                    "search": "Buscar:",
-                    "zeroRecords": "No se encontraron resultados",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    },
-                    "aria": {
-                        "sortAscending": ": activar para ordenar la columna de manera ascendente",
-                        "sortDescending": ": activar para ordenar la columna de manera descendente"
-                    },
-                    "buttons": {
-                        "searchBuilder": "Constructor de búsqueda",
-                        "pageLength": "Mostrar _MENU_"
-                    }
+                    "search": "Buscar:"
                 }
             });
         });
+
+        function confirmar() {
+            return confirm('¿Está seguro de que desea eliminar este registro?');
+        }
     </script>
 </body>
 </html>

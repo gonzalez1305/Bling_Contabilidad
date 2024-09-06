@@ -150,39 +150,40 @@ if (isset($_POST['enviar'])) {
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <h1 class="h2">Editar Pedido</h1>
             <div class="container mt-5">
-                <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post" class="p-4 border rounded-3 bg-light">
-                    <input type="hidden" name="id_detalles_pedido" value="<?php echo $id_detalles_pedido; ?>">
-                    <div class="mb-3">
-                        <label class="form-label"><strong>ID Pedido:</strong></label>
-                        <input type="text" name="id_pedido" value="<?php echo $pedidoDetalles['id_pedido']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>ID Usuario:</strong></label>
-                        <input type="text" name="fk_id_usuario" value="<?php echo $pedidoDetalles['fk_id_usuario']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Fecha:</strong></label>
-                        <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Situación:</strong></label>
-                        <input type="text" name="situacion" value="<?php echo $pedidoDetalles['situacion']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Nombre del Producto:</strong></label>
-                        <input type="text" name="nombre" value="<?php echo $pedidoDetalles['nombre']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Precio Total:</strong></label>
-                        <input type="text" name="precio_total" value="<?php echo $pedidoDetalles['precio_total']; ?>" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="unidades" class="form-label"><strong>Unidades:</strong></label>
-                        <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" required>
-                    </div>
-                    <button type="submit" name="enviar" class="btn btn-primary">ACTUALIZAR</button>
-                    <a href="validarpedido.php" class="btn btn-secondary ms-2">Regresar</a>
-                </form>
+            <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post" class="p-4 border rounded-3 bg-light">
+    <input type="hidden" name="id_detalles_pedido" value="<?php echo $id_detalles_pedido; ?>">
+    <div class="mb-3">
+        <label class="form-label"><strong>ID Pedido:</strong></label>
+        <input type="text" name="id_pedido" value="<?php echo $pedidoDetalles['id_pedido']; ?>" class="form-control" readonly>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><strong>ID Usuario:</strong></label>
+        <input type="text" name="fk_id_usuario" value="<?php echo $pedidoDetalles['fk_id_usuario']; ?>" class="form-control" readonly>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><strong>Fecha:</strong></label>
+        <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><strong>Situación:</strong></label>
+        <input type="text" name="situacion" value="<?php echo $pedidoDetalles['situacion']; ?>" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><strong>Nombre del Producto:</strong></label>
+        <input type="text" name="nombre" value="<?php echo $pedidoDetalles['nombre']; ?>" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><strong>Precio Total:</strong></label>
+        <input type="text" name="precio_total" value="<?php echo $pedidoDetalles['precio_total']; ?>" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="unidades" class="form-label"><strong>Unidades:</strong></label>
+        <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" required>
+    </div>
+    <button type="submit" name="enviar" class="btn btn-primary">ACTUALIZAR</button>
+    <a href="validarpedido.php" class="btn btn-secondary ms-2">Regresar</a>
+</form>
+
             </div>
         </main>
     </div>
