@@ -1,4 +1,3 @@
-
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
@@ -16,8 +15,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     }
 }
 
-// Consulta para obtener todos los registros de gestion_ventas
-$sql_select = "SELECT * FROM gestion_ventas";
+// Consulta para obtener todos los registros de gestion_ventas con el precio_total
+$sql_select = "
+    SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.id_vendedor, gv.fecha_venta, gv.fecha_registro,
+           dp.precio_total
+    FROM gestion_ventas gv
+    JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
+";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
 <!DOCTYPE html>
@@ -128,6 +132,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                             <th>ID de Vendedor</th>
                             <th>Fecha de Venta</th>
                             <th>Fecha de Registro</th>
+                            <th>Precio Total</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -141,6 +146,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                                 echo "<td>" . $row['id_vendedor'] . "</td>";
                                 echo "<td>" . $row['fecha_venta'] . "</td>";
                                 echo "<td>" . $row['fecha_registro'] . "</td>";
+                                echo "<td>" . number_format($row['precio_total'], 2) . " COP</td>";
                                 echo "<td class='btn-group'>";
                                 echo "<a href='gestionVentasEditar.php?id=" . $row['id_gestion_venta'] . "' class='btn btn-warning'>Editar</a>";
                                 echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
@@ -151,16 +157,13 @@ $resultado = mysqli_query($conectar, $sql_select);
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='6'>No hay ventas registradas</td></tr>";
+                            echo "<tr><td colspan='7'>No hay ventas registradas</td></tr>";
                         }
                         ?>
                     </tbody>
                 </table>
 
                 <a href="gestionVentasCrear.php" class="btn btn-primary">Agregar Nueva Venta</a>
-               
-             
-
             </div>
         </main>
     </div>
