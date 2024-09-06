@@ -1,10 +1,16 @@
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
-// Consultas para obtener los ID de Detalles Pedido con precio_total y Vendedores
-$query_detalles_pedido = "SELECT id_detalles_pedido, precio_total FROM detalles_pedido";
+// Consultas para obtener los ID de Detalles Pedido con precio_total solo si el pedido está en situación "entregado"
+$query_detalles_pedido = "
+    SELECT dp.id_detalles_pedido, dp.precio_total 
+    FROM detalles_pedido dp
+    JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+    WHERE p.situacion = 'entregado'
+";
 $result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
 
+// Consulta para obtener los Vendedores
 $query_vendedores = "SELECT id_vendedor FROM administrador";
 $result_vendedores = mysqli_query($conectar, $query_vendedores);
 
@@ -128,6 +134,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
                     </li>
                 </ul>
             </div>
