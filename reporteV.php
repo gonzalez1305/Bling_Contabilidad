@@ -3,11 +3,14 @@
 require('pdf/fpdf.php');
 
 // Paso 2: Conectar a la base de datos MySQL
-include("conexion2.php");
+$conexion = new mysqli("localhost", "root", "", "blingC");
 
+if ($conexion->connect_error) {
+    die("Conexión fallida: " . $conexion->connect_error);
+}
 
 // Paso 3: Consulta a la base de datos
-$query = "SELECT id_venta, fecha, total_cantidad, total_venta FROM venta";
+$query = "SELECT id_gestion_venta, id_vendedor, id_detalles_pedido, fecha_venta, fecha_registro FROM gestion_ventas";
 $result = $conexion->query($query);
 
 if (!$result) {
@@ -30,10 +33,11 @@ $pdf->Cell(40, 10, 'Reporte de Ventas', 0, 1);
 // Iterar sobre los resultados y añadirlos al PDF
 foreach ($ventas as $venta) {
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(40, 10, 'ID Venta: ' . $venta['id_venta'], 0, 1);
-    $pdf->Cell(40, 10, 'Fecha: ' . $venta['fecha'], 0, 1);
-    $pdf->Cell(40, 10, 'total_cantidad: ' . $venta['total_cantidad'], 0, 1);
-    $pdf->Cell(40, 10, 'total_venta: ' . $venta['total_venta'], 0, 1);
+    $pdf->Cell(40, 10, 'ID Venta: ' . $venta['id_gestion_venta'], 0, 1);
+    $pdf->Cell(40, 10, 'ID Vendedor: ' . $venta['id_vendedor'], 0, 1);
+    $pdf->Cell(40, 10, 'ID Detalles Pedido: ' . $venta['id_detalles_pedido'], 0, 1);
+    $pdf->Cell(40, 10, 'Fecha Venta: ' . $venta['fecha_venta'], 0, 1);
+    $pdf->Cell(40, 10, 'Fecha Registro: ' . $venta['fecha_registro'], 0, 1);
     $pdf->Ln(); // Salto de línea
 }
 

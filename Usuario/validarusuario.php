@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,7 @@
         }
         .navbar {
             background-color: #007bff;
-            margin-bottom: 10px; /* Reducido el margen inferior */
+            margin-bottom: 10px;
         }
         .navbar-brand {
             color: #ffffff;
@@ -31,12 +31,12 @@
             position: fixed;
             top: 56px;
             left: 0;
-            width: 200px; /* Reducido */
-            overflow-y: auto; /* Permite desplazamiento vertical */
+            width: 200px;
+            overflow-y: auto;
         }
         .sidebar a {
             color: #ffffff;
-            padding: 8px; /* Reducido */
+            padding: 8px;
             text-decoration: none;
             display: block;
         }
@@ -44,21 +44,21 @@
             background-color: #007bff;
         }
         .content {
-            margin-left: 200px; /* Reducido */
-            padding: 10px; /* Reducido */
-            margin-top: 10px; /* Reducido el margen superior */
+            margin-left: 200px;
+            padding: 10px;
+            margin-top: 10px;
         }
         .btn-back {
-            margin: 10px 0; /* Reducido */
+            margin: 10px 0;
         }
         .btn-group .btn {
-            margin-right: 4px; /* Reducido */
-            padding: 4px 8px; /* Reducido */
-            font-size: 12px; /* Reducido */
+            margin-right: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
         }
         .profile-image {
-            width: 30px; /* Reducido */
-            height: 30px; /* Reducido */
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background-color: #e9ecef;
             display: flex;
@@ -71,36 +71,36 @@
             height: auto;
         }
         .profile-image .bi {
-            font-size: 18px; /* Reducido */
+            font-size: 18px;
             color: #6c757d;
         }
         /* Estilo para la tabla */
         table {
             width: 100%;
-            table-layout: auto; /* Permite a la tabla ajustarse al contenido */
-            border-collapse: collapse; /* Combina los bordes de las celdas */
+            table-layout: auto;
+            border-collapse: collapse;
         }
         th, td {
-            white-space: nowrap; /* Evita el salto de línea en las celdas */
-            padding: 4px 8px; /* Reducido para menor espacio interno */
-            font-size: 12px; /* Reducido */
-            border: 1px solid #dee2e6; /* Borde entre celdas */
-            overflow: hidden; /* Oculta el texto que se desborda */
-            text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
+            white-space: nowrap;
+            padding: 4px 8px;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         th {
-            background-color: #f1f1f1; /* Fondo gris claro para encabezados */
-            font-size: 12px; /* Reducido */
+            background-color: #f1f1f1;
+            font-size: 12px;
         }
         .column-tipo-usuario {
-            width: 100px; /* Ajuste del ancho de la columna */
+            width: 100px;
         }
         .column-actions {
-            width: 120px; /* Ajuste del ancho de la columna de acciones */
+            width: 120px;
         }
         /* Estilo para la tabla dentro del contenedor */
         .table-responsive {
-            overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+            overflow-x: auto;
         }
         @media (max-width: 768px) {
             .sidebar {
@@ -159,12 +159,9 @@
             </div>
             <h1 class="h2">Usuarios Registrados</h1>
 
-            
-                <a class="btn btn-success" href="../reporteU.php" role="button">Reporte Usuarios</a>
-       
-                <a class="btn btn-success" href="../reporteGraficoU.html" role="button">Reporte Usuarios Grafico</a>
-        
-            
+            <a class="btn btn-success" href="../reporteU.php" role="button">Reporte Usuarios</a>
+            <a class="btn btn-success" href="../reporteGraficoU.html" role="button">Reporte Usuarios Gráfico</a>
+
             <?php
                 include("../conexion.php");
                 $sql = "SELECT id_usuario, nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, tipo_usuario, imagen FROM usuario";
@@ -217,7 +214,6 @@
                         <?php } ?>
                     </tbody>
                 </table>
-        
             </div>
         </main>
     </div>
@@ -245,13 +241,16 @@
     </div>
 </div>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#pedidosTable').DataTable();
+        $('#pedidosTable').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+            }
+        });
     });
 
     function confirmDelete(id_usuario) {
@@ -259,5 +258,6 @@
         $('#confirmDeleteModal').modal('show');
     }
 </script>
+
 </body>
 </html>

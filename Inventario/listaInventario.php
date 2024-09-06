@@ -118,7 +118,11 @@ $resultado = mysqli_query($conectar, $sql_select);
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <h1 class="h2">Listado de Inventario</h1>
+            <h1 class="h2">Listado de Productos</h1>
+
+            <a class="btn btn-success" href="../reporteP.php" role="button">Reporte Productos</a>
+            <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Productos Gráfico</a>
+
 
             <?php
             // Verificar si hay registros
@@ -144,17 +148,16 @@ $resultado = mysqli_query($conectar, $sql_select);
                     echo "<input type='hidden' name='eliminar_id' value='" . htmlspecialchars($fila['id_producto']) . "'>";
                     echo "<input type='submit' value='Eliminar' class='btn btn-danger btn-sm'>";
                     echo "</form>";
-                    echo "</td>";
-                    echo "</tr>";
+             
                 }
                 echo "</tbody></table>";
             } else {
-                echo "<p>No se encontraron registros de inventario.</p>";
+                echo "<p>No se encontraron registros de Productos.</p>";
             }
             ?>
 
             <div class="mt-4">
-                <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Inventario</a>
+                <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Producto</a>
             </div>
         </main>
     </div>

@@ -1,4 +1,3 @@
-
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
@@ -120,6 +119,8 @@ $resultado = mysqli_query($conectar, $sql_select);
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="container">
                 <h1 class="h2">Listado de Ventas</h1>
+                <a class="btn btn-success" href="../reporteV.php" role="button">Reporte Ventas</a>
+                <a class="btn btn-success" href="../reporteGraficoV.html" role="button">Reporte Ventas Gráfico</a>
                 <table id="ventasTable" class="table table-striped">
                     <thead>
                         <tr>
@@ -158,9 +159,6 @@ $resultado = mysqli_query($conectar, $sql_select);
                 </table>
 
                 <a href="gestionVentasCrear.php" class="btn btn-primary">Agregar Nueva Venta</a>
-               
-             
-
             </div>
         </main>
     </div>
@@ -172,7 +170,32 @@ $resultado = mysqli_query($conectar, $sql_select);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#ventasTable').DataTable();
+        $('#ventasTable').DataTable({
+            "language": {
+                "sProcessing":    "Procesando...",
+                "sLengthMenu":    "Mostrar _MENU_ registros",
+                "sZeroRecords":   "No se encontraron resultados",
+                "sEmptyTable":    "Ningún dato disponible en esta tabla",
+                "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix":   "",
+                "sSearch":        "Buscar:",
+                "sUrl":           "",
+                "sInfoThousands":  ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst":    "Primero",
+                    "sLast":     "Último",
+                    "sNext":     "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
     });
 </script>
 </body>

@@ -16,12 +16,12 @@
         $(document).ready(function () {
             // Obtener los datos de la base de datos
             $.ajax({
-                url: 'get_data_inventario.php',
+                url: 'get_data_producto.php',
                 method: 'GET',
                 success: function (data) {
                     const parsedData = JSON.parse(data);
-                    const labels = parsedData.map(item => item.fecha);
-                    const values = parsedData.map(item => item.total_disponible);
+                    const labels = parsedData.map(item => item.categorias);
+                    const values = parsedData.map(item => item.cantidad);
 
                     // Crear la gráfica
                     const ctx = document.getElementById('myChart').getContext('2d');
@@ -30,7 +30,7 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Cantidad Disponible por Fecha',
+                                label: 'Cantidad Disponible por Categoria',
                                 data: values,
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                 borderColor: 'rgba(75, 192, 192, 1)',

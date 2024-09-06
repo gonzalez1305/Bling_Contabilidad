@@ -140,6 +140,9 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
                 <h1 class="h2">Lista de Pedidos</h1>
+                <a class="btn btn-success" href="../reportePedido.php" role="button">Reporte Pedidos</a>
+                <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Pedidos Gráfico</a>
+
                 <div class="pedido-container">
                     <table id="pedidosTable">
                         <thead>
@@ -202,13 +205,37 @@
                 dom: 'Bfrtip', // Configuración de los elementos en la interfaz
                 buttons: [
                     'searchBuilder', 'pageLength' // Botones disponibles
-                ]
+                ],
+                language: {
+                    "decimal": "",
+                    "emptyTable": "No hay datos disponibles en la tabla",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ registros",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "No se encontraron resultados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    },
+                    "aria": {
+                        "sortAscending": ": activar para ordenar la columna de manera ascendente",
+                        "sortDescending": ": activar para ordenar la columna de manera descendente"
+                    },
+                    "buttons": {
+                        "searchBuilder": "Constructor de búsqueda",
+                        "pageLength": "Mostrar _MENU_"
+                    }
+                }
             });
         });
-
-        function confirmar() {
-            return confirm('¿Está seguro que desea eliminar este pedido?');
-        }
     </script>
 </body>
 </html>
