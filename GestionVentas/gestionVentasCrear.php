@@ -1,8 +1,8 @@
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
-// Consultas para obtener los ID de Detalles Pedido y Vendedores
-$query_detalles_pedido = "SELECT id_detalles_pedido FROM detalles_pedido";
+// Consultas para obtener los ID de Detalles Pedido con precio_total y Vendedores
+$query_detalles_pedido = "SELECT id_detalles_pedido, precio_total FROM detalles_pedido";
 $result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
 
 $query_vendedores = "SELECT id_vendedor FROM administrador";
@@ -84,6 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha_venta').setAttribute('max', today);
             document.getElementById('fecha_registro').setAttribute('max', today);
+
+            // Actualizar el precio_total cuando se cambie la selección
+            document.getElementById('id_detalles_pedido').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const priceText = selectedOption.getAttribute('data-price');
+                document.getElementById('precio_total').textContent = priceText;
+            });
         });
     </script>
 </head>
@@ -92,14 +99,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Bling Compra</a>
-        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
+                    <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
                 </li>
             </ul>
         </div>
@@ -135,11 +141,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
                         <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
                             <?php while($row = mysqli_fetch_assoc($result_detalles_pedido)): ?>
-                                <option value="<?php echo $row['id_detalles_pedido']; ?>">
-                                    <?php echo $row['id_detalles_pedido']; ?>
+                                <option value="<?php echo $row['id_detalles_pedido']; ?>" data-price="<?php echo number_format($row['precio_total'], 2); ?>">
+                                    <?php echo $row['id_detalles_pedido']; ?> - Precio Total: <?php echo number_format($row['precio_total'], 2); ?> COP
                                 </option>
                             <?php endwhile; ?>
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="precio_total" class="form-label">Precio Total:</label>
+                        <div id="precio_total" class="form-control" readonly>
+                            Seleccione un ID Detalles Pedido
+                        </div>
                     </div>
 
                     <div class="mb-3">

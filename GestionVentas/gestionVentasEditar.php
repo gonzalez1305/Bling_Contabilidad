@@ -2,7 +2,7 @@
 require '../conexion.php'; // Conexión a la base de datos
 
 // Consultas para obtener los ID de Detalles Pedido y Vendedores
-$query_detalles_pedido = "SELECT id_detalles_pedido FROM detalles_pedido";
+$query_detalles_pedido = "SELECT id_detalles_pedido, precio_total FROM detalles_pedido";
 $result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
 
 $query_vendedores = "SELECT id_vendedor FROM administrador";
@@ -99,14 +99,13 @@ if (isset($_GET['id'])) {
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Bling Compra</a>
-        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
+                    <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
                 </li>
             </ul>
         </div>
@@ -147,7 +146,7 @@ if (isset($_GET['id'])) {
                             // Volver a cargar las opciones y marcar la opción seleccionada
                             while($row = mysqli_fetch_assoc($result_detalles_pedido)) {
                                 $selected = ($row['id_detalles_pedido'] == $venta['id_detalles_pedido']) ? 'selected' : '';
-                                echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . "</option>";
+                                echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . " - Precio Total: " . number_format($row['precio_total'], 2) . " COP</option>";
                             }
                             ?>
                         </select>
