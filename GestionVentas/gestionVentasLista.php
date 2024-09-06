@@ -15,12 +15,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     }
 }
 
-// Consulta para obtener todos los registros de gestion_ventas con el precio_total
+// Consulta para obtener los registros de gestion_ventas con el precio_total solo para pedidos entregados
 $sql_select = "
     SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.id_vendedor, gv.fecha_venta, gv.fecha_registro,
            dp.precio_total
     FROM gestion_ventas gv
     JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
+    JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+    WHERE p.situacion = 'entregado'
 ";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
@@ -117,6 +119,9 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -209,5 +214,6 @@ $resultado = mysqli_query($conectar, $sql_select);
 </html>
 
 <?php
+// Cerrar la conexión a la base de datos
 mysqli_close($conectar);
 ?>

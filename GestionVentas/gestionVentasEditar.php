@@ -2,7 +2,12 @@
 require '../conexion.php'; // Conexión a la base de datos
 
 // Consultas para obtener los ID de Detalles Pedido y Vendedores
-$query_detalles_pedido = "SELECT id_detalles_pedido, precio_total FROM detalles_pedido";
+$query_detalles_pedido = "
+    SELECT dp.id_detalles_pedido, dp.precio_total 
+    FROM detalles_pedido dp
+    JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+    WHERE p.situacion = 'entregado'
+";
 $result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
 
 $query_vendedores = "SELECT id_vendedor FROM administrador";
@@ -38,7 +43,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
 // Obtener el ID de gestión de venta a editar
 if (isset($_GET['id'])) {
     $id_gestion_venta = $_GET['id'];
-    $sql_select = "SELECT * FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
+    $sql_select = "
+        SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.id_vendedor, gv.fecha_venta, gv.fecha_registro,
+               dp.precio_total
+        FROM gestion_ventas gv
+        JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
+        JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+        WHERE p.situacion = 'entregado' AND gv.id_gestion_venta = '$id_gestion_venta'
+    ";
     $result = mysqli_query($conectar, $sql_select);
     $venta = mysqli_fetch_assoc($result);
 } else {
@@ -129,6 +141,9 @@ if (isset($_GET['id'])) {
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -176,18 +191,14 @@ if (isset($_GET['id'])) {
                     </div>
 
                     <button type="submit" class="btn btn-primary">Actualizar Registro</button>
-                    <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver al Listado</a>
+                    <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver</a>
                 </form>
             </div>
         </main>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php
-mysqli_close($conectar);
-?>

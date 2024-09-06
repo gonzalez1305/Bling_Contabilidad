@@ -113,6 +113,9 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                    </li>
                 </ul>
             </div>
         </nav>
