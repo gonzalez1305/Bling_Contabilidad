@@ -120,7 +120,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                 </ul>
             </div>
@@ -134,9 +134,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                 <table id="ventasTable" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID de Gestión de Venta</th>
-                            <th>ID de Detalles del Pedido</th>
-                            <th>ID de Vendedor</th>
+                         
                             <th>Fecha de Venta</th>
                             <th>Fecha de Registro</th>
                             <th>Precio Total</th>
@@ -148,9 +146,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                         if (mysqli_num_rows($resultado) > 0) {
                             while ($row = mysqli_fetch_assoc($resultado)) {
                                 echo "<tr>";
-                                echo "<td>" . $row['id_gestion_venta'] . "</td>";
-                                echo "<td>" . $row['id_detalles_pedido'] . "</td>";
-                                echo "<td>" . $row['id_vendedor'] . "</td>";
+                             
                                 echo "<td>" . $row['fecha_venta'] . "</td>";
                                 echo "<td>" . $row['fecha_registro'] . "</td>";
                                 echo "<td>" . number_format($row['precio_total'], 2) . " COP</td>";

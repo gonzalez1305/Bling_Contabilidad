@@ -21,7 +21,7 @@
                 success: function (data) {
                     const parsedData = JSON.parse(data);
                     const labels = parsedData.map(item => item.fecha);
-                    const values = parsedData.map(item => item.situacion);
+                    const values = parsedData.map(item => item.cantidad);
 
                     // Crear la gráfica
                     const ctx = document.getElementById('myChart').getContext('2d');

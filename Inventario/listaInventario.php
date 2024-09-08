@@ -114,7 +114,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                 </ul>
             </div>
@@ -131,10 +131,10 @@ $resultado = mysqli_query($conectar, $sql_select);
             // Verificar si hay registros
             if (mysqli_num_rows($resultado) > 0) {
                 echo "<table id='tablaInventario' class='table table-striped'>";
-                echo "<thead><tr><th>ID</th><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
+                echo "<thead><tr><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
                 while ($fila = mysqli_fetch_assoc($resultado)) {
                     echo "<tr>";
-                    echo "<td>" . htmlspecialchars($fila['id_producto']) . "</td>";
+                   
                     echo "<td>" . htmlspecialchars($fila['talla']) . "</td>";
                     echo "<td>" . htmlspecialchars($fila['color']) . "</td>";
                     echo "<td>" . htmlspecialchars($fila['cantidad']) . "</td>";

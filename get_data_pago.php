@@ -1,7 +1,10 @@
 <?php
 include("conexion.php");
 
-$sql = "SELECT fecha_pago, COUNT(*) AS cantidad FROM pagos GROUP BY fecha_pago";
+$sql = "SELECT fecha_pago, SUM(monto) AS total_monto 
+        FROM pagos 
+        GROUP BY fecha_pago 
+       ";
 
 $resultado = mysqli_query($conectar, $sql);
 

@@ -8,6 +8,8 @@ if (isset($_POST['enviar'])) {
     // Si se ha enviado el formulario
     $unidades = $_POST["unidades"];
     $id_detalles_pedido = $_POST["id_detalles_pedido"];
+    $situacion = $_POST["situacion"];
+    $id_pedido = $_POST["id_pedido"];
 
     // Obtén el precio unitario del producto
     $sqlPrecioUnitario = "SELECT precio_unitario FROM producto WHERE id_producto = (SELECT fk_id_producto FROM detalles_pedido WHERE id_detalles_pedido = '".$id_detalles_pedido."')";
@@ -21,10 +23,14 @@ if (isset($_POST['enviar'])) {
         $nuevoPrecioTotal = $precioUnitario * $unidades;
 
         // Actualiza las unidades y el precio total en la base de datos
-        $sql = "UPDATE detalles_pedido SET unidades='".$unidades."', precio_total='".$nuevoPrecioTotal."' WHERE id_detalles_pedido = '".$id_detalles_pedido."'";
-        $resultado = mysqli_query($conectar, $sql);
+        $sqlDetallesPedido = "UPDATE detalles_pedido SET unidades='".$unidades."', precio_total='".$nuevoPrecioTotal."' WHERE id_detalles_pedido = '".$id_detalles_pedido."'";
+        $resultadoDetalles = mysqli_query($conectar, $sqlDetallesPedido);
 
-        if ($resultado) {
+        // Actualiza la situación del pedido en la base de datos
+        $sqlSituacionPedido = "UPDATE pedido SET situacion='".$situacion."' WHERE id_pedido='".$id_pedido."'";
+        $resultadoSituacion = mysqli_query($conectar, $sqlSituacionPedido);
+
+        if ($resultadoDetalles && $resultadoSituacion) {
             echo "<script language='javascript'>";
             echo "alert('Los datos se actualizaron correctamente');";
             echo "location.assign('validarpedido.php');";
@@ -165,8 +171,11 @@ if (isset($_POST['enviar'])) {
         <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" required>
     </div>
     <div class="mb-3">
-        <label class="form-label"><strong>Situación:</strong></label>
-        <input type="text" name="situacion" value="<?php echo $pedidoDetalles['situacion']; ?>" class="form-control" required>
+    <label class="form-label"><strong>Situación:</strong></label>
+    <select name="situacion" class="form-control" required>
+        <option value="En proceso" <?php echo ($pedidoDetalles['situacion'] == 'En proceso') ? 'selected' : ''; ?>>En proceso</option>
+        <option value="Entregado" <?php echo ($pedidoDetalles['situacion'] == 'Entregado') ? 'selected' : ''; ?>>Entregado</option>
+    </select>
     </div>
     <div class="mb-3">
         <label class="form-label"><strong>Nombre del Producto:</strong></label>

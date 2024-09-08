@@ -135,7 +135,7 @@
                             <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                     </ul>
                 </div>
@@ -150,11 +150,10 @@
                     <table id="pedidosTable">
                         <thead>
                             <tr>
-                                <th>ID PEDIDO</th>
-                                <th>ID USUARIO</th>
+                            <th>CLIENTE</th>
                                 <th>FECHA</th>
                                 <th>SITUACION</th>
-                                <th>NOMBRE</th>
+                               
                                 <th>UNIDADES</th>
                                 <th>PRECIO</th>
                                 <th>ACCIONES</th>
@@ -163,18 +162,27 @@
                         <tbody>
                             <?php
                                 include("../conexion.php");
-                                $sql = "SELECT * FROM pedido
-                                    INNER JOIN detalles_pedido ON pedido.id_pedido = detalles_pedido.fk_id_pedido
-                                    INNER JOIN producto ON detalles_pedido.fk_id_producto = producto.id_producto";
+                                $sql = "SELECT 
+    pedido.*, 
+    detalles_pedido.*, 
+    producto.*, 
+    usuario.nombre
+FROM 
+    pedido
+INNER JOIN 
+    detalles_pedido ON pedido.id_pedido = detalles_pedido.fk_id_pedido
+INNER JOIN 
+    producto ON detalles_pedido.fk_id_producto = producto.id_producto
+INNER JOIN 
+    usuario ON pedido.fk_id_usuario = usuario.id_usuario";
                                 $resultado = mysqli_query($conectar, $sql);
                                 while ($filas = mysqli_fetch_assoc($resultado)) {
                             ?>
                                 <tr>
-                                    <td><?php echo $filas['id_pedido'] ?></td>
-                                    <td><?php echo $filas['fk_id_usuario'] ?></td>
+                                <td><?php echo $filas['nombre'] ?></td>
                                     <td><?php echo $filas['fecha'] ?></td>
                                     <td><?php echo $filas['situacion'] ?></td>
-                                    <td><?php echo $filas['nombre'] ?></td>
+                                  
                                     <td><?php echo $filas['unidades'] ?></td>
                                     <td><?php echo $filas['precio_total'] ?></td>
                                     <td>

@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Reporte Estadístico de Ventas</h1>
+        <h1>Reporte Estadístico de Pagos</h1>
         <canvas id="myChart" width="400" height="200"></canvas>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -20,7 +20,7 @@
                 method: 'GET',
                 success: function (data) {
                     const parsedData = JSON.parse(data);
-                    const labels = parsedData.map(item => item.fecha_venta);
+                    const labels = parsedData.map(item => item.fecha_pago);
                     const values = parsedData.map(item => item.cantidad);
 
                     // Crear la gráfica
@@ -30,7 +30,7 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'ventas por fecha',
+                                label: 'Pagos por fecha',
                                 data: values,
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                 borderColor: 'rgba(75, 192, 192, 1)',

@@ -1,38 +1,15 @@
 <?php
 require '../conexion.php'; // Conexión a la base de datos
 
-// Inicializa un mensaje de resultado vacío
-$resultado = "";
-
-// Verifica si el formulario ha sido enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_gestion_venta = $_POST['id_gestion_venta'];
-    $monto = $_POST['monto_pago'];
-    $metodo_pago = $_POST['metodo_pago'];
-    $fecha_pago = date('Y-m-d');
-
-    // Inserta el pago en la tabla 'pagos'
-    $pagoQuery = "INSERT INTO pagos (id_gestion_venta, fecha_pago, monto, metodo_pago) 
-                  VALUES ('$id_gestion_venta', '$fecha_pago', '$monto', '$metodo_pago')";
-
-    if (mysqli_query($conectar, $pagoQuery)) {
-        session_start();
-        $_SESSION['mensaje'] = "El pago ha sido registrado exitosamente.";
-        header("Location: pago.php");
-        exit();
-    } else {
-        $resultado = "Error al registrar el pago: " . mysqli_error($conectar);
-    }
-}
-
-// Consulta para obtener las ventas disponibles para el pago
-$ventasQuery = "SELECT gv.id_gestion_venta, dp.precio_total 
-                FROM gestion_ventas gv 
-                JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido";
-$ventasResult = mysqli_query($conectar, $ventasQuery);
+// Consulta para obtener los pagos registrados
+$pagoQuery = "SELECT p.id_pago, p.id_gestion_venta, p.fecha_pago, p.monto, p.metodo_pago, gv.id_gestion_venta, gv.fecha_venta
+              FROM pagos p
+              JOIN gestion_ventas gv ON p.id_gestion_venta = gv.id_gestion_venta";
+$pagoResult = mysqli_query($conectar, $pagoQuery);
 
 // Verifica si existe un mensaje en la sesión
 session_start();
+$resultado = "";
 if (isset($_SESSION['mensaje'])) {
     $resultado = $_SESSION['mensaje'];
     unset($_SESSION['mensaje']);
@@ -44,9 +21,10 @@ if (isset($_SESSION['mensaje'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realizar Pago - Bling Compra</title>
+    <title>Ver Pagos - Bling Compra</title>
     <link rel="icon" href="../imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -132,7 +110,10 @@ if (isset($_SESSION['mensaje'])) {
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="container">
-                <h1 class="h2">Realizar Pago</h1>
+                <h1 class="h2">Listado de Pagos</h1>
+
+                <a class="btn btn-success" href="../reportePago.php" role="button">Reporte Pago</a>
+                <a class="btn btn-success" href="../reporteGraficoPago.html" role="button">Reporte Grafico Pago</a>
 
                 <!-- Muestra el mensaje de resultado -->
                 <?php if ($resultado): ?>
@@ -141,37 +122,35 @@ if (isset($_SESSION['mensaje'])) {
                     </div>
                 <?php endif; ?>
 
-                <form action="pago.php" method="post">
-                    <div class="mb-3">
-                        <label for="id_gestion_venta" class="form-label">Seleccionar Venta:</label>
-                        <select name="id_gestion_venta" id="id_gestion_venta" class="form-select" required>
-                            <?php while($venta = mysqli_fetch_assoc($ventasResult)): ?>
-                                <option value="<?php echo $venta['id_gestion_venta']; ?>">
-                                    Venta ID: <?php echo $venta['id_gestion_venta']; ?> - Total: <?php echo number_format($venta['precio_total'], 2); ?> COP
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
+                <!-- Tabla para mostrar los pagos -->
+                <table id="pagosTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha de Pago</th>
+                            <th>Monto</th>
+                            <th>Método de Pago</th>
+                            <th>Fecha de Venta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($pago = mysqli_fetch_assoc($pagoResult)): ?>
+                            <tr>
+                                <td><?php echo $pago['fecha_pago']; ?></td>
+                                <td><?php echo number_format($pago['monto'], 2); ?> COP</td>
+                                <td><?php echo $pago['metodo_pago']; ?></td>
+                                <td><?php echo $pago['fecha_venta']; ?></td>
+                                <td>
+                                    <a href="editarPago.php?id=<?php echo htmlspecialchars($pago['id_pago']); ?>" class="btn btn-warning btn-sm">Editar</a>
+                                    <a href="eliminarPago.php?id=<?php echo $pago['id_pago']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este pago?');">Eliminar</a>
 
-                 
-
-
-                    <div class="mb-3">
-                        <label for="monto_pago" class="form-label">Monto del Pago:</label>
-                        <input type="number" name="monto_pago" id="monto_pago" class="form-control" required step="0.01">
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label for="metodo_pago" class="form-label">Método de Pago:</label>
-                        <select name="metodo_pago" id="metodo_pago" class="form-select" required>
-                            <option value="Efectivo">Efectivo</option>
-                        <select>
-                    </div>
-
-
-                    <button type="submit" class="btn btn-success">Realizar Pago</button>
-                </form>
+    
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+                <a href="pago.php" class="btn btn-primary">Agregar Nuevo Pago</a>
             </div>
         </main>
     </div>
@@ -179,29 +158,33 @@ if (isset($_SESSION['mensaje'])) {
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
+    $(document).ready(function() {
+        $('#pagosTable').DataTable({
+            language: {
+                "sEmptyTable": "No hay datos disponibles en la tabla",
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "sInfoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "sLengthMenu": "Mostrar _MENU_ entradas",
+                "sLoadingRecords": "Cargando...",
+                "sProcessing": "Procesando...",
+                "sSearch": "Buscar:",
+                "sZeroRecords": "No se encontraron resultados",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                }
+            }
+        });
+    });
+
     // Si hay un mensaje, ocúltalo después de 5 segundos
     window.onload = function() {
-        var mensaje = document.getElementById('mensaje');
-        if (mensaje) {
-            setTimeout(function() {
-                mensaje.style.display = 'none';
-            }, 5000); // 5000 milisegundos = 5 segundos
-        }
-    }
-</script>
-<script>
-    // Establecer la fecha máxima en el campo de fecha como la fecha actual
-    window.onload = function() {
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, '0');
-        var month = String(today.getMonth() + 1).padStart(2, '0'); // Los meses comienzan desde 0
-        var year = today.getFullYear();
-        var maxDate = year + '-' + month + '-' + day;
-
-        document.getElementById('fecha_venta').setAttribute('max', maxDate);
-
-        // Si hay un mensaje, ocúltalo después de 5 segundos
         var mensaje = document.getElementById('mensaje');
         if (mensaje) {
             setTimeout(function() {

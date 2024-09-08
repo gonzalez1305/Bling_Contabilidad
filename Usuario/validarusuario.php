@@ -150,7 +150,7 @@
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                 </ul>
             </div>
@@ -176,14 +176,14 @@
                     <thead>
                         <tr>
                             <th>Imagen</th>
-                            <th>ID Usuario</th>
+                          
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Teléfono</th>
                             <th>Dirección</th>
                             <th>Fecha de Nacimiento</th>
                             <th>Correo</th>
-                            <th class="column-tipo-usuario">Tipo Usuario</th>
+                           
                             <th class="column-actions">Acciones</th>
                         </tr>
                     </thead>
@@ -199,14 +199,14 @@
                                         <?php endif; ?>
                                     </div>
                                 </td>
-                                <td><?php echo htmlspecialchars($filas['id_usuario']); ?></td>
+                             
                                 <td><?php echo htmlspecialchars($filas['nombre']); ?></td>
                                 <td><?php echo htmlspecialchars($filas['apellido']); ?></td>
                                 <td><?php echo htmlspecialchars($filas['telefono']); ?></td>
                                 <td><?php echo htmlspecialchars($filas['direccion']); ?></td>
                                 <td><?php echo htmlspecialchars($filas['fecha_de_nacimiento']); ?></td>
                                 <td><?php echo htmlspecialchars($filas['correo']); ?></td>
-                                <td class="column-tipo-usuario"><?php echo htmlspecialchars($filas['tipo_usuario']); ?></td>
+                               
                                 <td class="column-actions">
                                     <div class="btn-group" role="group">
                                         <a href='./editarU.php?id_usuario=<?php echo $filas['id_usuario']; ?>' class="btn btn-warning btn-sm">Editar</a>

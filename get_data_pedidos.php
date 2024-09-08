@@ -1,7 +1,7 @@
 <?php
 include("conexion.php");
 
-$sql = "SELECT fecha, COUNT(*) AS situacion  FROM pedido 
+$sql = "SELECT fecha, COUNT(*) AS cantidad  FROM pedido 
         GROUP BY fecha";
        
 $resultado = mysqli_query($conectar, $sql);
