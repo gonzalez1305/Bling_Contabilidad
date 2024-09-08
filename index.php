@@ -23,6 +23,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION["id_usuario"] = $usuario["id_usuario"];
                     $_SESSION["tipo_usuario"] = $usuario["tipo_usuario"];
 
+                    // Limpiar el carrito del usuario
+                    $idUsuario = $_SESSION["id_usuario"];
+                    $clearCartQuery = "DELETE FROM carrito WHERE fk_id_usuario = ?";
+                    $stmt = $conectar->prepare($clearCartQuery);
+                    $stmt->bind_param('i', $idUsuario);
+                    $stmt->execute();
+                    $stmt->close();
+
                     // Redirigir al menú correspondiente
                     if ($usuario["tipo_usuario"] == 1) {
                         header("Location: menuV.html"); // Redirigir a la interfaz del vendedor
@@ -187,10 +195,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const passwordToggle = document.querySelector('.password-toggle');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto 1
+                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
             } else {
                 passwordField.type = 'password';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado 1
+                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
             }
         }
     </script>

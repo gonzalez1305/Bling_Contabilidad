@@ -106,11 +106,11 @@ $result = mysqli_query($conectar, $query);
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo '<div class="col-md-6 mb-4">';
                             echo '<div class="card">';
-                            echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
+                            echo "<img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' class='card-img-top' style='max-height: 200px; object-fit: cover;'>";
                             echo '<div class="card-body">';
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
-                            echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2) . '</p>';
+                            echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
                             echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
                             echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
                             echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
@@ -155,9 +155,9 @@ $result = mysqli_query($conectar, $query);
                             while ($row = $cartResult->fetch_assoc()) {
                                 $subtotal = $row['precio_unitario'] * $row['cantidad'];
                                 $total += $subtotal; // Sumar al total
-                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2) . '</p>';
+                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
                             }
-                            echo '<h4>Total: $' . number_format($total, 2) . '</h4>';
+                            echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
                         } else {
                             echo '<p>El carrito está vacío.</p>';
                         }
@@ -190,24 +190,25 @@ $result = mysqli_query($conectar, $query);
                     data: formData,
                     success: function(response) {
                         if (response.status === 'success') {
-                            $('#notification').text(response.message).show();
+                            $('#notification').removeClass('alert-danger').addClass('alert-success').text(response.message).show();
                             setTimeout(function() {
                                 $('#notification').fadeOut();
                             }, 2000);
 
                             // Actualizar los detalles del carrito
-                            $('#cart-details').empty();
+                            var cartDetails = $('#cart-details');
+                            cartDetails.empty();
+
                             var total = 0;
 
-                            response.carrito.forEach(item => {
-                                var subtotal = item.precio_unitario * item.cantidad;
+                            response.carrito.forEach(function(item) {
+                                var subtotal = parseFloat(item.precio_unitario) * parseFloat(item.cantidad);
                                 total += subtotal;
-                                $('#cart-details').append(
-                                    '<p>' + item.nombre + ' - Cantidad: ' + item.cantidad + ' - Precio Total: $' + subtotal.toFixed(2) + '</p>'
+                                cartDetails.append(
+                                    '<p>' + item.nombre + ' - Cantidad: ' + item.cantidad + ' - Precio Total: $' + subtotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</p>'
                                 );
                             });
-
-                            $('#cart-details').append('<h4>Total: $' + total.toFixed(2) + '</h4>');
+                            cartDetails.append('<h4>Total: $' + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</h4>');
                         } else {
                             $('#notification').removeClass('alert-success').addClass('alert-danger').text(response.message).show();
                             setTimeout(function() {
