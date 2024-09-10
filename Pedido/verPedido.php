@@ -1,95 +1,125 @@
 <?php
 session_start();
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.php");
-    exit();
-}
-
 include '../conexion.php';
-$idUsuario = $_SESSION['id_usuario'];
 
-// Consulta para obtener los pedidos del usuario
-$query = "SELECT * FROM pedido WHERE fk_id_usuario = ?";
-$stmt = $conectar->prepare($query);
-$stmt->bind_param('i', $idUsuario);
-$stmt->execute();
-$result = $stmt->get_result();
+// Inicialización de la respuesta en caso de error
+$response = ['status' => 'error', 'message' => 'Error desconocido'];
+
+// Verificar si el formulario fue enviado por método POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verificar si el usuario está logueado
+    if (!isset($_SESSION['id_usuario'])) {
+        $response['message'] = 'No estás logueado.';
+        echo json_encode($response);
+        exit();
+    }
+
+    $idUsuario = $_SESSION['id_usuario'];
+
+    // Crear un nuevo pedido
+    $crearPedido = "INSERT INTO pedido (fecha, situacion, fk_id_usuario) VALUES (NOW(), 'en proceso', ?)";
+    $stmtPedido = $conectar->prepare($crearPedido);
+    $stmtPedido->bind_param('i', $idUsuario);
+
+    if ($stmtPedido->execute()) {
+        $idPedido = $stmtPedido->insert_id;  // Obtener el ID del pedido creado
+
+        // Consultar los productos del carrito
+        $consultaCarrito = "SELECT fk_id_producto, cantidad FROM carrito WHERE fk_id_usuario = ?";
+        $stmtCarrito = $conectar->prepare($consultaCarrito);
+        $stmtCarrito->bind_param('i', $idUsuario);
+        $stmtCarrito->execute();
+        $resultadoCarrito = $stmtCarrito->get_result();
+
+        if ($resultadoCarrito->num_rows > 0) {
+            // Preparar la inserción de los detalles del pedido
+            $insertarDetalle = "INSERT INTO detalles_pedido (fk_id_pedido, fk_id_producto, unidades, precio_total) VALUES (?, ?, ?, ?)";
+            $stmtDetalle = $conectar->prepare($insertarDetalle);
+
+            while ($producto = $resultadoCarrito->fetch_assoc()) {
+                $idProducto = $producto['fk_id_producto'];
+                $cantidad = $producto['cantidad'];
+
+                // Obtener el precio del producto
+                $consultaPrecio = "SELECT precio_unitario FROM producto WHERE id_producto = ?";
+                $stmtPrecio = $conectar->prepare($consultaPrecio);
+                $stmtPrecio->bind_param('i', $idProducto);
+                $stmtPrecio->execute();
+                $resultadoPrecio = $stmtPrecio->get_result();
+                $precioProducto = $resultadoPrecio->fetch_assoc()['precio_unitario'];
+
+                $precioTotal = $cantidad * $precioProducto; // Calcular el precio total
+
+                // Insertar cada producto del carrito en la tabla de detalles de pedido
+                $stmtDetalle->bind_param('iiid', $idPedido, $idProducto, $cantidad, $precioTotal);
+                $stmtDetalle->execute();
+            }
+
+            // Eliminar los productos del carrito después de confirmar el pedido
+            $borrarCarrito = "DELETE FROM carrito WHERE fk_id_usuario = ?";
+            $stmtBorrarCarrito = $conectar->prepare($borrarCarrito);
+            $stmtBorrarCarrito->bind_param('i', $idUsuario);
+            $stmtBorrarCarrito->execute();
+
+            $response['status'] = 'success';
+            $response['message'] = 'Pedido confirmado exitosamente.';
+        } else {
+            $response['message'] = 'El carrito está vacío.';
+        }
+    } else {
+        $response['message'] = 'Error al crear el pedido.';
+    }
+}
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="icon" href="../imgs/logo.png">
-    <title>Ver Pedidos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Confirmados</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #f8f9fa;
         }
-        #header {
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        .btn-custom {
             background-color: #007bff;
             color: #fff;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px;
         }
-        #header img {
-            width: 150px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-        .btn-primary:hover {
+        .btn-custom:hover {
             background-color: #0056b3;
-        }
-        .btn-info {
-            background-color: #17a2b8;
-            border: none;
-        }
-        .btn-info:hover {
-            background-color: #117a8b;
         }
     </style>
 </head>
-
 <body>
-    <div class="container mt-5">
-        <div id="header" class="bg-primary text-white text-center p-3 rounded">
-            <img src="../imgs/logo.jpeg" alt="logo" id="logo" class="mb-2">
-            <h1>Mis Pedidos</h1>
-            <a href="../menuC.html" class="btn btn-light">Volver</a>
-        </div>
+    <div class="container">
+        <h2 class="mb-4 text-center">Pedidos Confirmados</h2>
 
-        <div class="mt-4">
-            <?php
-            if ($result->num_rows > 0) {
-                echo '<table class="table table-striped">';
-                echo '<thead><tr><th>ID Pedido</th><th>Fecha</th><th>Situación</th></tr></thead>';
-                echo '<tbody>';
-                while ($row = $result->fetch_assoc()) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($row['id_pedido']) . '</td>';
-                    echo '<td>' . htmlspecialchars($row['fecha']) . '</td>';
-                    echo '<td>' . htmlspecialchars($row['situacion']) . '</td>';
-                    echo '</tr>';
-                }
-                echo '</tbody>';
-                echo '</table>';
-            } else {
-                echo '<p>No tienes pedidos.</p>';
-            }
-            ?>
+        <!-- Mostrar mensajes de respuesta -->
+        <?php if (isset($response['status']) && $response['status'] === 'success'): ?>
+            <div class="alert alert-success">
+                <?php echo $response['message']; ?>
+            </div>
+        <?php elseif (isset($response['status']) && $response['status'] === 'error'): ?>
+            <div class="alert alert-danger">
+                <?php echo $response['message']; ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Botón para volver al menú -->
+        <div class="text-center mt-4">
+            <a href="../menuC.html" class="btn btn-secondary">Volver al Menú</a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
