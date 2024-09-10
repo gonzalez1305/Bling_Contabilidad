@@ -4,56 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Términos de Uso</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/imgs/logo.png">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
-        }
-        h1 {
-            text-align: center;
-        }
-        h2 {
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
+            transition: background 0.5s, color 0.5s;
         }
-        p {
-            margin: 10px 0;
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
         }
-        ul {
-            list-style-type: disc;
-            margin: 10px 0 10px 20px;
+
+        h1, h2, p {
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1 {
+            color: #007bff;
+        }
+
+        .dark-mode h2 {
+            color: #0056b3;
+        }
+
+        .dark-mode p {
+            color: #dddddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body>
-    <h1>Términos de Uso</h1>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
 
-    <p>Bienvenido a nuestro software de venta de zapatos en línea. Al utilizar este software, usted acepta cumplir con los siguientes términos y condiciones:</p>
+    <div class="container">
+        <h1>Términos de Uso</h1>
 
-    <h2>1. Uso del Software</h2>
-    <p>Este software está destinado para la compra de zapatos en línea. Usted se compromete a utilizar este software únicamente para fines legítimos y de acuerdo con todas las leyes y regulaciones aplicables.</p>
+        <p>Bienvenido a nuestro software de venta de zapatos en línea. Al utilizar este software, usted acepta cumplir con los siguientes términos y condiciones:</p>
 
-    <h2>2. Registro de Usuario</h2>
-    <p>Para utilizar algunas funciones de nuestro software, es posible que necesite registrarse y crear una cuenta. Usted es responsable de mantener la confidencialidad de su información de cuenta y contraseña, y de todas las actividades que ocurran bajo su cuenta.</p>
+        <h2>1. Uso del Software</h2>
+        <p>Este software está destinado para la compra de zapatos en línea. Usted se compromete a utilizar este software únicamente para fines legítimos y de acuerdo con todas las leyes y regulaciones aplicables.</p>
 
-    <h2>3. Privacidad</h2>
-    <p>Su privacidad es importante para nosotros. Por favor, revise nuestra <a href="politica-de-privacidad.html">Política de Privacidad</a> para comprender cómo recopilamos, usamos y protegemos su información personal.</p>
+        <h2>2. Registro de Usuario</h2>
+        <p>Para utilizar algunas funciones de nuestro software, es posible que necesite registrarse y crear una cuenta. Usted es responsable de mantener la confidencialidad de su información de cuenta y contraseña, y de todas las actividades que ocurran bajo su cuenta.</p>
 
-    <h2>4. Propiedad Intelectual</h2>
-    <p>Todo el contenido y los materiales disponibles en este software, incluidos, entre otros, texto, gráficos, logotipos, iconos, imágenes, clips de audio, descargas digitales y compilaciones de datos, son propiedad de BlingContabilidad o de sus proveedores de contenido y están protegidos por las leyes de derechos de autor e intelectuales.</p>
+        <h2>3. Privacidad</h2>
+        <p>Su privacidad es importante para nosotros. Por favor, revise nuestra <a href="politica-de-privacidad.html">Política de Privacidad</a> para comprender cómo recopilamos, usamos y protegemos su información personal.</p>
 
-    <h2>5. Limitación de Responsabilidad</h2>
-    <p>Este software se proporciona "tal cual" y "según disponibilidad". No garantizamos que el software será ininterrumpido o libre de errores. En ningún caso BlingContabilidad será responsable por daños directos, indirectos, incidentales, especiales o consecuentes que resulten del uso o la imposibilidad de usar el software.</p>
+        <h2>4. Propiedad Intelectual</h2>
+        <p>Todo el contenido y los materiales disponibles en este software, incluidos, entre otros, texto, gráficos, logotipos, iconos, imágenes, clips de audio, descargas digitales y compilaciones de datos, son propiedad de BlingContabilidad o de sus proveedores de contenido y están protegidos por las leyes de derechos de autor e intelectuales.</p>
 
-    <h2>6. Modificaciones de los Términos</h2>
-    <p>Nos reservamos el derecho de modificar estos términos de uso en cualquier momento. Cualquier cambio se publicará en esta página y, si es necesario, se le notificará a través de otros medios.</p>
+        <h2>5. Limitación de Responsabilidad</h2>
+        <p>Este software se proporciona "tal cual" y "según disponibilidad". No garantizamos que el software será ininterrumpido o libre de errores. En ningún caso BlingContabilidad será responsable por daños directos, indirectos, incidentales, especiales o consecuentes que resulten del uso o la imposibilidad de usar el software.</p>
 
-    <h2>7. Ley Aplicable</h2>
-    <p>Estos términos se regirán e interpretarán de acuerdo con las leyes del país en el que opera BlingContabilidad.</p>
+        <h2>6. Modificaciones de los Términos</h2>
+        <p>Nos reservamos el derecho de modificar estos términos de uso en cualquier momento. Cualquier cambio se publicará en esta página y, si es necesario, se le notificará a través de otros medios.</p>
 
-    <h2>8. Contacto</h2>
-    <p>Si tiene alguna pregunta sobre estos términos de uso, por favor contáctenos en BlingContabilidad@gmail.com.co</p>
+        <h2>7. Ley Aplicable</h2>
+        <p>Estos términos se regirán e interpretarán de acuerdo con las leyes del país en el que opera BlingContabilidad.</p>
 
-    <p>Gracias por utilizar nuestro software de venta de zapatos en línea.</p>
+        <h2>8. Contacto</h2>
+        <p>Si tiene alguna pregunta sobre estos términos de uso, por favor contáctenos en BlingContabilidad@gmail.com.co</p>
+
+        <p>Gracias por utilizar nuestro software de venta de zapatos en línea.</p>
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>

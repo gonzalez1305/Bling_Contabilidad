@@ -4,56 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Políticas de Privacidad y Cookies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/imgs/logo.png">
+
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
-        }
-        h1 {
-            text-align: center;
-        }
-        h2 {
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
+            transition: background 0.5s, color 0.5s;
         }
-        p {
-            margin: 10px 0;
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
         }
-        ul {
-            list-style-type: disc;
-            margin: 10px 0 10px 20px;
+
+        h1, h2, p {
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1 {
+            color: #007bff;
+        }
+
+        .dark-mode h2 {
+            color: #0056b3;
+        }
+
+        .dark-mode p {
+            color: #dddddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body>
-    <h1>Políticas de Privacidad y Cookies</h1>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
 
-    <p>En BlingContabilidad, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta política de privacidad describe cómo recopilamos, usamos y protegemos su información personal cuando utiliza nuestro software de venta de zapatos en línea.</p>
+    <div class="container">
+        <h1>Políticas de Privacidad y Cookies</h1>
 
-    <h2>1. Información que Recopilamos</h2>
-    <p>Podemos recopilar información personal que usted nos proporciona al registrarse, realizar compras, o interactuar con nuestro software, como su nombre, dirección de correo electrónico, dirección de envío y detalles de pago.</p>
+        <p>En BlingContabilidad, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta política de privacidad describe cómo recopilamos, usamos y protegemos su información personal cuando utiliza nuestro software de venta de zapatos en línea.</p>
 
-    <h2>2. Uso de la Información</h2>
-    <p>Utilizamos la información que recopilamos para procesar sus pedidos, personalizar su experiencia, mejorar nuestro software y comunicarnos con usted sobre actualizaciones o promociones. No compartimos su información personal con terceros sin su consentimiento, excepto cuando sea necesario para cumplir con la ley o proteger nuestros derechos.</p>
+        <h2>1. Información que Recopilamos</h2>
+        <p>Podemos recopilar información personal que usted nos proporciona al registrarse, realizar compras, o interactuar con nuestro software, como su nombre, dirección de correo electrónico, dirección de envío y detalles de pago.</p>
 
-    <h2>3. Protección de la Información</h2>
-    <p>Implementamos medidas de seguridad adecuadas para proteger su información personal contra el acceso no autorizado, la alteración, divulgación o destrucción de la misma. Sin embargo, tenga en cuenta que ninguna transmisión de datos a través de Internet es completamente segura.</p>
+        <h2>2. Uso de la Información</h2>
+        <p>Utilizamos la información que recopilamos para procesar sus pedidos, personalizar su experiencia, mejorar nuestro software y comunicarnos con usted sobre actualizaciones o promociones. No compartimos su información personal con terceros sin su consentimiento, excepto cuando sea necesario para cumplir con la ley o proteger nuestros derechos.</p>
 
-    <h2>4. Uso de Cookies</h2>
-    <p>Utilizamos cookies para mejorar su experiencia en nuestro sitio web. Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio. Estas cookies nos permiten reconocer su navegador y recordar ciertas informaciones, como sus preferencias de usuario y artículos en su carrito de compras.</p>
+        <h2>3. Protección de la Información</h2>
+        <p>Implementamos medidas de seguridad adecuadas para proteger su información personal contra el acceso no autorizado, la alteración, divulgación o destrucción de la misma. Sin embargo, tenga en cuenta que ninguna transmisión de datos a través de Internet es completamente segura.</p>
 
-    <h2>5. Gestión de Cookies</h2>
-    <p>Puede configurar su navegador para rechazar cookies o para que le avise cuando se envíen cookies. Sin embargo, si desactiva las cookies, es posible que algunas funciones de nuestro sitio web no funcionen correctamente.</p>
+        <h2>4. Uso de Cookies</h2>
+        <p>Utilizamos cookies para mejorar su experiencia en nuestro sitio web. Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio. Estas cookies nos permiten reconocer su navegador y recordar ciertas informaciones, como sus preferencias de usuario y artículos en su carrito de compras.</p>
 
-    <h2>6. Derechos del Usuario</h2>
-    <p>Usted tiene derecho a acceder, rectificar o eliminar su información personal en cualquier momento. Si desea ejercer estos derechos, por favor contáctenos en juanandresramirezmunoz94@gmail.com</p>
+        <h2>5. Gestión de Cookies</h2>
+        <p>Puede configurar su navegador para rechazar cookies o para que le avise cuando se envíen cookies. Sin embargo, si desactiva las cookies, es posible que algunas funciones de nuestro sitio web no funcionen correctamente.</p>
 
-    <h2>7. Cambios en la Política de Privacidad</h2>
-    <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Le recomendamos revisar esta página periódicamente para estar informado sobre cómo protegemos su información.</p>
+        <h2>6. Derechos del Usuario</h2>
+        <p>Usted tiene derecho a acceder, rectificar o eliminar su información personal en cualquier momento. Si desea ejercer estos derechos, por favor contáctenos en juanandresramirezmunoz94@gmail.com</p>
 
-    <h2>8. Contacto</h2>
-    <p>Si tiene alguna pregunta sobre nuestra política de privacidad o el uso de cookies, por favor contáctenos en juanandresramirezmunoz94@gmail.com</p>
+        <h2>7. Cambios en la Política de Privacidad</h2>
+        <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Le recomendamos revisar esta página periódicamente para estar informado sobre cómo protegemos su información.</p>
 
-    <p>Gracias por confiar en BlingContabilidad para sus compras en línea.</p>
+        <h2>8. Contacto</h2>
+        <p>Si tiene alguna pregunta sobre nuestra política de privacidad o el uso de cookies, por favor contáctenos en juanandresramirezmunoz94@gmail.com</p>
+
+        <p>Gracias por confiar en BlingContabilidad para sus compras en línea.</p>
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>

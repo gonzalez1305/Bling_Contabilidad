@@ -4,53 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviso Legal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/imgs/logo.png">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
-        }
-        h1 {
-            text-align: center;
-        }
-        h2 {
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
+            transition: background 0.5s, color 0.5s;
         }
-        p {
-            margin: 10px 0;
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
         }
-        ul {
-            list-style-type: disc;
-            margin: 10px 0 10px 20px;
+
+        h1, h2, p {
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1 {
+            color: #007bff;
+        }
+
+        .dark-mode h2 {
+            color: #0056b3;
+        }
+
+        .dark-mode p {
+            color: #dddddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body>
-    <h1>Aviso Legal</h1>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
 
-    <p>Este aviso legal regula el uso del sitio web y del software de venta de zapatos en línea proporcionado por BlingContabilidad. Al acceder a este sitio web, usted acepta cumplir con los siguientes términos y condiciones:</p>
+    <div class="container">
+        <h1>Aviso Legal</h1>
 
-    <h2>1. Información General</h2>
-    <p>El presente sitio web es operado por BlingContabilidad, una empresa registrada en [País], con domicilio en [Dirección] y con correo electrónico de contacto BlingContabilidad@gmail.com.co.</p>
+        <p>Este aviso legal regula el uso del sitio web y del software de venta de zapatos en línea proporcionado por BlingContabilidad. Al acceder a este sitio web, usted acepta cumplir con los siguientes términos y condiciones:</p>
 
-    <h2>2. Condiciones de Uso</h2>
-    <p>El acceso y uso de este sitio web y del software asociado están sujetos a las siguientes condiciones de uso. Al acceder a este sitio web, usted acepta estos términos en su totalidad. Si no está de acuerdo con alguna parte de estos términos, por favor no utilice nuestro sitio web o software.</p>
+        <h2>1. Información General</h2>
+        <p>El presente sitio web es operado por BlingContabilidad, una empresa registrada en [País], con domicilio en [Dirección] y con correo electrónico de contacto BlingContabilidad@gmail.com.co.</p>
 
-    <h2>3. Propiedad Intelectual</h2>
-    <p>El contenido, diseño, logotipos, imágenes y otros materiales presentes en este sitio web son propiedad de BlingContabilidad o de sus proveedores de contenido. Está prohibida la reproducción, distribución o uso no autorizado de dicho contenido sin el consentimiento expreso de BlingContabilidad.</p>
+        <h2>2. Condiciones de Uso</h2>
+        <p>El acceso y uso de este sitio web y del software asociado están sujetos a las siguientes condiciones de uso. Al acceder a este sitio web, usted acepta estos términos en su totalidad. Si no está de acuerdo con alguna parte de estos términos, por favor no utilice nuestro sitio web o software.</p>
 
-    <h2>4. Limitación de Responsabilidad</h2>
-    <p>BlingContabilidad no se responsabiliza por cualquier daño o perjuicio que pueda derivarse del uso de este sitio web o del software de venta de zapatos en línea, incluyendo, pero no limitado a, errores técnicos, interrupciones del servicio o inexactitudes en la información proporcionada.</p>
+        <h2>3. Propiedad Intelectual</h2>
+        <p>El contenido, diseño, logotipos, imágenes y otros materiales presentes en este sitio web son propiedad de BlingContabilidad o de sus proveedores de contenido. Está prohibida la reproducción, distribución o uso no autorizado de dicho contenido sin el consentimiento expreso de BlingContabilidad.</p>
 
-    <h2>5. Enlaces Externos</h2>
-    <p>Este sitio web puede contener enlaces a sitios web de terceros. BlingContabilidad no se hace responsable del contenido o la disponibilidad de estos sitios externos. El acceso a dichos enlaces es bajo su propio riesgo.</p>
+        <h2>4. Limitación de Responsabilidad</h2>
+        <p>BlingContabilidad no se responsabiliza por cualquier daño o perjuicio que pueda derivarse del uso de este sitio web o del software de venta de zapatos en línea, incluyendo, pero no limitado a, errores técnicos, interrupciones del servicio o inexactitudes en la información proporcionada.</p>
 
-    <h2>6. Ley Aplicable</h2>
-    <p>Este aviso legal se regirá e interpretará de acuerdo con las leyes del país en el que opera BlingContabilidad. Cualquier disputa derivada del uso de este sitio web estará sujeta a la jurisdicción de los tribunales competentes en dicho país.</p>
+        <h2>5. Enlaces Externos</h2>
+        <p>Este sitio web puede contener enlaces a sitios web de terceros. BlingContabilidad no se hace responsable del contenido o la disponibilidad de estos sitios externos. El acceso a dichos enlaces es bajo su propio riesgo.</p>
 
-    <h2>7. Contacto</h2>
-    <p>Si tiene alguna pregunta o inquietud sobre este aviso legal, por favor contáctenos en el correo juanandresramirezmunoz94@gmail.com</p>
+        <h2>6. Ley Aplicable</h2>
+        <p>Este aviso legal se regirá e interpretará de acuerdo con las leyes del país en el que opera BlingContabilidad. Cualquier disputa derivada del uso de este sitio web estará sujeta a la jurisdicción de los tribunales competentes en dicho país.</p>
 
-    <p>Gracias por visitar nuestro sitio web y utilizar nuestro software de venta de zapatos en línea.</p>
+        <h2>7. Contacto</h2>
+        <p>Si tiene alguna pregunta o inquietud sobre este aviso legal, por favor contáctenos en el correo blingcontabilidadgaes@gmail.com</p>
+
+        <p>Gracias por visitar nuestro sitio web y utilizar nuestro software de venta de zapatos en línea.</p>
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>

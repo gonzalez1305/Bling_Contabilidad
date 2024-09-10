@@ -20,9 +20,11 @@ $vendedor = 1; // Asumiendo que 1 es el ID para vendedores en la tabla de roles
 $tipo_usuario = isset($_POST["esVendedor"]) ? $vendedor : $cliente;
 
 // Verificar si el correo ya está registrado
-$verificarCorreo = "SELECT COUNT(*) as total FROM usuario WHERE correo = '$correo'";
-$queryVerificarCorreo = mysqli_query($conectar, $verificarCorreo);
-$resultadoVerificarCorreo = mysqli_fetch_assoc($queryVerificarCorreo);
+$verificarCorreo = "SELECT COUNT(*) as total FROM usuario WHERE correo = ?";
+$stmt = $conectar->prepare($verificarCorreo);
+$stmt->bind_param("s", $correo);
+$stmt->execute();
+$resultadoVerificarCorreo = $stmt->get_result()->fetch_assoc();
 
 if ($resultadoVerificarCorreo['total'] > 0) {
     echo "<script>";
@@ -37,11 +39,13 @@ if ($resultadoVerificarCorreo['total'] > 0) {
     $codigo_verificacion = rand(100000, 999999);
 
     // Insertar el usuario si el correo no está registrado
-    $insertusuario = "INSERT INTO usuario (nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, contraseña, estado, tipo_usuario, fk_id_rol, codigo_verificacion) VALUES ('$nombre', '$apellido', '$telefono', '$direccion', '$fecha_de_nacimiento', '$correo', '$contraseñaCifrada', '$estado', '$tipo_usuario','$tipo_usuario', '$codigo_verificacion')";
-    $queryusuario = mysqli_query($conectar, $insertusuario);
+    $insertusuario = "INSERT INTO usuario (nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, contraseña, estado, tipo_usuario, fk_id_rol, codigo_verificacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conectar->prepare($insertusuario);
+    $stmt->bind_param("sssssssssii", $nombre, $apellido, $telefono, $direccion, $fecha_de_nacimiento, $correo, $contraseñaCifrada, $estado, $tipo_usuario, $tipo_usuario, $codigo_verificacion);
+    $queryusuario = $stmt->execute();
 
     if ($queryusuario) {
-        $idGeneradousuario = mysqli_insert_id($conectar);
+        $idGeneradousuario = $conectar->insert_id;
 
         // Enviar correo de verificación
         $mail = new PHPMailer(true);
@@ -83,8 +87,10 @@ if ($resultadoVerificarCorreo['total'] > 0) {
 
         // Insertar el vendedor si el usuario es un vendedor de la tienda
         if ($tipo_usuario == $vendedor) {
-            $insertVendedor = "INSERT INTO administrador (cod_vendedor, fk_id_usuario) VALUES('$cod_vendedor','$idGeneradousuario')";
-            $queryVendedor = mysqli_query($conectar, $insertVendedor);
+            $insertVendedor = "INSERT INTO administrador (cod_vendedor, fk_id_usuario) VALUES(?, ?)";
+            $stmt = $conectar->prepare($insertVendedor);
+            $stmt->bind_param("si", $cod_vendedor, $idGeneradousuario);
+            $queryVendedor = $stmt->execute();
             
             if ($queryVendedor) {
                 echo "<script>";

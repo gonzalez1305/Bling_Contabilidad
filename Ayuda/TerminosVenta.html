@@ -4,46 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Términos y Condiciones de Venta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/imgs/logo.png">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
-        }
-        h1, h2 {
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
+        }
+
+        h1, h2, p {
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1 {
+            color: #007bff;
+        }
+
+        .dark-mode h2 {
+            color: #0056b3;
+        }
+
+        .dark-mode p {
+            color: #dddddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body>
-    <h1>Términos y Condiciones de Venta</h1>
-    <p>Estos términos y condiciones ("Términos", "Acuerdo") son un acuerdo entre el Operador del sitio web ("Operador del sitio web", "nosotros", "nos" o "nuestro") y usted ("Usuario", "usted" o "su"). Este Acuerdo establece los términos y condiciones generales de su uso del sitio web y de cualquiera de sus productos o servicios (colectivamente, "Sitio web" o "Servicios").</p>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
+    
+    <div class="container">
+        <h1>Términos y Condiciones de Venta</h1>
+        <p>Estos términos y condiciones ("Términos", "Acuerdo") son un acuerdo entre el Operador del sitio web ("Operador del sitio web", "nosotros", "nos" o "nuestro") y usted ("Usuario", "usted" o "su"). Este Acuerdo establece los términos y condiciones generales de su uso del sitio web y de cualquiera de sus productos o servicios (colectivamente, "Sitio web" o "Servicios").</p>
 
-    <h2>Cuentas y Membresías</h2>
-    <p>Si crea una cuenta en el Sitio web, usted es responsable de mantener la seguridad de su cuenta y es plenamente responsable de todas las actividades que ocurran bajo la cuenta y cualquier otra acción tomada en relación con ella. Podemos, pero no tenemos la obligación de, supervisar y revisar nuevas cuentas antes de que pueda iniciar sesión y comenzar a usar los Servicios.</p>
+        <h2>Cuentas y Membresías</h2>
+        <p>Si crea una cuenta en el Sitio web, usted es responsable de mantener la seguridad de su cuenta y es plenamente responsable de todas las actividades que ocurran bajo la cuenta y cualquier otra acción tomada en relación con ella. Podemos, pero no tenemos la obligación de, supervisar y revisar nuevas cuentas antes de que pueda iniciar sesión y comenzar a usar los Servicios.</p>
 
-    <h2>Precios y Pagos</h2>
-    <p>Todos los precios de los productos están sujetos a cambios sin previo aviso. Nos reservamos el derecho de modificar o discontinuar un producto en cualquier momento.</p>
-    <p>Al comprar cualquier producto, usted acepta que se le cobrará el precio indicado en el momento de su compra, así como cualquier impuesto y tarifa aplicable.</p>
+        <h2>Precios y Pagos</h2>
+        <p>Todos los precios de los productos están sujetos a cambios sin previo aviso. Nos reservamos el derecho de modificar o discontinuar un producto en cualquier momento.</p>
+        <p>Al comprar cualquier producto, usted acepta que se le cobrará el precio indicado en el momento de su compra, así como cualquier impuesto y tarifa aplicable.</p>
 
-    <h2>Política de Entrega</h2>
-    <p>Los pedidos los recogera a la dirección proporcionada en el momento de la compra. Nos esforzamos por procesar y terminar todos los pedidos de manera oportuna, pero no somos responsables de retrasos a la hora de usted recogerlo en nuestra tienda fisica.</p>
+        <h2>Política de Entrega</h2>
+        <p>Los pedidos los recogerá a la dirección proporcionada en el momento de la compra. Nos esforzamos por procesar y terminar todos los pedidos de manera oportuna, pero no somos responsables de retrasos a la hora de usted recogerlo en nuestra tienda física.</p>
 
-    <h2>Garantía</h2>
-    <p>Nuestros productos están cubiertos por una garantía de un año a partir de la fecha de compra. Esta garantía cubre defectos de fabricación y materiales. No cubre daños causados por uso inadecuado, desgaste normal o accidentes.</p>
+        <h2>Garantía</h2>
+        <p>Nuestros productos están cubiertos por una garantía de un año a partir de la fecha de compra. Esta garantía cubre defectos de fabricación y materiales. No cubre daños causados por uso inadecuado, desgaste normal o accidentes.</p>
 
-    <h2>Limitación de Responsabilidad</h2>
-    <p>En la medida máxima permitida por la ley aplicable, en ningún caso el Operador del sitio web, sus afiliados, empleados, agentes, proveedores o licenciantes serán responsables ante ninguna persona por (a) cualquier daño indirecto, incidental, especial, punitivo, de cobertura o consecuente (incluidos, entre otros, daños por pérdida de beneficios, ingresos, ventas, buena voluntad, uso de contenido, impacto en el negocio, interrupción del negocio, pérdida de ahorros anticipados, pérdida de oportunidades comerciales) sin importar cómo sea causado, bajo cualquier teoría de responsabilidad, incluidos, entre otros, contrato, agravio, garantía, incumplimiento de deber estatutario, negligencia o de otro tipo, incluso si la parte responsable ha sido informada sobre la posibilidad de dichos daños o podría haber previsto dichos daños.</p>
+        <h2>Limitación de Responsabilidad</h2>
+        <p>En la medida máxima permitida por la ley aplicable, en ningún caso el Operador del sitio web, sus afiliados, empleados, agentes, proveedores o licenciantes serán responsables ante ninguna persona por (a) cualquier daño indirecto, incidental, especial, punitivo, de cobertura o consecuente (incluidos, entre otros, daños por pérdida de beneficios, ingresos, ventas, buena voluntad, uso de contenido, impacto en el negocio, interrupción del negocio, pérdida de ahorros anticipados, pérdida de oportunidades comerciales) sin importar cómo sea causado, bajo cualquier teoría de responsabilidad, incluidos, entre otros, contrato, agravio, garantía, incumplimiento de deber estatutario, negligencia o de otro tipo, incluso si la parte responsable ha sido informada sobre la posibilidad de dichos daños o podría haber previsto dichos daños.</p>
 
-    <h2>Cambios y Enmiendas</h2>
-    <p>Nos reservamos el derecho de modificar este Acuerdo o sus políticas relacionadas con el Sitio web o los Servicios en cualquier momento, a partir de la publicación de una versión actualizada de este Acuerdo en el Sitio web. Cuando lo hagamos, publicaremos una notificación en la página principal de nuestro Sitio web. El uso continuado del Sitio web después de dichos cambios constituirá su consentimiento a dichos cambios.</p>
+        <h2>Cambios y Enmiendas</h2>
+        <p>Nos reservamos el derecho de modificar este Acuerdo o sus políticas relacionadas con el Sitio web o los Servicios en cualquier momento, a partir de la publicación de una versión actualizada de este Acuerdo en el Sitio web. Cuando lo hagamos, publicaremos una notificación en la página principal de nuestro Sitio web. El uso continuado del Sitio web después de dichos cambios constituirá su consentimiento a dichos cambios.</p>
 
-    <h2>Aceptación de estos Términos</h2>
-    <p>Usted reconoce que ha leído este Acuerdo y acepta todos sus términos y condiciones. Al usar el Sitio web o sus Servicios, usted acepta estar sujeto a este Acuerdo. Si no acepta cumplir con los términos de este Acuerdo, no está autorizado para usar o acceder al Sitio web y sus Servicios.</p>
+        <h2>Aceptación de estos Términos</h2>
+        <p>Usted reconoce que ha leído este Acuerdo y acepta todos sus términos y condiciones. Al usar el Sitio web o sus Servicios, usted acepta estar sujeto a este Acuerdo. Si no acepta cumplir con los términos de este Acuerdo, no está autorizado para usar o acceder al Sitio web y sus Servicios.</p>
 
-    <h2>Contacto</h2>
-    <p>Si tiene alguna pregunta sobre este Acuerdo, contáctenos a través de la información proporcionada en el Sitio web.</p>
+        <h2>Contacto</h2>
+        <p>Si tiene alguna pregunta sobre este Acuerdo, contáctenos a través de la información proporcionada en el Sitio web.</p>
 
-    <p>Este documento fue actualizado por última vez el 17/07/2024.</p>
+        <p>Este documento fue actualizado por última vez el 17/07/2024.</p>
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>
