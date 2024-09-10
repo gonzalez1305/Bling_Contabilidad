@@ -150,10 +150,9 @@
                     <table id="pedidosTable">
                         <thead>
                             <tr>
-                            <th>CLIENTE</th>
+                                <th>CLIENTE</th>
                                 <th>FECHA</th>
                                 <th>SITUACION</th>
-                               
                                 <th>UNIDADES</th>
                                 <th>PRECIO</th>
                                 <th>ACCIONES</th>
@@ -163,28 +162,29 @@
                             <?php
                                 include("../conexion.php");
                                 $sql = "SELECT 
-    pedido.*, 
-    detalles_pedido.*, 
-    producto.*, 
-    usuario.nombre
-FROM 
-    pedido
-INNER JOIN 
-    detalles_pedido ON pedido.id_pedido = detalles_pedido.fk_id_pedido
-INNER JOIN 
-    producto ON detalles_pedido.fk_id_producto = producto.id_producto
-INNER JOIN 
-    usuario ON pedido.fk_id_usuario = usuario.id_usuario";
+                                    p.id_pedido, 
+                                    p.fecha, 
+                                    p.situacion, 
+                                    dp.unidades, 
+                                    dp.precio_total, 
+                                    u.nombre AS cliente
+                                FROM 
+                                    pedido p
+                                INNER JOIN 
+                                    detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
+                                INNER JOIN 
+                                    producto pr ON dp.fk_id_producto = pr.id_producto
+                                INNER JOIN 
+                                    usuario u ON p.fk_id_usuario = u.id_usuario";
                                 $resultado = mysqli_query($conectar, $sql);
                                 while ($filas = mysqli_fetch_assoc($resultado)) {
                             ?>
                                 <tr>
-                                <td><?php echo $filas['nombre'] ?></td>
-                                    <td><?php echo $filas['fecha'] ?></td>
-                                    <td><?php echo $filas['situacion'] ?></td>
-                                  
-                                    <td><?php echo $filas['unidades'] ?></td>
-                                    <td><?php echo $filas['precio_total'] ?></td>
+                                    <td><?php echo htmlspecialchars($filas['cliente']) ?></td>
+                                    <td><?php echo htmlspecialchars($filas['fecha']) ?></td>
+                                    <td><?php echo htmlspecialchars($filas['situacion']) ?></td>
+                                    <td><?php echo htmlspecialchars($filas['unidades']) ?></td>
+                                    <td><?php echo htmlspecialchars($filas['precio_total']) ?></td>
                                     <td>
                                         <a href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-warning btn-sm'>Editar</a>
                                         <a href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-danger btn-sm' onclick='return confirmar()'>Eliminar</a>
@@ -196,7 +196,6 @@ INNER JOIN
                         </tbody>
                     </table>
                     <a href="../menuV.html" class="btn">Volver</a><br><br>
-
                 </div>
             </main>
         </div>
@@ -212,24 +211,19 @@ INNER JOIN
     <script>
         $(document).ready(function () {
             $('#pedidosTable').DataTable({
-                dom: 'Bfrtip', // Configuración de los elementos en la interfaz
+                dom: 'Bfrtip',
                 buttons: [
-                    'searchBuilder', 'pageLength' // Botones disponibles
+                    'searchBuilder', 'pageLength'
                 ],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por página",
                     "zeroRecords": "No se encontraron registros",
                     "info": "Mostrando página _PAGE_ de _PAGES_",
                     "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                    "search": "Buscar:"
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)"
                 }
             });
         });
-
-        function confirmar() {
-            return confirm('¿Está seguro de que desea eliminar este registro?');
-        }
     </script>
 </body>
 </html>
