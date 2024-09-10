@@ -202,8 +202,8 @@ $result = mysqli_query($conectar, $query);
                                 $('#notification').fadeOut();
                             }, 2000);
 
-                            // Actualizar los detalles del carrito
-                            updateCartDetails(response.carrito);
+                            // Recargar la página después de agregar al carrito
+                            window.location.reload();
                         } else {
                             $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
                             setTimeout(function() {
@@ -213,32 +213,6 @@ $result = mysqli_query($conectar, $query);
                     }
                 });
             });
-
-            // Función para actualizar los detalles del carrito
-            function updateCartDetails(carrito) {
-                var cartDetails = $('#cart-details');
-                cartDetails.empty();
-
-                var total = 0;
-
-                if (carrito.length > 0) {
-                    carrito.forEach(function(item) {
-                        var subtotal = parseFloat(item.precio_unitario) * parseFloat(item.cantidad);
-                        total += subtotal;
-                        cartDetails.append(
-                            '<p>' + item.nombre + ' - Cantidad: ' + item.cantidad + ' - Precio Total: $' + subtotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</p>' +
-                            '<form method="POST" action="../eliminarProductoCarrito.php">' +
-                            '<input type="hidden" name="idProducto" value="' + item.id_producto + '">' +
-                            '<button type="submit" class="btn btn-danger">Eliminar</button>' +
-                            '</form>'
-                        );
-                    });
-
-                    cartDetails.append('<h4>Total: $' + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</h4>');
-                } else {
-                    cartDetails.append('<p>El carrito está vacío.</p>');
-                }
-            }
         });
     </script>
 </body>

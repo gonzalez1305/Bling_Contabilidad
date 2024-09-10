@@ -106,7 +106,7 @@ $result = mysqli_query($conectar, $query);
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo '<div class="col-md-6 mb-4">';
                             echo '<div class="card">';
-                            echo "<td><img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
+                            echo "<img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen' style='max-width: 100px;'>";
                             echo '<div class="card-body">';
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
@@ -144,29 +144,29 @@ $result = mysqli_query($conectar, $query);
                         JOIN producto p ON c.fk_id_producto = p.id_producto
                         WHERE c.fk_id_usuario = ?
                         GROUP BY p.id_producto";
-          
-                                  $stmt = $conectar->prepare($cartQuery);
-                                  $stmt->bind_param('i', $idUsuario);
-                                  $stmt->execute();
-                                  $cartResult = $stmt->get_result();
-          
-                                  $total = 0; // Inicializar el total del carrito
-                                  if ($cartResult->num_rows > 0) {
-                                      while ($row = $cartResult->fetch_assoc()) {
-                                          $subtotal = $row['precio_unitario'] * $row['cantidad'];
-                                          $total += $subtotal;
-                                  
-                                          // Mostrar detalles del producto en el carrito
-                                          echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                                          echo '<form method="POST" action="../eliminarCarritoNiño.php">';
-                                          echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
-                                          echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
-                                          echo '</form>';
-                                      }
-                                      echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
-                                  } else {
-                                      echo '<p>El carrito está vacío.</p>';
-                                  }
+                        
+                        $stmt = $conectar->prepare($cartQuery);
+                        $stmt->bind_param('i', $idUsuario);
+                        $stmt->execute();
+                        $cartResult = $stmt->get_result();
+
+                        $total = 0; // Inicializar el total del carrito
+                        if ($cartResult->num_rows > 0) {
+                            while ($row = $cartResult->fetch_assoc()) {
+                                $subtotal = $row['precio_unitario'] * $row['cantidad'];
+                                $total += $subtotal;
+                        
+                                // Mostrar detalles del producto en el carrito
+                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
+                                echo '<form method="POST" action="../eliminarCarritoNiño.php">';
+                                echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
+                                echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
+                                echo '</form>';
+                            }
+                            echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
+                        } else {
+                            echo '<p>El carrito está vacío.</p>';
+                        }
                         $stmt->close();
                         ?>
                     </div>
@@ -203,8 +203,10 @@ $result = mysqli_query($conectar, $query);
                                 $('#notification').fadeOut();
                             }, 2000);
 
-                            // Actualizar los detalles del carrito
-                            updateCartDetails(response.carrito);
+                            // Recargar la página para actualizar el carrito
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
                         } else {
                             $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
                             setTimeout(function() {
@@ -214,28 +216,8 @@ $result = mysqli_query($conectar, $query);
                     }
                 });
             });
-
-            // Función para actualizar los detalles del carrito
-            function updateCartDetails(carrito) {
-                var cartDetails = $('#cart-details');
-                cartDetails.empty();
-
-                var total = 0;
-
-                if (carrito.length > 0) {
-                    carrito.forEach(function(item) {
-                        var subtotal = parseFloat(item.precio_unitario) * parseFloat(item.cantidad);
-                        total += subtotal;
-                        cartDetails.append(
-                            '<p>' + item.nombre + ' - Cantidad: ' + item.cantidad + ' - Precio Total: $' + subtotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</p>'
-                        );
-                    });
-                    cartDetails.append('<h4>Total: $' + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</h4>');
-                } else {
-                    cartDetails.append('<p>El carrito está vacío.</p>');
-                }
-            }
         });
     </script>
 </body>
+
 </html>
