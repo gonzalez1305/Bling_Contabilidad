@@ -139,29 +139,34 @@ $result = mysqli_query($conectar, $query);
                     <div id="cart-details" class="card p-3">
                         <?php
                         // Consulta para obtener los detalles del carrito
-                        $cartQuery = "SELECT p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario 
-                                      FROM carrito c
-                                      JOIN producto p ON c.fk_id_producto = p.id_producto
-                                      WHERE c.fk_id_usuario = ?
-                                      GROUP BY p.id_producto";
-                        $stmt = $conectar->prepare($cartQuery);
-                        $stmt->bind_param('i', $idUsuario);
-                        $stmt->execute();
-                        $cartResult = $stmt->get_result();
-
-                        $total = 0; // Inicializar el total del carrito
-
-                        if ($cartResult->num_rows > 0) {
-                            while ($row = $cartResult->fetch_assoc()) {
-                                $subtotal = $row['precio_unitario'] * $row['cantidad'];
-                                $total += $subtotal; // Sumar al total
-                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                            }
-                            echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
-                        } else {
-                            echo '<p>El carrito está vacío.</p>';
-                        }
-
+                        $cartQuery = "SELECT p.id_producto, p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario
+                        FROM carrito c
+                        JOIN producto p ON c.fk_id_producto = p.id_producto
+                        WHERE c.fk_id_usuario = ?
+                        GROUP BY p.id_producto";
+          
+                                  $stmt = $conectar->prepare($cartQuery);
+                                  $stmt->bind_param('i', $idUsuario);
+                                  $stmt->execute();
+                                  $cartResult = $stmt->get_result();
+          
+                                  $total = 0; // Inicializar el total del carrito
+                                  if ($cartResult->num_rows > 0) {
+                                      while ($row = $cartResult->fetch_assoc()) {
+                                          $subtotal = $row['precio_unitario'] * $row['cantidad'];
+                                          $total += $subtotal;
+                                  
+                                          // Mostrar detalles del producto en el carrito
+                                          echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
+                                          echo '<form method="POST" action="../eliminarCarritoNiño.php">';
+                                          echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
+                                          echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
+                                          echo '</form>';
+                                      }
+                                      echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
+                                  } else {
+                                      echo '<p>El carrito está vacío.</p>';
+                                  }
                         $stmt->close();
                         ?>
                     </div>
