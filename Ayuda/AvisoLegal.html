@@ -4,50 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviso Legal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            margin: 20px;
+            line-height: 1.6;
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
+            transition: background 0.5s, color 0.5s;
         }
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
+        }
+
         h1 {
             text-align: center;
-            color: #4CAF50;
+            color: #007bff;
             margin-bottom: 20px;
         }
+
         h2 {
-            color: #333;
+            color: #0056b3;
             margin-top: 20px;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
+
         p {
             margin: 10px 0;
-            line-height: 1.6;
+            padding: 0 20px;
         }
+
         ul {
             list-style-type: disc;
-            margin: 10px 0 10px 20px;
+            margin: 10px 0 10px 40px;
         }
+
         .container {
             max-width: 800px;
-            margin: auto;
-            background: white;
+            margin: 0 auto;
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #777;
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
+
     <div class="container">
         <h1>Aviso Legal</h1>
 
@@ -72,9 +106,21 @@
         <p>Este aviso legal se regirá e interpretará de acuerdo con las leyes del país en el que opera BlingContabilidad. Cualquier disputa derivada del uso de este sitio web estará sujeta a la jurisdicción de los tribunales competentes en dicho país.</p>
 
         <h2>7. Contacto</h2>
-        <p>Si tiene alguna pregunta o inquietud sobre este aviso legal, por favor contáctenos en el correo juanandresramirezmunoz94@gmail.com</p>
+        <p>Si tiene alguna pregunta o inquietud sobre este aviso legal, por favor contáctenos en el correo blingcontabilidadgaes@gmail.com</p>
 
         <p>Gracias por visitar nuestro sitio web y utilizar nuestro software de venta de zapatos en línea.</p>
     </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
+</body>
+</html>
+
 </body>
 </html>
