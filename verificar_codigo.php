@@ -43,34 +43,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="icon" href="imgs/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <title>Verificar Código</title>
 
   <style>
     body {
-      background-color: #007bff;  /* Fondo azul */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
       margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    .dark-mode {
+      background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+      color: #ffffff;
     }
 
     .verification-container {
-      background-color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.9);
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       max-width: 500px;
       width: 100%;
       text-align: center;
+      transition: background-color 0.5s, color 0.5s;
     }
 
-    .verification-container h1 {
-      margin-bottom: 20px;
+    .dark-mode .verification-container {
+      background-color: rgba(50, 50, 50, 0.9);
+      color: #ffffff;
     }
 
-    .verification-container .form-control {
-      margin-bottom: 15px;
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      color: #ffffff;
+    }
+
+    .dark-mode .btn-primary {
+      background-color: #0056b3;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .dark-mode .btn-primary:hover {
+      background-color: #003d7a;
     }
 
     .eye-icon {
@@ -84,10 +107,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .form-group {
       position: relative;
     }
+
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1000;
+      transition: background-color 0.3s;
+    }
+
+    .dark-mode .toggle-btn {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .toggle-btn i {
+      font-size: 20px;
+    }
   </style>
 </head>
 
 <body>
+  <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
   <div class="verification-container">
     <h1>Verificar Código</h1>
     <form method="post" action="">
@@ -115,13 +161,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   
   <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-btn i');
+      icon.classList.toggle('fa-sun');
+      icon.classList.toggle('fa-moon');
+    }
+
     function togglePassword() {
       var passwordField = document.getElementById('nueva_contraseña');
       var eyeIcon = document.querySelector('.eye-icon');
 
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        eyeIcon.textContent = '🙈'; // Cambia el emoji cuando la contraseña es visible en el codigo
+        eyeIcon.textContent = '🙈'; // Cambia el emoji cuando la contraseña es visible
       } else {
         passwordField.type = 'password';
         eyeIcon.textContent = '👁️'; // Cambia el emoji cuando la contraseña está oculta
