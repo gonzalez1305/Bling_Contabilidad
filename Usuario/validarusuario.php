@@ -176,7 +176,7 @@
                     <thead>
                         <tr>
                             <th>Imagen</th>
-                          
+                            <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Teléfono</th>

@@ -11,7 +11,7 @@ if ($conexion->connect_error) {
 
 
 // Paso 3: Consulta a la base de datos
-$query = "SELECT id_producto, talla, color, cantidad, nombre, estado, categorias, precio_unitario  FROM producto";
+$query = "SELECT talla, color, cantidad, nombre, estado, categorias, precio_unitario  FROM producto";
 $result = $conexion->query($query);
 
 if (!$result) {
@@ -34,7 +34,6 @@ $pdf->Cell(40, 10, 'Reporte de Productos', 0, 1);
 // Iterar sobre los resultados y añadirlos al PDF
 foreach ($productos as $producto) {
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(40, 10, 'ID Producto: ' . $producto ['id_producto'], 0, 1);
     $pdf->Cell(40, 10, 'Talla: ' . $producto['talla'], 0, 1);
     $pdf->Cell(40, 10, 'Color: ' . $producto['color'], 0, 1);
     $pdf->Cell(40, 10, 'Cantidad: ' . $producto['cantidad'], 0, 1);

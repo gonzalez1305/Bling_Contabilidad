@@ -11,7 +11,7 @@ if ($conexion->connect_error) {
 
 
 // Paso 3: Consulta a la base de datos
-$query = "SELECT id_pago, id_gestion_venta, monto, metodo_pago, fecha_pago FROM pagos";
+$query = "SELECT   monto, metodo_pago, fecha_pago FROM pagos";
 $result = $conexion->query($query);
 
 if (!$result) {
@@ -29,13 +29,11 @@ $pdf->AddPage();
 
 // Encabezado
 $pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(40, 10, 'Reporte de Productos', 0, 1);
+$pdf->Cell(40, 10, 'Reporte de Pagos', 0, 1);
 
 // Iterar sobre los resultados y añadirlos al PDF
 foreach ($pagos as $pago) {
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(40, 10, 'ID Pago: ' . $pago ['id_pago'], 0, 1);
-    $pdf->Cell(40, 10, 'ID Venta: ' . $pago['id_gestion_venta'], 0, 1);
     $pdf->Cell(40, 10, 'Monto: ' . $pago['monto'], 0, 1);
     $pdf->Cell(40, 10, 'Metodo Pago: ' . $pago['metodo_pago'], 0, 1);
     $pdf->Cell(40, 10, 'Fecha Pago: ' . $pago['fecha_pago'], 0, 1);
