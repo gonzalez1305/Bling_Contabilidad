@@ -78,28 +78,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedidos Confirmados</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="icon" href="imgs/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.5s, color 0.5s;
         }
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
+        }
+
         .container {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.5s, color 0.5s;
         }
-        .btn-custom {
+
+        .dark-mode .container {
+            background-color: rgba(50, 50, 50, 0.9);
+            color: #ffffff;
+        }
+
+        .btn-primary {
             background-color: #007bff;
-            color: #fff;
+            border: none;
+            color: #ffffff;
         }
-        .btn-custom:hover {
+
+        .dark-mode .btn-primary {
             background-color: #0056b3;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .dark-mode .btn-primary:hover {
+            background-color: #003d7a;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
     <div class="container">
         <h2 class="mb-4 text-center">Pedidos Confirmados</h2>
 
@@ -120,6 +176,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>

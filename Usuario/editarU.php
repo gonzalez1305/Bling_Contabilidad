@@ -1,112 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario - Bling Compra</title>
     <link rel="icon" href="../imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./css/dash.css">
+    <link rel="stylesheet" href="../css/admin-styles.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
-        .navbar {
-            background-color: #007bff;
-        }
-        .navbar-brand, .navbar-nav .nav-link {
-            color: #ffffff;
-        }
-        .sidebar {
-            height: calc(100vh - 56px);
-            background-color: #343a40;
-            padding-top: 20px;
-            position: fixed;
-            top: 56px;
-            left: 0;
-            width: 250px;
-        }
-        .sidebar a {
-            color: #ffffff;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar a:hover {
-            background-color: #007bff;
-        }
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-            margin-top: 56px;
-        }
-        .profile-image {
+        .profile-image img {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background-color: #e9ecef;
+            object-fit: cover;
+        }
+
+        .form-container {
+            background-color: var(--card-background);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .form-container h1 {
+            color: var(--primary-color);
+        }
+
+        .form-container .form-label {
+            color: var(--text-color);
+        }
+
+        .form-container .form-control {
+            background-color: var(--input-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-container .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-container .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-container .btn-primary:hover {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+        }
+
+        .form-container .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .form-container .btn-secondary:hover {
+            background-color: var(--secondary-color-dark);
+            border-color: var(--secondary-color-dark);
+        }
+
+        .profile-image {
             display: flex;
-            align-items: center;
             justify-content: center;
-            overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
         .profile-image img {
-            width: 100%;
-            height: auto;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
         }
-        .profile-image .bi {
-            font-size: 100px;
-            color: #6c757d;
+
+        .profile-image i {
+            font-size: 150px;
+            color: var(--text-color);
         }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bling Compra</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Bling Compra</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="../usuario/validarusuario.php">Usuarios</a>
+                        <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="../dashboard_v.html">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="../dashboard_I.html">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" href="../Pedido/validarpedido.php">Pedidos</a>
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch" for="checkbox">
+                                <input type="checkbox" id="checkbox" />
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
                     </li>
                 </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <div class="container mt-4">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8 col-md-10 col-sm-12">
-                        <h1 class="h3">Editar Usuario</h1>
+    <div class="sidebar">
+        <a class="nav-link" href="../usuario/validarusuario.php">Usuarios</a>
+        <a class="nav-link" href="../dashboard_v.html">Ventas</a>
+        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
+        <a class="nav-link active" href="../Pedido/validarpedido.php">Pedidos</a>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="btn-back">
+            <a class="btn btn-light text-primary" href="../menuv.html" role="button">Volver al Menú</a>
+        </div>
+        <h1 class="h2">Editar Usuario</h1>
+
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10 col-sm-12">
+                    <div class="form-container">
                         <?php
                         include("../conexion.php");
 
@@ -275,10 +291,10 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/cambiarColor.js"></script>
 </body>
 </html>
