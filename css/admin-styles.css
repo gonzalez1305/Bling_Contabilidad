@@ -1,0 +1,149 @@
+:root {
+  --primary-color: #007bff;
+  --primary-color-dark: #0056b3;
+  --secondary-color: #6c757d;
+  --secondary-color-dark: #5a6268;
+  --text-color: #343a40;
+  --card-background: #ffffff;
+  --input-background: #f8f9fa;
+  --border-color: #ced4da;
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  color: var(--text-color);
+}
+
+.navbar {
+  background-color: var(--primary-color);
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #ffffff !important;
+}
+
+.nav-link:hover {
+  color: var(--primary-color-dark) !important;
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 200px;
+  height: 100%;
+  background-color: var(--primary-color);
+  padding-top: 20px;
+}
+
+.sidebar .nav-link {
+  color: #ffffff;
+  padding: 10px 20px;
+  display: block;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--primary-color-dark);
+  color: #ffffff;
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--primary-color-dark);
+  color: #ffffff;
+}
+
+.content-wrapper {
+  margin-left: 200px;
+  padding: 20px;
+}
+
+.card {
+  background-color: var(--card-background);
+  border: none;
+  box-shadow: var(--card-shadow);
+}
+
+.card-title {
+  color: var(--primary-color);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-color-dark);
+  border-color: var(--secondary-color-dark);
+}
+
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

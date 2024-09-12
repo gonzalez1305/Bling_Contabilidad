@@ -198,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="email" class="form-control" id="correo" name="correo" required>
       </div>
       <button type="submit" class="btn btn-primary">Enviar Código</button>
-      <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
+
     </form>
   </div>
 
