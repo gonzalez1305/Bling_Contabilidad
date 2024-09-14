@@ -38,16 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param('iiii', $idProducto, $cantidad, $idUsuario, $cantidad);
             $stmt->execute();
 
-            // Actualizar la cantidad del producto en el inventario
-            $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
-            $stmt = $conectar->prepare($updateProductQuery);
-            $stmt->bind_param('ii', $cantidad, $idProducto);
-            $stmt->execute();
-
             if ($stmt->affected_rows > 0) {
                 $response = ['status' => 'success', 'message' => 'Producto añadido al carrito'];
             } else {
-                $response['message'] = 'No se pudo actualizar el producto.';
+                $response['message'] = 'No se pudo añadir el producto al carrito.';
             }
         } elseif ($cantidad < 0) {
             // Eliminar productos del carrito
@@ -56,16 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
             $stmt->execute();
 
-            // Si la cantidad en el carrito es 0, eliminar el registro del carrito
+            // Si la cantidad en el carrito es 0 o menor, eliminar el registro del carrito
             $deleteCartQuery = "DELETE FROM carrito WHERE cantidad <= 0 AND fk_id_producto = ? AND fk_id_usuario = ?";
             $stmt = $conectar->prepare($deleteCartQuery);
             $stmt->bind_param('ii', $idProducto, $idUsuario);
-            $stmt->execute();
-
-            // Devolver el stock al inventario
-            $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
-            $stmt = $conectar->prepare($updateProductQuery);
-            $stmt->bind_param('ii', -$cantidad, $idProducto);  // Restablecer el inventario
             $stmt->execute();
 
             if ($stmt->affected_rows > 0) {
@@ -115,3 +103,4 @@ header('Content-Type: application/json');
 echo json_encode($response);
 
 $conectar->close();
+?>

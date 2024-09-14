@@ -41,18 +41,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $cantidad = $producto['cantidad'];
 
                 // Obtener el precio del producto
-                $consultaPrecio = "SELECT precio_unitario FROM producto WHERE id_producto = ?";
+                $consultaPrecio = "SELECT precio_unitario, cantidad FROM producto WHERE id_producto = ?";
                 $stmtPrecio = $conectar->prepare($consultaPrecio);
                 $stmtPrecio->bind_param('i', $idProducto);
                 $stmtPrecio->execute();
                 $resultadoPrecio = $stmtPrecio->get_result();
-                $precioProducto = $resultadoPrecio->fetch_assoc()['precio_unitario'];
+                $productoInfo = $resultadoPrecio->fetch_assoc();
 
+                $precioProducto = $productoInfo['precio_unitario'];
                 $precioTotal = $cantidad * $precioProducto; // Calcular el precio total
 
                 // Insertar cada producto del carrito en la tabla de detalles de pedido
                 $stmtDetalle->bind_param('iiid', $idPedido, $idProducto, $cantidad, $precioTotal);
                 $stmtDetalle->execute();
+
+                // Descontar la cantidad del producto en el inventario
+                $updateProducto = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
+                $stmtUpdateProducto = $conectar->prepare($updateProducto);
+                $stmtUpdateProducto->bind_param('ii', $cantidad, $idProducto);
+                $stmtUpdateProducto->execute();
             }
 
             // Eliminar los productos del carrito después de confirmar el pedido
@@ -62,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtBorrarCarrito->execute();
 
             $response['status'] = 'success';
-            $response['message'] = 'Pedido confirmado exitosamente.';
+            $response['message'] = 'Pedido confirmado exitosamente. Redirigiendo...';
         } else {
             $response['message'] = 'El carrito está vacío.';
         }
@@ -164,6 +171,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert alert-success">
                 <?php echo $response['message']; ?>
             </div>
+            <script>
+                setTimeout(function() {
+                    window.location.href = "../menuC.html";
+                }, 3000);  // Redirigir después de 3 segundos
+            </script>
         <?php elseif (isset($response['status']) && $response['status'] === 'error'): ?>
             <div class="alert alert-danger">
                 <?php echo $response['message']; ?>

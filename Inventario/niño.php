@@ -110,7 +110,11 @@ if (isset($_SESSION['id_usuario'])) {
 include '../conexion.php';
 
 // Consulta para obtener los productos de la categoría 'niño' y que estén disponibles
-$query = "SELECT * FROM producto WHERE categorias = 'niño' AND estado = 'disponible'";
+$query = "SELECT nombre, talla, imagen, precio_unitario, SUM(cantidad) as cantidad, id_producto
+FROM producto 
+WHERE categorias = 'niño' AND estado = 'disponible'
+GROUP BY nombre, talla, id_producto";
+
 $result = mysqli_query($conectar, $query);
 ?>
 
@@ -132,34 +136,44 @@ $result = mysqli_query($conectar, $query);
             <!-- Contenedor de productos -->
             <div id="productos" class="col-md-8">
                 <div class="row">
-                    <?php
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo '<div class="col-md-6 mb-4">';
-                            echo '<div class="card product-card">';
-                            echo "<img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen'>";
-                            echo '<div class="card-body">';
-                            echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
-                            echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
-                            echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
-                            echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
-                            echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
-                            echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
-                            echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
-                            echo '<div class="mb-3">';
-                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
-                            echo '</div>';
-                            echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
-                            echo '</form>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<p>No hay productos disponibles.</p>';
-                    }
-                    ?>
+                <?php
+if (mysqli_num_rows($result) > 0) {
+    $productos = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $productos[$row['nombre']][$row['talla']][] = $row;
+    }
+    foreach ($productos as $nombre => $tallas) {
+        echo '<div class="col-md-6 mb-4">';
+        echo '<h4>' . htmlspecialchars($nombre) . '</h4>';
+        foreach ($tallas as $talla => $items) {
+            echo '<div class="card product-card">';
+            echo '<img src="' . htmlspecialchars($items[0]['imagen']) . '" alt="Imagen">';
+            echo '<div class="card-body">';
+            echo '<p class="card-text">Talla: ' . htmlspecialchars($talla) . '</p>';
+            foreach ($items as $item) {
+                echo '<p class="card-text">Precio: $' . number_format($item['precio_unitario'], 2, ',', '.') . '</p>';
+                echo '<p class="card-text">Maximo de unidades: ' . htmlspecialchars($item['cantidad']) . '</p>';
+                echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
+                echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($item['id_producto']) . '">';
+                echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
+                echo '<div class="mb-3">';
+                echo '<label for="cantidad' . $item['id_producto'] . '" class="form-label">Cantidad:</label>';
+                echo '<input type="number" name="cantidad" id="cantidad' . $item['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($item['cantidad']) . '" required>';
+                echo '</div>';
+                echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
+                echo '</form>';
+            }
+            echo '</div>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+} else {
+    echo '<p>No hay productos disponibles.</p>';
+}
+?>
+
+
                 </div>
             </div>
 
@@ -203,16 +217,14 @@ $result = mysqli_query($conectar, $query);
                     </div>
                     <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
                     <!-- Confirmar Pedido -->
-                    <form method="POST" action="../Pedido/verPedido.php">
-                      <button type="submit" name="confirmarPedido" class="btn btn-danger mt-3">Confirmar Pedido</button>
+                    <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
+                      <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
     <div id="notification" class="notification alert" role="alert" style="display: none;"></div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -222,7 +234,6 @@ $result = mysqli_query($conectar, $query);
                 e.preventDefault();
                 var form = $(this);
                 var formData = form.serialize();
-
                 $.ajax({
                     type: 'POST',
                     url: '../pruebaCarrito.php',
@@ -233,7 +244,6 @@ $result = mysqli_query($conectar, $query);
                             setTimeout(function() {
                                 $('#notification').fadeOut();
                             }, 2000);
-
                             // Recargar la página para actualizar el carrito
                             setTimeout(function() {
                                 location.reload();
@@ -249,9 +259,6 @@ $result = mysqli_query($conectar, $query);
             });
         });
     </script>
-
-  
-
   <footer class="bg-primary">
     <div class="container">
       <div class="row">

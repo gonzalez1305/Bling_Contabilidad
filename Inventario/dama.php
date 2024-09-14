@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,68 +67,56 @@
 </head>
 <body>
 
-  <div class="top-info">
-    <p>Email: <a href="mailto:blingcontabilidadgaes@gmail.com" style="color: #ffffff;">blingcontabilidadgaes@gmail.com</a> | Teléfono: <a href="tel:+573222465996" style="color: #ffffff;">+57 322 2465996</a></p>
-  </div>
-
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <img src="../imgs/logo.png" alt="Logo">
-        Bling Compra
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="../menuC.html">Regresar</a>
-          </li>
-        </ul>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-              <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
-              <a class="nav-link" href="../Usuario/infocliente.php">Mi info</a>
-          </li>
-        </ul>
-      </div>
+    <div class="top-info">
+        <p>Email: <a href="mailto:blingcontabilidadgaes@gmail.com" style="color: #ffffff;">blingcontabilidadgaes@gmail.com</a> | Teléfono: <a href="tel:+573222465996" style="color: #ffffff;">+57 322 2465996</a></p>
     </div>
-  </nav>
 
-  <div class="video-container">
-    <video src="../imgs/Dama.mp4" autoplay muted loop></video>
-    <div class="overlay-text">
-      Dama
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="../imgs/logo.png" alt="Logo">
+                Bling Compra
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../menuC.html">Regresar</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
+                        <a class="nav-link" href="../Usuario/infocliente.php">Mi info</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="video-container">
+        <video src="../imgs/Dama.mp4" autoplay muted loop></video>
+        <div class="overlay-text">
+            Dama
+        </div>
     </div>
-  </div>
-  <?php
-session_start();
-if (isset($_SESSION['id_usuario'])) {
-    $idUsuario = $_SESSION['id_usuario'];
-}
-include '../conexion.php';
 
-// Consulta para obtener los productos de la categoría 'dama' y que estén disponibles
-$query = "SELECT * FROM producto WHERE categorias = 'dama' AND estado = 'disponible'";
-$result = mysqli_query($conectar, $query);
-?>
+    <?php
+    session_start();
+    if (isset($_SESSION['id_usuario'])) {
+        $idUsuario = $_SESSION['id_usuario'];
+    }
+    include '../conexion.php';
 
-<!doctype html>
-<html lang="es">
+    // Consulta para obtener los productos de la categoría 'dama' y que estén disponibles
+    $query = "SELECT * FROM producto WHERE categorias = 'dama' AND estado = 'disponible'";
+    $result = mysqli_query($conectar, $query);
+    ?>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
-    <title>Productos Dama</title>
-</head>
-
-<body>
-   
-       
-        <div class="row mt-4">
+    <div class="container mt-4">
+        <div class="row">
             <!-- Contenedor de productos -->
             <div id="productos" class="col-md-8">
                 <div class="row">
@@ -214,101 +202,41 @@ $result = mysqli_query($conectar, $query);
     <div id="notification" class="notification alert" role="alert" style="display: none;"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Manejo del envío del formulario
-            $('.add-to-cart-form').on('submit', function(e) {
-                e.preventDefault();
-                var form = $(this);
-                var formData = form.serialize();
+        $(document).ready(function () {
+            // Función para mostrar notificaciones
+            function showNotification(message, type) {
+                var alertBox = $('#notification');
+                alertBox.text(message);
+                alertBox.removeClass('alert-success alert-danger');
+                alertBox.addClass('alert-' + type);
+                alertBox.show();
+                setTimeout(function () {
+                    alertBox.hide();
+                }, 3000);
+            }
 
+            // Manejar el envío del formulario de agregar al carrito
+            $('.add-to-cart-form').on('submit', function (e) {
+                e.preventDefault(); // Evita que el formulario se envíe de la manera tradicional
+
+                var form = $(this);
                 $.ajax({
                     type: 'POST',
                     url: '../pruebaCarrito.php',
-                    data: formData,
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
-
-                            // Recargar la página para actualizar el carrito
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
-                        }
+                    data: form.serialize(),
+                    success: function (response) {
+                        showNotification('Producto agregado al carrito', 'success');
+                        // Actualizar los detalles del carrito
+                        $('#cart-details').load(location.href + ' #cart-details');
+                    },
+                    error: function () {
+                        showNotification('Error al agregar al carrito', 'danger');
                     }
                 });
             });
         });
     </script>
-
-  
-
-  <footer class="bg-primary">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Encuéntranos aquí</h2>
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4049.1718945081834!2d-74.0631136444054!3d4.650984044931557!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9a45d9f1654b%3A0x3d69138572d157f2!2sSENA%20-%20Centro%20De%20Servicios%20Financieros!5e1!3m2!1ses-419!2sco!4v1722806451254!5m2!1ses-419!2sco" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-        <div class="col-md-6">
-            <div class="container">
-                <h2>Contacto</h2>
-                <ul class="social-icons list-unstyled d-flex flex-column align-items-start">
-                  <li>
-                    <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
-                      <i class="bi bi-instagram fs-3"></i> Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <a href="https://wa.me/573222465996" class="text-decoration-none text-light">
-                      <i class="bi bi-whatsapp fs-3"></i> WhatsApp
-                    </a>
-                  </li>
-                  <li>
-                    <a href="https://www.youtube.com/channel/UCoJhZ0ileMMnQ2Wkp1bFnCA" class="text-decoration-none text-light">
-                      <i class="bi bi-youtube fs-3"></i> YouTube
-                    </a>
-                  </li>
-                  <li>
-                    <a href="formularioCorreo.php" class="text-decoration-none text-light">
-                      <i class="bi bi-envelope-fill fs-3"></i> Email
-                    </a>
-                  </li>
-                </ul>
-              
-                <h2>Ayuda</h2>
-                <p>
-                  <a href="../Ayuda/TerminosUso.html" class="text-decoration-none">Términos de uso</a><br><br>
-                  <a href="../Ayuda/TerminosVenta.html" class="text-decoration-none">Términos de venta</a><br><br>
-                  <a href="../Ayuda/AvisoLegal.html" class="text-decoration-none">Aviso Legal</a><br><br>
-                  <a href="../Ayuda/PoliticaPrivacidad.html" class="text-decoration-none">Política de privacidad y cookies</a>
-                </p>
-            </div>
-              
-            <p>&copy; 2023 Bling Compra, Inc. Todos los derechos reservados</p>
-        </div>
-      </div>
-    </footer>
-
-    <div class="theme-switch-wrapper">
-      <div class="theme-switch">
-        <input type="checkbox" id="theme-switch">
-        <label for="theme-switch"></label>
-        <i class="bi bi-sun icon"></i>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <script src="../js/theme-switch.js"></script> <!-- Asegúrate que esta ruta sea correcta -->
-  </body>
+</body>
 </html>
