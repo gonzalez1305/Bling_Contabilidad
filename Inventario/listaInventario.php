@@ -1,3 +1,4 @@
+<?php include '../session_check.php'; ?>
 <?php
 require '../conexion.php'; // Conexión
 
@@ -35,170 +36,161 @@ $resultado = mysqli_query($conectar, $sql_select);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Inventario - Bling Compra</title>
-    <link rel="icon" href="../imgs/logo.png">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .navbar {
-            background-color: #007bff;
-        }
-        .navbar-brand {
-            color: #ffffff;
-        }
-        .navbar-nav .nav-link {
-            color: #ffffff;
-        }
-        .sidebar {
-            height: 100vh;
-            background-color: #343a40;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            color: #ffffff;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar a:hover {
-            background-color: #007bff;
-        }
-        .content {
-            padding: 20px;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .volver-btn {
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../imgs/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bling Compra</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../menuV.php">
+                <img src="../imgs/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-top">
+                Bling Compra
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
+                        <button id="darkModeToggle" class="btn btn-outline-light toggle-btn">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="./listaInventario.php">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
+                        <a class="nav-link" href="../logout.php"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <h1 class="h2">Listado de Productos</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Usuario/validarusuario.php">
+                                <i class="fas fa-users"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">
+                                <i class="fas fa-chart-line"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./listaInventario.php">
+                                <i class="fas fa-box"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pedido/validarpedido.php">
+                                <i class="fas fa-clipboard-list"></i> Pedidos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pagos/pago.php">
+                                <i class="fas fa-credit-card"></i> Pagos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
-            <a class="btn btn-success" href="../reporteP.php" role="button">Reporte Productos</a>
-            <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Productos Gráfico</a>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Listado de Productos</h1>
+                </div>
+                <div class="btn-back">
+                    <a class="btn btn-light text-primary" href="../menuV.php" role="button">Volver al Menú</a>
+                </div>
+                <a class="btn btn-success" href="../reporteP.php" role="button">Reporte Productos</a>
+                <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Productos Gráfico</a>
 
+                <div class="table-responsive">
+                    <?php
+                    // Verificar si hay registros
+                    if (mysqli_num_rows($resultado) > 0) {
+                        echo "<table id='tablaInventario' class='display'>";
+                        echo "<thead><tr><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th class='column-actions'>Acciones</th></tr></thead><tbody>";
+                        while ($fila = mysqli_fetch_assoc($resultado)) {
+                            echo "<tr id='row-" . $fila['id_producto'] . "'>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['talla']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['color']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['cantidad']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['nombre']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['estado']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['categorias']) . "</td>";
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['precio_unitario']) . "</td>";
+                            // Mostrar la marca
+                            echo "<td style='color: black;'>" . htmlspecialchars($fila['nombre_marca']) . "</td>";
+                            echo "<td><img src='" . htmlspecialchars($fila['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
+                            echo "<td class='column-actions'>";
+                            echo "<div class='btn-group' role='group'>";
+                            echo "<a href='editarInventario.php?id=" . htmlspecialchars($fila['id_producto']) . "' class='btn btn-warning btn-sm'>Editar</a>";
+                            echo "<button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $fila['id_producto'] . ")'>Eliminar</button>";
+                            echo "</div>";
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                        echo "</tbody></table>";
+                    } else {
+                        echo "<p>No se encontraron registros de Productos.</p>";
+                    }
+                    ?>
+                </div>
 
-            <?php
-            // Verificar si hay registros
-            if (mysqli_num_rows($resultado) > 0) {
-                echo "<table id='tablaInventario' class='table table-striped'>";
-                echo "<thead><tr><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>";
-                while ($fila = mysqli_fetch_assoc($resultado)) {
-                    echo "<tr>";
-                   
-                    echo "<td>" . htmlspecialchars($fila['talla']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['color']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['cantidad']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['estado']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['categorias']) . "</td>";
-                    echo "<td>" . htmlspecialchars($fila['precio_unitario']) . "</td>";
-                    // Mostrar la marca
-                    echo "<td>" . htmlspecialchars($fila['nombre_marca']) . "</td>";
-                    echo "<td><img src='" . htmlspecialchars($fila['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
-                    echo "<td>";
-                    echo "<a href='editarInventario.php?id=" . htmlspecialchars($fila['id_producto']) . "' class='btn btn-warning btn-sm'>Editar</a> ";
-                    echo "<form method='POST' action='' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar este registro?\");'>";
-                    echo "<input type='hidden' name='eliminar_id' value='" . htmlspecialchars($fila['id_producto']) . "'>";
-                    echo "<input type='submit' value='Eliminar' class='btn btn-danger btn-sm'>";
-                    echo "</form>";
-             
-                }
-                echo "</tbody></table>";
-            } else {
-                echo "<p>No se encontraron registros de Productos.</p>";
-            }
-            ?>
-
-            <div class="mt-4">
-                <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Producto</a>
-            </div>
-        </main>
+                <div class="mt-4">
+                    <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Producto</a>
+                </div>
+            </main>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#tablaInventario').DataTable({
-            "language": {
-                "sProcessing": "Procesando...",
-                "sLengthMenu": "Mostrar _MENU_ registros",
-                "sZeroRecords": "No se encontraron resultados",
-                "sEmptyTable": "Ningún dato disponible en esta tabla",
-                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                "sInfoPostFix": "",
-                "sSearch": "Buscar:",
-                "sUrl": "",
-                "sInfoThousands": ",",
-                "sLoadingRecords": "Cargando...",
-                "oPaginate": {
-                    "sFirst": "Primero",
-                    "sLast": "Último",
-                    "sNext": "Siguiente",
-                    "sPrevious": "Anterior"
-                },
-                "oAria": {
-                    "sSortAscending": ": activar para ordenar la columna de manera ascendente",
-                    "sSortDescending": ": activar para ordenar la columna de manera descendente"
+    <!-- Confirmación de Eliminación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteForm" method="POST" action="">
+                        <input type="hidden" id="eliminar_id" name="eliminar_id">
+                        ¿Está seguro de que desea eliminar este producto?
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="deleteForm" class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../script.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#tablaInventario').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
                 }
-            }
+            });
         });
-    });
-</script>
+
+        function confirmDelete(id_producto) {
+            $('#eliminar_id').val(id_producto);
+            $('#confirmDeleteModal').modal('show');
+        }
+    </script>
 </body>
 </html>
 

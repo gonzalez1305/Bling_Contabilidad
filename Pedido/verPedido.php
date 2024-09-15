@@ -1,6 +1,10 @@
 <?php
 session_start();
 include '../conexion.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
 
 // Inicialización de la respuesta en caso de error
 $response = ['status' => 'error', 'message' => 'Error desconocido'];
@@ -61,8 +65,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtBorrarCarrito->bind_param('i', $idUsuario);
             $stmtBorrarCarrito->execute();
 
-            $response['status'] = 'success';
-            $response['message'] = 'Pedido confirmado exitosamente.';
+            // Enviar correo de confirmación de pedido
+            $mail = new PHPMailer(true);
+
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'blingcontabilidadgaes@gmail.com';
+                $mail->Password = 'mgzhlqxhogvdnlnm'; 
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                // Obtener el correo del usuario
+                $consultaCorreo = "SELECT correo FROM usuario WHERE id_usuario = ?";
+                $stmtCorreo = $conectar->prepare($consultaCorreo);
+                $stmtCorreo->bind_param('i', $idUsuario);
+                $stmtCorreo->execute();
+                $resultadoCorreo = $stmtCorreo->get_result();
+                $correoUsuario = $resultadoCorreo->fetch_assoc()['correo'];
+
+                // Destinatario del correo
+                $mail->setFrom('blingcontabilidadgaes@gmail.com', 'Bling Contabilidad');
+                $mail->addAddress($correoUsuario);
+
+                // Contenido
+                $mail->isHTML(true);
+                $mail->CharSet = 'UTF-8';
+                $mail->Subject = 'Confirmación de Pedido';
+                $mail->Body    = 'Tu pedido ha sido confirmado exitosamente. El ID de tu pedido es: ' . $idPedido;
+
+                $mail->send();
+
+                $response['status'] = 'success';
+                $response['message'] = 'Pedido confirmado exitosamente. Se ha enviado un correo de confirmación.';
+            } catch (Exception $e) {
+                $response['message'] = 'Pedido confirmado, pero hubo un error al enviar el correo de confirmación: ' . $mail->ErrorInfo;
+            }
         } else {
             $response['message'] = 'El carrito está vacío.';
         }
@@ -172,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Botón para volver al menú -->
         <div class="text-center mt-4">
-            <a href="../menuC.html" class="btn btn-secondary">Volver al Menú</a>
+            <a href="../menuC.php" class="btn btn-secondary">Volver al Menú</a>
         </div>
     </div>
 

@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $direccion = filter_var($_POST['direccion'] ?? $usuario['direccion'], FILTER_SANITIZE_STRING);
     $fecha_de_nacimiento = $_POST['fecha_de_nacimiento'] ?? $usuario['fecha_de_nacimiento'];
     $correo = filter_var($_POST['correo'] ?? $usuario['correo'], FILTER_SANITIZE_EMAIL);
-    $estado = filter_var($_POST['estado'] ?? $usuario['estado'], FILTER_SANITIZE_STRING);
+
 
     // Validar la fecha de nacimiento
     $fecha_de_nacimiento = DateTime::createFromFormat('Y-m-d', $fecha_de_nacimiento);
@@ -257,10 +257,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="correo" class="form-label">Correo Electrónico</label>
                     <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
                 </div>
-                <div class="mb-1">
-                    <label for="estado" class="form-label">Estado</label>
-                    <input type="text" class="form-control" id="estado" name="estado" value="<?php echo htmlspecialchars($usuario['estado']); ?>" required>
-                </div>
+
                 <div class="mb-1">
                     <label for="imagen" class="form-label">Imagen</label>
                     <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">

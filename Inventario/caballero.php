@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bling Compra - Sección Caballero</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css"> <!-- Asegúrate que esta ruta sea correcta -->
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -83,7 +83,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="../menuC.html">Regresar</a>
+            <a class="nav-link" href="../menuC.php">Regresar</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
@@ -201,7 +201,7 @@ $result = mysqli_query($conectar, $query);
                         $stmt->close();
                         ?>
                     </div>
-                    <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
+                    <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
                     <!-- Confirmar Pedido -->
                     <form method="POST" action="../Pedido/verPedido.php">
                       <button type="submit" name="confirmarPedido" class="btn btn-danger mt-3">Confirmar Pedido</button>
@@ -309,6 +309,6 @@ $result = mysqli_query($conectar, $query);
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <script src="../js/theme-switch.js"></script> <!-- Asegúrate que esta ruta sea correcta -->
+    <script src="../js/theme-switch.js"></script>
   </body>
 </html>

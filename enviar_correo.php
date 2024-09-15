@@ -1,12 +1,10 @@
 <?php
-// Configuración del correo
 $to = "juanandresramirezmunoz94@gmail.com";
 $subject = "PQRS";
 
-// Inicializa una variable para controlar el estado del envío
+
 $status = "";
 
-// Asegúrate de que el campo de mensaje no esté vacío
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['message']) && !empty($_POST['message'])) {
         $message = $_POST['message'];
