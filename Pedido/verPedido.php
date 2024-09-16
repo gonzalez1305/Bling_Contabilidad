@@ -45,27 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $cantidad = $producto['cantidad'];
 
                 // Obtener el precio del producto
-                $consultaPrecio = "SELECT precio_unitario, cantidad FROM producto WHERE id_producto = ?";
+                $consultaPrecio = "SELECT precio_unitario FROM producto WHERE id_producto = ?";
                 $stmtPrecio = $conectar->prepare($consultaPrecio);
                 $stmtPrecio->bind_param('i', $idProducto);
                 $stmtPrecio->execute();
                 $resultadoPrecio = $stmtPrecio->get_result();
-                $productoDetalles = $resultadoPrecio->fetch_assoc();
-
-                $precioProducto = $productoDetalles['precio_unitario'];
-                $cantidadDisponible = $productoDetalles['cantidad'];
+                $precioProducto = $resultadoPrecio->fetch_assoc()['precio_unitario'];
 
                 $precioTotal = $cantidad * $precioProducto; // Calcular el precio total
 
                 // Insertar cada producto del carrito en la tabla de detalles de pedido
                 $stmtDetalle->bind_param('iiid', $idPedido, $idProducto, $cantidad, $precioTotal);
                 $stmtDetalle->execute();
-
-                // Actualizar la cantidad del producto en el inventario
-                $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
-                $stmtUpdateProduct = $conectar->prepare($updateProductQuery);
-                $stmtUpdateProduct->bind_param('ii', $cantidad, $idProducto);
-                $stmtUpdateProduct->execute();
             }
 
             // Eliminar los productos del carrito después de confirmar el pedido
@@ -137,33 +128,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.5s, color 0.5s;
         }
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
+        }
+
         .container {
-            max-width: 600px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
             text-align: center;
+            transition: background-color 0.5s, color 0.5s;
         }
-        .btn-custom {
+
+        .dark-mode .container {
+            background-color: rgba(50, 50, 50, 0.9);
+            color: #ffffff;
+        }
+
+        .btn-primary {
             background-color: #007bff;
-            color: white;
             border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
+            color: #ffffff;
         }
-        .btn-custom:hover {
+
+        .dark-mode .btn-primary {
             background-color: #0056b3;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .dark-mode .btn-primary:hover {
+            background-color: #003d7a;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
     <div class="container">
-        <h1 class="mb-4">Pedido Confirmado</h1>
-        <p><?php echo $response['message']; ?></p>
-        <a href="../menuC.html" class="btn btn-custom">Volver al Menú</a>
         <h2 class="mb-4 text-center">Pedidos Confirmados</h2>
 
         <!-- Mostrar mensajes de respuesta -->
@@ -182,6 +214,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../menuC.php" class="btn btn-secondary">Volver al Menú</a>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
 </body>
 </html>

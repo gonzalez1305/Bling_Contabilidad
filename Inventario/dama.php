@@ -109,6 +109,7 @@
       $idUsuario = $_SESSION['id_usuario'];
   }
   include '../conexion.php';
+
   // Consulta para obtener los productos de la categoría 'dama' y que estén disponibles
   $query = "SELECT * FROM producto WHERE categorias = 'dama' AND estado = 'disponible'";
   $result = mysqli_query($conectar, $query);
