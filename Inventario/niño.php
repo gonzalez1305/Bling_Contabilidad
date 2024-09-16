@@ -102,7 +102,6 @@
       Niño
     </div>
   </div>
-
   <?php
 session_start();
 if (isset($_SESSION['id_usuario'])) {
@@ -111,7 +110,7 @@ if (isset($_SESSION['id_usuario'])) {
 include '../conexion.php';
 
 // Consulta para obtener los productos de la categoría 'niño' y que estén disponibles
-$query = "SELECT id_producto, nombre, precio_unitario, imagen, talla, cantidad FROM producto WHERE categorias = 'niño' AND estado = 'disponible' ORDER BY nombre";
+$query = "SELECT * FROM producto WHERE categorias = 'niño' AND estado = 'disponible'";
 $result = mysqli_query($conectar, $query);
 ?>
 
@@ -164,62 +163,65 @@ $result = mysqli_query($conectar, $query);
                 </div>
             </div>
 
-    <!-- Contenedor Carrito en el lado derecho -->
-    <div class="col-md-4">
-        <div id="cart-sidebar" class="mt-5">
-            <h3>Carrito de Compras</h3>
-            <div id="cart-details" class="card p-3 cart-details">
-                <?php
-                // Consulta para obtener los detalles del carrito
-                $cartQuery = "SELECT p.id_producto, p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario
-                FROM carrito c
-                JOIN producto p ON c.fk_id_producto = p.id_producto
-                WHERE c.fk_id_usuario = ?
-                GROUP BY p.id_producto";
-                
-                $stmt = $conectar->prepare($cartQuery);
-                $stmt->bind_param('i', $idUsuario);
-                $stmt->execute();
-                $cartResult = $stmt->get_result();
+            <!-- Contenedor Carrito en el lado derecho -->
+            <div class="col-md-4">
+                <div id="cart-sidebar" class="mt-5">
+                    <h3>Carrito de Compras</h3>
+                    <div id="cart-details" class="card p-3 cart-details">
+                        <?php
+                        // Consulta para obtener los detalles del carrito
+                        $cartQuery = "SELECT p.id_producto, p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario
+                        FROM carrito c
+                        JOIN producto p ON c.fk_id_producto = p.id_producto
+                        WHERE c.fk_id_usuario = ?
+                        GROUP BY p.id_producto";
+                        
+                        $stmt = $conectar->prepare($cartQuery);
+                        $stmt->bind_param('i', $idUsuario);
+                        $stmt->execute();
+                        $cartResult = $stmt->get_result();
 
-                $total = 0; // Inicializar el total del carrito
-                if ($cartResult->num_rows > 0) {
-                    while ($row = $cartResult->fetch_assoc()) {
-                        $subtotal = $row['precio_unitario'] * $row['cantidad'];
-                        $total += $subtotal;
-                
-                        // Mostrar detalles del producto en el carrito
-                        echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                        echo '<form method="POST" action="../eliminarCarritoNiño.php">';
-                        echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
-                        echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
-                        echo '</form>';
-                    }
-                    echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
-                } else {
-                    echo '<p>El carrito está vacío.</p>';
-                }
-                ?>
+                        $total = 0; // Inicializar el total del carrito
+                        if ($cartResult->num_rows > 0) {
+                            while ($row = $cartResult->fetch_assoc()) {
+                                $subtotal = $row['precio_unitario'] * $row['cantidad'];
+                                $total += $subtotal;
+                        
+                                // Mostrar detalles del producto en el carrito
+                                echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
+                                echo '<form method="POST" action="../eliminarCarritoNiño.php">';
+                                echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
+                                echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
+                                echo '</form>';
+                            }
+                            echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
+                        } else {
+                            echo '<p>El carrito está vacío.</p>';
+                        }
+                        $stmt->close();
+                        ?>
+                    </div>
+                    <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
+                    <!-- Confirmar Pedido -->
+                    <form method="POST" action="../Pedido/verPedido.php">
+                      <button type="submit" name="confirmarPedido" class="btn btn-danger mt-3">Confirmar Pedido</button>
+                    </form>
+                </div>
             </div>
-            <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
-            <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
-                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
-            </form>
         </div>
     </div>
-</div>
 
     <div id="notification" class="notification alert" role="alert" style="display: none;"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var forms = document.querySelectorAll('.add-to-cart-form');
-        forms.forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                var formData = new FormData(form);
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Manejo del envío del formulario
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
 
                 $.ajax({
                     type: 'POST',
@@ -246,10 +248,6 @@ $result = mysqli_query($conectar, $query);
                 });
             });
         });
-    });
-</script>
-</body>
-</html>
     </script>
 
   
