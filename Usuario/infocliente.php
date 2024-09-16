@@ -1,6 +1,6 @@
 <?php
-session_start();
 include("../conexion.php");
+include '../session_check.php'; 
 
 // Verificar si el usuario ha iniciado sesión ya
 if (!isset($_SESSION['id_usuario'])) {
@@ -166,7 +166,7 @@ if (!$usuario) {
             <p><strong>Correo:</strong> <?php echo htmlspecialchars($usuario['correo']); ?></p>
             <p><strong>Estado:</strong> <?php echo htmlspecialchars($usuario['estado']); ?></p>
             <a href="editar_usuario_cliente.php" class="btn btn-primary btn-custom">Editar Información</a>
-            <a href="../MenuC.html" class="btn btn-secondary btn-custom">Volver</a>
+            <a href="../menuC.php" class="btn btn-secondary btn-custom">Volver</a>
             <a href="confirmar_eliminacion.php" class="btn btn-danger btn-custom">Eliminar Cuenta</a>
         </div>
     </div>
