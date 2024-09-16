@@ -1,12 +1,12 @@
 <?php include '../session_check.php'; ?>
 <?php
-require '../conexion.php'; // Conexión
+require '../conexion.php';
 
-// Verifica si se ha enviado una solicitud de eliminación
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $id_producto = $_POST['eliminar_id'];
 
-    // Preparar la consulta para eliminar el registro del inventario
+
     $stmt_delete = $conectar->prepare("DELETE FROM producto WHERE id_producto = ?");
     $stmt_delete->bind_param("i", $id_producto);
 
@@ -19,7 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $stmt_delete->close();
 }
 
-// Verificar si la variable $where_sql está definida, si no, se define como una cadena vacía
 $where_sql = isset($where_sql) ? $where_sql : "";
 
 // Consulta de selección para incluir la marca
