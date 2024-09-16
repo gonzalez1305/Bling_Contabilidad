@@ -102,134 +102,141 @@
       Caballero
     </div>
   </div>
-  
+
   <?php
-  session_start();
-  if (isset($_SESSION['id_usuario'])) {
-      $idUsuario = $_SESSION['id_usuario'];
-  }
-  include '../conexion.php';
+session_start();
+if (isset($_SESSION['id_usuario'])) {
+    $idUsuario = $_SESSION['id_usuario'];
+}
+include '../conexion.php';
 
-  // Consulta para obtener los productos de la categoría 'caballero' y que estén disponibles
-  $query = "SELECT * FROM producto WHERE categorias = 'caballero' AND estado = 'disponible'";
-  $result = mysqli_query($conectar, $query);
-  ?>
+// Consulta para obtener los productos de la categoría 'caballero' y que estén disponibles
+$query = "SELECT id_producto, nombre, precio_unitario, imagen, talla, cantidad FROM producto WHERE categorias = 'caballero' AND estado = 'disponible' ORDER BY nombre";
+$result = mysqli_query($conectar, $query);
 
-  <div class="container mt-4">
-    <div class="row">
-      <!-- Contenedor de productos -->
-      <div id="productos" class="col-md-8">
+$productos = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $productos[$row['nombre']][] = $row;
+}
+?>
+
+<div class="row mt-4">
+    <!-- Contenedor de productos -->
+    <div id="productos" class="col-md-8">
         <div class="row">
-          <?php
-          if (mysqli_num_rows($result) > 0) {
-              while ($row = mysqli_fetch_assoc($result)) {
-                  echo '<div class="col-md-6 mb-4">';
-                  echo '<div class="card product-card">';
-                  echo "<img src='" . htmlspecialchars($row['imagen']) . "' alt='Imagen'>";
-                  echo '<div class="card-body">';
-                  echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
-                  echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
-                  echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
-                  echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
-                  echo '<form method="POST" class="add-to-cart-form">';
-                  echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
-                  echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
-                  echo '<div class="mb-3">';
-                  echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                  echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
-                  echo '</div>';
-                  echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
-                  echo '</form>';
-                  echo '</div>';
-                  echo '</div>';
-                  echo '</div>';
-              }
-          } else {
-              echo '<p>No hay productos disponibles.</p>';
-          }
-          ?>
-        </div>
-      </div>
-
-      <!-- Contenedor Carrito en el lado derecho -->
-      <div class="col-md-4">
-        <div id="cart-sidebar" class="mt-5">
-          <h3>Carrito de Compras</h3>
-          <div id="cart-details" class="card p-3 cart-details">
             <?php
-            // Consulta para obtener los detalles del carrito
-            $cartQuery = "SELECT p.id_producto, p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario
-            FROM carrito c
-            JOIN producto p ON c.fk_id_producto = p.id_producto
-            WHERE c.fk_id_usuario = ?
-            GROUP BY p.id_producto";
-            
-            $stmt = $conectar->prepare($cartQuery);
-            $stmt->bind_param('i', $idUsuario);
-            $stmt->execute();
-            $cartResult = $stmt->get_result();
+            foreach ($productos as $nombre => $items) {
+                echo '<div class="col-md-12 mb-4">';
+                echo '<div class="card product-card">';
+                echo "<img src='" . htmlspecialchars($items[0]['imagen']) . "' alt='Imagen'>";
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">' . htmlspecialchars($nombre) . '</h5>';
 
-            $total = 0; // Inicializar el total del carrito
-            if ($cartResult->num_rows > 0) {
-                while ($row = $cartResult->fetch_assoc()) {
-                    $subtotal = $row['precio_unitario'] * $row['cantidad'];
-                    $total += $subtotal;
-            
-                    // Mostrar detalles del producto en el carrito
-                    echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                    echo '<form method="POST" action="../eliminarProductoCarrito.php">';
-                    echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
-                    echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
-                    echo '</form>';
+                // Mostrar tallas disponibles
+                echo '<form method="POST" class="add-to-cart-form">';
+                echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($items[0]['id_producto']) . '">';
+                echo '<div class="mb-3">';
+                echo '<label for="talla' . $items[0]['id_producto'] . '" class="form-label">Talla:</label>';
+                echo '<select name="talla" id="talla' . $items[0]['id_producto'] . '" class="form-control" required>';
+                foreach ($items as $item) {
+                    echo '<option value="' . htmlspecialchars($item['talla']) . '">' . htmlspecialchars($item['talla']) . '</option>';
                 }
-                echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
-            } else {
-                echo '<p>El carrito está vacío.</p>';
+                echo '</select>';
+                echo '</div>';
+
+                echo '<div class="mb-3">';
+                echo '<label for="cantidad' . $items[0]['id_producto'] . '" class="form-label">Cantidad:</label>';
+                echo '<input type="number" name="cantidad" id="cantidad' . $items[0]['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($items[0]['cantidad']) . '" required>';
+                echo '<small id="cantidadHelp' . $items[0]['id_producto'] . '" class="form-text text-muted">Cantidad disponible: ' . htmlspecialchars($items[0]['cantidad']) . '</small>';
+                echo '</div>';
+
+                echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
+                echo '</form>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
             }
-            $stmt->close();
             ?>
-          </div>
-          <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
-          <!-- Confirmar Pedido -->
-          <form method="POST" action="../Pedido/verPedido.php">
-            <button type="submit" name="confirmarPedido" class="btn btn-danger mt-3">Confirmar Pedido</button>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div id="notification" class="notification alert" role="alert" style="display: none;"></div>
+    <!-- Contenedor Carrito en el lado derecho -->
+    <div class="col-md-4">
+        <div id="cart-sidebar" class="mt-5">
+            <h3>Carrito de Compras</h3>
+            <div id="cart-details" class="card p-3 cart-details">
+                <?php
+                // Consulta para obtener los detalles del carrito
+                $cartQuery = "SELECT p.id_producto, p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario
+                FROM carrito c
+                JOIN producto p ON c.fk_id_producto = p.id_producto
+                WHERE c.fk_id_usuario = ?
+                GROUP BY p.id_producto";
+                
+                $stmt = $conectar->prepare($cartQuery);
+                $stmt->bind_param('i', $idUsuario);
+                $stmt->execute();
+                $cartResult = $stmt->get_result();
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('.add-to-cart-form').on('submit', function(event) {
-        event.preventDefault();
-        var form = $(this);
-        $.ajax({
-          url: '../carrito.php',
-          type: 'POST',
-          data: form.serialize(),
-          success: function(response) {
-            $('#notification').removeClass('alert-danger').addClass('alert-success').text('Producto agregado al carrito').show();
-            setTimeout(function() {
-              $('#notification').fadeOut();
-            }, 3000);
-            // Actualizar los detalles del carrito
-            $('#cart-details').load(location.href + ' #cart-details>*', "");
-          },
-          error: function() {
-            $('#notification').removeClass('alert-success').addClass('alert-danger').text('Error al agregar al carrito').show();
-            setTimeout(function() {
-              $('#notification').fadeOut();
-            }, 3000);
-          }
+                $total = 0; // Inicializar el total del carrito
+                if ($cartResult->num_rows > 0) {
+                    while ($row = $cartResult->fetch_assoc()) {
+                        $subtotal = $row['precio_unitario'] * $row['cantidad'];
+                        $total += $subtotal;
+                
+                        // Mostrar detalles del producto en el carrito
+                        echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
+                        echo '<form method="POST" action="../eliminarProductoCarrito.php">';
+                        echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
+                        echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
+                        echo '</form>';
+                    }
+                    echo '<h4>Total: $' . number_format($total, 2, ',', '.') . '</h4>';
+                } else {
+                    echo '<p>El carrito está vacío.</p>';
+                }
+                ?>
+            </div>
+            <a href="../menuC.html" class="btn btn-primary mt-3">Seguir comprando</a>
+            <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
+                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/notificaciones.js"></script> <!-- Incluye el script para mostrar notificaciones -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var forms = document.querySelectorAll('.add-to-cart-form');
+        forms.forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var formData = new FormData(form);
+
+                fetch('../pruebaCarrito.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById('notification').innerHTML = '<div class="alert alert-success" role="alert">Producto añadido al carrito.</div>';
+                    setTimeout(function() {
+                        document.getElementById('notification').innerHTML = '';
+                        window.location.reload();
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
         });
-      });
     });
-  </script>
+</script>
 
 </body>
 </html>
