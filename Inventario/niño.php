@@ -150,7 +150,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                 echo '<small id="cantidadHelp' . $items[0]['id_producto'] . '" class="form-text text-muted">Cantidad Máxima: ' . htmlspecialchars($items[0]['cantidad']) . '</small>';
                 echo '</div>';
 
-                echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
+                echo '<button type="submit" class="btn btn-primary">Agregar al Carrito de compras</button>';
                 echo '</form>';
                 echo '</div>';
                 echo '</div>';
