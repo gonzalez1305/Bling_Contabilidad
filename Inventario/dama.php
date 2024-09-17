@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/styles.css"> <!-- Asegúrate que esta ruta sea correcta -->
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         .product-card {
             color: black;
@@ -191,8 +192,8 @@
                 </div>
                 <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
                 <!-- Confirmar Pedido -->
-                <form method="POST" action="../Pedido/verPedido.php">
-                  <button type="submit" name="confirmarPedido" class="btn btn-danger mt-3">Confirmar Pedido</button>
+                <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
+                  <button type="button" id="confirmarPedidoBtn" class="btn btn-danger mt-3">Confirmar Pedido</button>
                 </form>
             </div>
         </div>
@@ -203,6 +204,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
       $(document).ready(function() {
           // Manejo del envío del formulario
@@ -232,6 +234,24 @@
                               $('#notification').fadeOut();
                           }, 2000);
                       }
+                  }
+              });
+          });
+
+          // Confirmar Pedido con SweetAlert2
+          $('#confirmarPedidoBtn').on('click', function() {
+              Swal.fire({
+                  title: '¿Estás seguro?',
+                  text: "¿Estás seguro de que deseas confirmar el pedido?",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Sí, confirmar',
+                  cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      $('#confirmarPedidoForm').submit();
                   }
               });
           });
