@@ -150,7 +150,7 @@ $resultado = mysqli_query($conectar, $sql_select);
         </div>
     </div>
 
-    <!-- Confirmación de Eliminación -->
+    <!-- Confirmación de Elaliminación -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

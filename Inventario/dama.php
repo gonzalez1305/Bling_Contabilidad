@@ -238,7 +238,7 @@
               });
           });
 
-          // Confirmar Pedido con SweetAlert2
+          // Confirmar Pedido conla SweetAlert2
           $('#confirmarPedidoBtn').on('click', function() {
               Swal.fire({
                   title: '¿Estás seguro?',

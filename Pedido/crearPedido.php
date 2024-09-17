@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $situacion = $_POST['situacion'];
     $fk_id_usuario = $_POST['fk_id_usuario'];
 
-    // Inserta el pedido en la tabla `pedido`
+    // Inserta el pedido en la tabla `pedido`la
     $insertPedido = "INSERT INTO pedido (fecha, situacion, fk_id_usuario) VALUES ('$fecha', '$situacion', '$fk_id_usuario')";
     $queryInsert = mysqli_query($conectar, $insertPedido);
 

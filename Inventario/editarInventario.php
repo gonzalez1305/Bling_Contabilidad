@@ -213,3 +213,4 @@ mysqli_close($conectar);
     <script src="../script.js"></script>
 </body>
 </html>
+/

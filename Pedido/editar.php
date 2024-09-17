@@ -112,7 +112,7 @@ if (isset($_POST['enviar'])) {
             border-color: #545b62;
         }
         .h2 {
-            color: black; /* Mantener el color del título negro */
+            color: black; /* Mantener el color del título negrola */
         }
     </style>
 </head>

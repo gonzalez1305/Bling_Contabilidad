@@ -15,7 +15,7 @@ $query_vendedores = "SELECT id_vendedor FROM administrador";
 $result_vendedores = mysqli_query($conectar, $query_vendedores);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recibir y validar los datos del formulario
+    // Recibir y validar los datos del formularios
     $id_detalles_pedido = $_POST['id_detalles_pedido'];
     $id_vendedor = $_POST['id_vendedor'];
     $fecha_venta = $_POST['fecha_venta'];

@@ -219,7 +219,7 @@ $result = mysqli_query($conectar, $query);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            // Manejo del envío del formulario
+            // Manejo del elanvío del formulario
             $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);

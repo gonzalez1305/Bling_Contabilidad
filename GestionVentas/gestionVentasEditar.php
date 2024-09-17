@@ -158,7 +158,7 @@ if (isset($_GET['id'])) {
                         <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
                         <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
                             <?php
-                            // Volver a cargar las opciones y marcar la opción seleccionada
+                            // Volver a cargar las opciones y marcar la opción seleccionadaa
                             while($row = mysqli_fetch_assoc($result_detalles_pedido)) {
                                 $selected = ($row['id_detalles_pedido'] == $venta['id_detalles_pedido']) ? 'selected' : '';
                                 echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . " - Precio Total: " . number_format($row['precio_total'], 2) . " COP</option>";

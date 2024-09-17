@@ -1,3 +1,6 @@
+<?php
+include '../session_check.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,7 +107,6 @@
     </div>
   </div>
   <?php
-session_start();
 if (isset($_SESSION['id_usuario'])) {
     $idUsuario = $_SESSION['id_usuario'];
 }

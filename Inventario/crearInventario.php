@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $imagen_ruta = 'uploads/' . basename($imagen_nombre);
         
         if (move_uploaded_file($imagen_tmp, $imagen_ruta)) {
-            // Imagen subida correctamente
+            // Imagen subida corrlaectamente
         } else {
             echo "Error al subir la imagen. Verifica que la carpeta exista y tenga permisos adecuados.";
             exit;

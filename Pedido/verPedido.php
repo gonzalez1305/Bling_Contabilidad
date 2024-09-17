@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
 
-// Inicialización de la respuesta en caso de error
+// Inicialización de lala respuesta en caso de error
 $response = ['status' => 'error', 'message' => 'Error desconocido'];
 
 // Verificar si el formulario fue enviado por método POST
