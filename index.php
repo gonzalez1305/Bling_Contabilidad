@@ -25,9 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // Redirigir al menú correspondiente
                     if ($usuario["tipo_usuario"] == 1) {
-                        header("Location: menuV.html"); // Redirigir a la interfaz del vendedor
+                        header("Location: menuV.php"); // Redirigir a la interfaz del vendedor
                     } elseif ($usuario["tipo_usuario"] == 2) {
-                        header("Location: menuC.html"); // Redirigir a la interfaz del cliente
+                        header("Location: menuC.php"); // Redirigir a la interfaz del cliente
                     } else {
                         // Manejar otros tipos de usuarios si es necesario
                         echo "Tipo de usuario no reconocido";
@@ -269,26 +269,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         function toggleMode() {
             document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.toggle-btn i');
-            icon.classList.toggle('fa-sun');
-            icon.classList.toggle('fa-moon');
         }
 
         function togglePassword() {
-            const passwordField = document.getElementById('contraseña');
-            const passwordToggle = document.querySelector('.password-toggle');
+            var passwordField = document.getElementById('contraseña');
+            var passwordToggle = document.querySelector('.password-toggle');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+                passwordToggle.innerHTML = '&#128065;';
             } else {
                 passwordField.type = 'password';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+                passwordToggle.innerHTML = '&#128065;';
             }
         }
-    </script>
-</body>
-</html>
-
     </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $idProducto = intval($_POST['idProducto']);
-    $cantidad = intval($_POST['cantidad']); // Puede ser positivo o negativo para agregar o quitar
+    $cantidad = intval($_POST['cantidad']); // La cantidad debe ser positiva
     $idUsuario = intval($_SESSION['id_usuario']);
 
     // Verificar la existencia del producto y la cantidad disponible
@@ -26,11 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         $product = $result->fetch_assoc();
         $cantidadDisponible = $product['cantidad'];
+        
         $precioUnitario = $product['precio_unitario'];
 
-        // Verificar si la cantidad es positiva o negativa (agregar o quitar del carrito)
+        // Verificar si la cantidad es válida
         if ($cantidad > 0 && $cantidad <= $cantidadDisponible) {
-            // Añadir el producto al carrito o actualizar la cantidad
+            // Añadir o actualizar el producto en el carrito
             $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) 
                                 VALUES (?, ?, ?) 
                                 ON DUPLICATE KEY UPDATE cantidad = cantidad + ?";
@@ -38,40 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param('iiii', $idProducto, $cantidad, $idUsuario, $cantidad);
             $stmt->execute();
 
-            // Actualizar la cantidad del producto en el inventario
+            /* Actualizar la cantidad del producto en el inventario
             $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
             $stmt = $conectar->prepare($updateProductQuery);
             $stmt->bind_param('ii', $cantidad, $idProducto);
             $stmt->execute();
+            */
 
             if ($stmt->affected_rows > 0) {
                 $response = ['status' => 'success', 'message' => 'Producto añadido al carrito'];
             } else {
                 $response['message'] = 'No se pudo actualizar el producto.';
-            }
-        } elseif ($cantidad < 0) {
-            // Eliminar productos del carrito
-            $removeCartQuery = "UPDATE carrito SET cantidad = cantidad + ? WHERE fk_id_producto = ? AND fk_id_usuario = ?";
-            $stmt = $conectar->prepare($removeCartQuery);
-            $stmt->bind_param('iii', $cantidad, $idProducto, $idUsuario);
-            $stmt->execute();
-
-            // Si la cantidad en el carrito es 0, eliminar el registro del carrito
-            $deleteCartQuery = "DELETE FROM carrito WHERE cantidad <= 0 AND fk_id_producto = ? AND fk_id_usuario = ?";
-            $stmt = $conectar->prepare($deleteCartQuery);
-            $stmt->bind_param('ii', $idProducto, $idUsuario);
-            $stmt->execute();
-
-            // Devolver el stock al inventario
-            $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
-            $stmt = $conectar->prepare($updateProductQuery);
-            $stmt->bind_param('ii', -$cantidad, $idProducto);  // Restablecer el inventario
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                $response = ['status' => 'success', 'message' => 'Producto eliminado del carrito'];
-            } else {
-                $response['message'] = 'No se pudo actualizar el carrito.';
             }
         } else {
             $response['message'] = 'Cantidad no válida o insuficiente.';
@@ -115,3 +93,4 @@ header('Content-Type: application/json');
 echo json_encode($response);
 
 $conectar->close();
+?>

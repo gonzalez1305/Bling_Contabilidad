@@ -1,3 +1,6 @@
+<?php
+include 'session_check.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,7 +32,7 @@
 
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-              <a class="nav-link" href="menu.html">Cerrar Sesión</a>
+              <a class="nav-link" href="logout.php">Cerrar Sesión</a>
               <a class="nav-link" href="./Usuario/infocliente.php">Mi info</a>
           </li>
         </ul>
