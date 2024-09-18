@@ -1,5 +1,6 @@
 <?php
 require "conexion.php";
+session_start();
 
 $errorMensaje = "";  // Variable para almacenar el mensaje de error
 $advertencia = "";   // Variable para almacenar el mensaje de advertencia
@@ -8,7 +9,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["correo"];
     $contraseña = $_POST["contraseña"];
 
-    // Consultar la base de datos para obtener la información del usuario
     $consultaUsuario = "SELECT id_usuario, contraseña, tipo_usuario, estado FROM usuario WHERE correo = '$correo'";
     $resultadoConsulta = mysqli_query($conectar, $consultaUsuario);
 
@@ -18,18 +18,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($usuario) {
             if (password_verify($contraseña, $usuario["contraseña"])) {
                 if ($usuario["estado"] == "Verificado") {
-                    // Iniciar sesión
-                    session_start();
                     $_SESSION["id_usuario"] = $usuario["id_usuario"];
                     $_SESSION["tipo_usuario"] = $usuario["tipo_usuario"];
 
-                    // Redirigir al menú correspondiente
                     if ($usuario["tipo_usuario"] == 1) {
-                        header("Location: menuV.html"); // Redirigir a la interfaz del vendedor
+                        header("Location: menuV.php");
                     } elseif ($usuario["tipo_usuario"] == 2) {
-                        header("Location: menuC.html"); // Redirigir a la interfaz del cliente
+                        header("Location: menuC.php");
                     } else {
-                        // Manejar otros tipos de usuarios si es necesario
                         echo "Tipo de usuario no reconocido";
                     }
 
@@ -269,26 +265,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         function toggleMode() {
             document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.toggle-btn i');
-            icon.classList.toggle('fa-sun');
-            icon.classList.toggle('fa-moon');
         }
 
         function togglePassword() {
-            const passwordField = document.getElementById('contraseña');
-            const passwordToggle = document.querySelector('.password-toggle');
+            var passwordField = document.getElementById('contraseña');
+            var passwordToggle = document.querySelector('.password-toggle');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo abierto
+                passwordToggle.innerHTML = '&#128065;';
             } else {
                 passwordField.type = 'password';
-                passwordToggle.innerHTML = '&#128065;'; // Ojo cerrado
+                passwordToggle.innerHTML = '&#128065;';
             }
         }
-    </script>
-</body>
-</html>
-
     </script>
 </body>
 </html>

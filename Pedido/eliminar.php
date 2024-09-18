@@ -1,5 +1,5 @@
 <?php
-// Verificar si se ha proporcionado el parámetro id_pedido
+// Verificar si se ha proporcionado el parámetro id_pedlaido
 if(isset($_GET['id_detalles_pedido'])){
     $id_detalles_pedido = $_GET['id_detalles_pedido'];
     
