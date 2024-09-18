@@ -11,8 +11,8 @@ if ($conexion->connect_error) {
 
 
 // Paso 3: Consulta a la base de datos
-$query = "SELECT id_usuario, nombre, apellido, telefono, direccion, fecha_de_nacimiento,  
-correo, estado, tipo_usuario
+$query = "SELECT nombre, apellido, telefono, direccion, fecha_de_nacimiento,  
+correo, estado 
 FROM usuario";
 $result = $conexion->query($query);
 
@@ -36,7 +36,7 @@ $pdf->Cell(40, 10, 'Reporte de Usuarios', 0, 1);
 // Iterar sobre los resultados y añadirlos al PDF
 foreach ($usuarios as $usuario) {
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(40, 10, 'ID Usuario: ' . $usuario['id_usuario'], 0, 1);
+
     $pdf->Cell(40, 10, 'nombre: ' . $usuario['nombre'], 0, 1);
     $pdf->Cell(40, 10, 'apellido: ' . $usuario['apellido'], 0, 1);
     $pdf->Cell(40, 10, 'telefono: ' . $usuario['telefono'], 0, 1);
@@ -44,7 +44,7 @@ foreach ($usuarios as $usuario) {
     $pdf->Cell(40, 10, 'fecha_de_nacimiento: ' . $usuario['fecha_de_nacimiento'], 0, 1);
     $pdf->Cell(40, 10, 'correo: ' . $usuario['correo'], 0, 1);
     $pdf->Cell(40, 10, 'estado: ' . $usuario['estado'], 0, 1);
-    $pdf->Cell(40, 10, 'tipo_usuario: ' . $usuario['tipo_usuario'], 0, 1);
+  
     $pdf->Ln(); // Salto de línea
 }
 
