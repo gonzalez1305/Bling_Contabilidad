@@ -1,4 +1,12 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
+    // Si no está logueado o no es un administrador, redirigir al login
+    header("Location: index.php");
+    exit();
+}
+?>
+<?php
 require '../conexion.php'; // Conexión a la base de datos
 
 // Inicializa un mensaje de resultado vacío
@@ -32,11 +40,8 @@ $ventasQuery = "SELECT gv.id_gestion_venta, dp.precio_total
 $ventasResult = mysqli_query($conectar, $ventasQuery);
 
 // Verifica si existe un mensaje en la sesión
-session_start();
-if (isset($_SESSION['mensaje'])) {
-    $resultado = $_SESSION['mensaje'];
-    unset($_SESSION['mensaje']);
-}
+
+
 ?>
 
 <!DOCTYPE html>

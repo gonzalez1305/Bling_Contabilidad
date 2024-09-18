@@ -6,6 +6,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codigoIngresado = $_POST['codigo'];
     $nuevaContraseña = $_POST['nueva_contraseña'];
 
+    // Validar la nueva contraseña
+    if (!preg_match('/(?=.*\d)(?=.*[a-zA-Z]).{8,}/', $nuevaContraseña)) {
+        echo "<script>alert('La contraseña debe tener al menos 8 caracteres, una letra y un número.'); window.history.back();</script>";
+        exit();
+    }
+
     // Verificar el código ingresado
     $stmt = $conectar->prepare("SELECT codigo_recuperacion FROM usuario WHERE correo = ?");
     $stmt->bind_param("s", $correo);
@@ -147,12 +153,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class="mb-3 form-group">
         <label for="nueva_contraseña" class="form-label">Nueva Contraseña</label>
-        <input type="password" class="form-control" id="nueva_contraseña" name="nueva_contraseña" required minlength="8">
+        <input type="password" class="form-control" id="nueva_contraseña" name="nueva_contraseña" required minlength="8" 
+               pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}" title="La contraseña debe tener al menos 8 caracteres, una letra y un número.">
         <span class="eye-icon" onclick="togglePassword()">
           👁️
         </span>
+        <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres, una letra y un número.</small>
       </div>
       <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+      <br>
       <a href="menu.html">Volver</a>
     </form>
   </div>

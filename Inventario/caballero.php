@@ -1,6 +1,21 @@
 <?php
-include '../session_check.php';
+session_start();
+
+// Verificar si el usuario está logueado y es un cliente
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 2) {
+    // Si no está logueado o no es un cliente, redirigir al login
+    header("Location: ../index.php");
+    exit();
+}
+
+if (isset($_SESSION['id_usuario'])) {
+    $idUsuario = $_SESSION['id_usuario'];
+}
+include '../conexion.php';
+$query = "SELECT * FROM producto WHERE categorias = 'caballero' AND estado = 'disponible'";
+$result = mysqli_query($conectar, $query);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,7 +107,7 @@ include '../session_check.php';
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-              <a class="nav-link" href="../menu.html">Cerrar Sesión</a>
+          <a class="nav-link" href="../logout.php">Cerrar Sesión</a>
               <a class="nav-link" href="../Usuario/infocliente.php">Mi info</a>
           </li>
         </ul>
@@ -106,16 +121,6 @@ include '../session_check.php';
       Caballero
     </div>
   </div>
-  <?php
-if (isset($_SESSION['id_usuario'])) {
-    $idUsuario = $_SESSION['id_usuario'];
-}
-include '../conexion.php';
-
-// Consulta para obtener los productos de la categoría 'caballero' y que estén disponibles
-$query = "SELECT * FROM producto WHERE categorias = 'caballero' AND estado = 'disponible'";
-$result = mysqli_query($conectar, $query);
-?>
 
 <!doctype html>
 <html lang="es">
@@ -252,7 +257,7 @@ $result = mysqli_query($conectar, $query);
                 });
             });
 
-            // Confirmar Pedido con SweetAlert2
+            // Confirmar Pedido con la SweetAlert2
             $('#confirmarPedidoBtn').on('click', function() {
                 Swal.fire({
                     title: '¿Estás seguro?',
