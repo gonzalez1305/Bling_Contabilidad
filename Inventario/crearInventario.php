@@ -1,4 +1,12 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
+    // Si no está logueado o no es un administrador, redirigir al login
+    header("Location: index.php");
+    exit();
+}
+?>
+<?php
 require '../conexion.php'; // Conexión
 
 $talla = '';
@@ -37,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $imagen_ruta = 'uploads/' . basename($imagen_nombre);
         
         if (move_uploaded_file($imagen_tmp, $imagen_ruta)) {
-            // Imagen subida correctamente
+            // Imagen subida corrlaectamente
         } else {
             echo "Error al subir la imagen. Verifica que la carpeta exista y tenga permisos adecuados.";
             exit;

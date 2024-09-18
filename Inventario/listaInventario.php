@@ -1,4 +1,11 @@
-<?php include '../session_check.php'; ?>
+<?php
+session_start();
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
+    // Si no está logueado o no es un administrador, redirigir al login
+    header("Location: index.php");
+    exit();
+}
+?>
 <?php
 require '../conexion.php';
 
@@ -42,6 +49,11 @@ $resultado = mysqli_query($conectar, $sql_select);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <style>
+                #confirmDeleteModal .modal-body,
+        #confirmDeleteModal .modal-title {
+            color: black !important;}
+    </style>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="../menuV.php">
@@ -150,7 +162,7 @@ $resultado = mysqli_query($conectar, $sql_select);
         </div>
     </div>
 
-    <!-- Confirmación de Eliminación -->
+    <!-- Confirmación de Elaliminación -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -161,7 +173,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                 <div class="modal-body">
                     <form id="deleteForm" method="POST" action="">
                         <input type="hidden" id="eliminar_id" name="eliminar_id">
-                        ¿Está seguro de que desea eliminar este producto?
+                        <p>  ¿Está seguro de que desea eliminar este producto?</p>
                     </form>
                 </div>
                 <div class="modal-footer">

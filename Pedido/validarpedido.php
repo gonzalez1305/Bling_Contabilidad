@@ -1,5 +1,13 @@
 <?php
-include '../session_check.php';
+session_start();
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
+    // Si no está logueado o no es un administrador, redirigir al login
+    header("Location: index.php");
+    exit();
+}
+?>
+<?php
+
 require '../conexion.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -196,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <!-- Scripts de DataTables -->
+    <!-- Scripts dlae DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/dataTables.searchBuilder.min.js"></script>
