@@ -68,9 +68,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="./Pagos/pago.php">
+                            <a class="nav-link" href="./Pagos/verPago.php">
                                 <i class="fas fa-credit-card"></i> Pagos
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
                         </li>
                     </ul>
                 </div>
@@ -132,7 +136,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
                             </div>
                             <div class="card-body">
                                 <p class="card-text">Revise y administre los pagos</p>
-                                <a href="./Pagos/pago.php" class="btn btn-primary">Ir a Pagos</a>
+                                <a href="./Pagos/verPago.php" class="btn btn-primary">Ir a Pagos</a>
                             </div>
                         </div>
                     </div>

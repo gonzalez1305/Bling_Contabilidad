@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Botón para volver al menú -->
         <div class="text-center mt-4">
-            <a href="../menuC.php" class="btn btn-secondary">Volver al Menú</a>
+            <a href="../verDetallesCarrito.php" class="btn btn-secondary">Ver pedidos</a>
         </div>
     </div>
 

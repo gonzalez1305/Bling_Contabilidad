@@ -145,8 +145,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/pago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
+                    <li class="nav-item">
+                            <a class="nav-link" href="./Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
+                        </li>
                 </ul>
             </div>
         </nav>
