@@ -43,7 +43,7 @@ $result = mysqli_query($conectar, $query);
         }
 
         .product-card img {
-            max-width: 100%;
+            max-width: 40%;
             border-bottom: 1px solid #ddd;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;

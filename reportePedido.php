@@ -36,8 +36,7 @@ $pdf->Cell(40, 10, 'Reporte de Pedidos', 0, 1);
 // Iterar sobre los resultados y añadirlos al PDF
 foreach ($pedidos as $pedido) {
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(40, 10, 'ID Pedido: ' . $pedido ['id_pedido'], 0, 1);
-    $pdf->Cell(40, 10, 'ID Usuario: ' . $pedido['fk_id_usuario'], 0, 1);
+
     $pdf->Cell(40, 10, 'Fecha: ' . $pedido['fecha'], 0, 1);
     $pdf->Cell(40, 10, 'Situacion: ' . $pedido['situacion'], 0, 1);
     $pdf->Cell(40, 10, 'Nombre Producto: ' . $pedido['nombre'], 0, 1);
