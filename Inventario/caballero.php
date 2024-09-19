@@ -197,7 +197,7 @@ $result = mysqli_query($conectar, $query);
                         
                                 // Mostrar detalles del producto en el carrito
                                 echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                                echo '<form method="POST" action="../eliminarCarritoCaballero.php">';
+                                echo '<form method="POST" action="../eliminarProductoCarrito.php">';
                                 echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
                                 echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
                                 echo '</form>';
