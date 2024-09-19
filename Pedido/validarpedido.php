@@ -83,6 +83,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<style>
+
+
+body.dark-mode .dataTables_wrapper .dataTables_filter label {
+    color: #ffffff; /* Color del texto en la etiqueta de búsqueda */
+}
+
+
+
+
+</style>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
@@ -207,8 +218,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Scripts dlae DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/dataTables.searchBuilder.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../script.js"></script>
