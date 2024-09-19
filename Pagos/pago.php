@@ -110,6 +110,10 @@ $ventasResult = mysqli_query($conectar, $ventasQuery);
                                 <i class="fas fa-credit-card"></i> Pagos
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
+                        </li>
                     </ul>
                 </div>
             </nav>

@@ -211,7 +211,7 @@ $result = mysqli_query($conectar, $query);
                     </div>
                     <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
                     <!-- Confirmar Pedido -->
-                    <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
+                    <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php" action="verDetallesCarrito.php">
                       <button type="button" id="confirmarPedidoBtn" class="btn btn-danger mt-3">Confirmar Pedido</button>
                     </form>
                 </div>
