@@ -4,35 +4,33 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-require '../conexion.php';
+
+require '../conexion.php'; // Conexión
+
+// Obtener productos desde la base de datos
+$sql_productos = "SELECT p.id_producto, p.nombre, p.categorias FROM producto p";
+$resultado_productos = mysqli_query($conectar, $sql_productos);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_producto = $_POST['id_producto'];
-    $tallas = $_POST['tallas']; // Array de tallas
-    $cantidades = $_POST['cantidades']; // Array de cantidades
+    $id_producto = mysqli_real_escape_string($conectar, $_POST['producto']);
+    $tallas = $_POST['tallas'];
+    $cantidades = $_POST['cantidades'];
 
-    // Validación adicional si es necesario
-    foreach ($tallas as $index => $talla) {
-        $cantidad = $cantidades[$index];
+    // Inserción de las tallas en la tabla tallas
+    for ($i = 0; $i < count($tallas); $i++) {
+        $talla = mysqli_real_escape_string($conectar, $tallas[$i]);
+        $cantidad = mysqli_real_escape_string($conectar, $cantidades[$i]);
 
-        // Asegúrate de que $id_producto, $talla y $cantidad sean seguros
-        $talla = mysqli_real_escape_string($conectar, $talla);
-        $cantidad = mysqli_real_escape_string($conectar, $cantidad);
-
-        // Inserción de tallas en la tabla
-        $sql = "INSERT INTO tallas (fk_id_producto, talla, cantidad) VALUES ('$id_producto', '$talla', '$cantidad')";
-        
-        if (!mysqli_query($conectar, $sql)) {
-            echo "Error: " . mysqli_error($conectar);
-        }
+        $sql_insert_talla = "INSERT INTO tallas (fk_id_producto, talla, cantidad) VALUES ('$id_producto', '$talla', '$cantidad')";
+        mysqli_query($conectar, $sql_insert_talla);
     }
 
-    echo "<script>alert('Tallas y cantidades agregadas exitosamente'); window.location.href='listaInventario.php';</script>";
+    echo "<script>alert('Tallas registradas correctamente');</script>";
+    echo "<script>window.location.href = 'listaInventario.php';</script>";
+    exit;
 }
 
-// Obtener productos existentes junto con la columna `categorias` de la tabla `producto`
-$sql_productos = "SELECT id_producto, nombre, categorias FROM producto";
-$result_productos = mysqli_query($conectar, $sql_productos);
+mysqli_close($conectar);
 ?>
 
 <!DOCTYPE html>
@@ -40,89 +38,104 @@ $result_productos = mysqli_query($conectar, $sql_productos);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Tallas a Producto Existente - Bling Compra</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Agregar Tallas - Bling Compra</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="icon" href="../imgs/logo.png">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container-fluid {
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Agregar Tallas a Producto Existente</h2>
+    <div class="container-fluid">
+        <h1 class="mt-4">Agregar Tallas a Producto</h1>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="mb-3">
-                <label for="id_producto" class="form-label">Selecciona un Producto:</label>
-                <select id="id_producto" name="id_producto" class="form-control" required>
+                <label for="producto" class="form-label">Producto:</label>
+                <select id="producto" name="producto" class="form-control" required>
                     <option value="">Seleccione un producto</option>
-                    <?php while ($producto = mysqli_fetch_assoc($result_productos)) { ?>
+                    <?php while ($producto = mysqli_fetch_assoc($resultado_productos)): ?>
                         <option value="<?php echo $producto['id_producto']; ?>" data-categoria="<?php echo $producto['categorias']; ?>">
-                            <?php echo $producto['nombre'] . " - " . $producto['categorias']; ?>
+                            <?php echo $producto['nombre'] . ' - ' . $producto['categorias']; ?>
                         </option>
-                    <?php } ?>
+                    <?php endwhile; ?>
                 </select>
             </div>
-           
             <div id="tallas-container">
-                <h5>Tallas y Cantidades</h5>
+                <h3>Tallas</h3>
                 <div class="mb-3">
-                    <label for="tallas[]" class="form-label">Talla:</label>
-                    <select name="tallas[]" class="form-control" required>
-                        <!-- Opciones se llenarán dinámicamente -->
+                    <label for="talla1" class="form-label">Talla:</label>
+                    <select id="talla1" name="tallas[]" class="form-control" required>
+                        <option value="">Seleccione una talla</option>
                     </select>
-                    <label for="cantidades[]" class="form-label">Cantidad:</label>
-                    <input type="number" name="cantidades[]" class="form-control" placeholder="Cantidad" min="1" required>
+                    <label for="cantidad1" class="form-label">Cantidad:</label>
+                    <input type="number" id="cantidad1" name="cantidades[]" class="form-control" required>
                 </div>
             </div>
-            <button type="button" id="agregar-talla" class="btn btn-secondary">Agregar Talla</button>
-            <button type="submit" class="btn btn-primary">Agregar Tallas</button>
+            <button type="button" id="agregar-talla" class="btn btn-secondary mb-3">Agregar Talla</button>
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">Registrar Tallas</button>
+                <a href="./listaInventario.php" class="btn btn-primary">Volver al Menu</a>
+            </div>
         </form>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Definición de tallas por categoría
-        const tallasPorCategoria = {
-            'Caballero': Array.from({ length: 7 }, (_, i) => i + 38), // Tallas desde 38 hasta 44
-            'Dama': Array.from({ length: 6 }, (_, i) => i + 35), // Tallas desde 35 hasta 40
-            'Niño': Array.from({ length: 12 }, (_, i) => i + 22) // Tallas desde 22 hasta 33
-        };
+        $(document).ready(function() {
+            const tallasPorCategoria = {
+                'Caballero': Array.from({length: 7}, (_, i) => i + 38), // Tallas 38-44
+                'Dama': Array.from({length: 6}, (_, i) => i + 35), // Tallas 35-40
+                'Niño': Array.from({length: 12}, (_, i) => i + 22) // Tallas 22-33
+            };
 
-        document.getElementById('id_producto').addEventListener('change', function () {
-            const selectedOption = this.options[this.selectedIndex];
-            const categoria = selectedOption.getAttribute('data-categoria');
-            actualizarTallas('select[name="tallas[]"]', categoria);
-        });
+            $('#producto').on('change', function() {
+                const categoriaSeleccionada = $(this).find(':selected').data('categoria');
+                actualizarTallas('#talla1', categoriaSeleccionada);
+            });
 
-        document.getElementById('agregar-talla').addEventListener('click', function () {
-            const container = document.getElementById('tallas-container');
-            const newDiv = document.createElement('div');
-            newDiv.classList.add('mb-3');
-            newDiv.innerHTML = `
-                <label for="tallas[]" class="form-label">Talla:</label>
-                <select name="tallas[]" class="form-control" required>
-                    <!-- Opciones se llenarán dinámicamente -->
-                </select>
-                <label for="cantidades[]" class="form-label">Cantidad:</label>
-                <input type="number" name="cantidades[]" class="form-control" placeholder="Cantidad" min="1" required>
-            `;
-            container.appendChild(newDiv);
+            $('#agregar-talla').on('click', function() {
+                const tallaCount = $('#tallas-container').children().length + 1;
+                const nuevaTalla = `
+                    <div class="mb-3">
+                        <label for="talla${tallaCount}" class="form-label">Talla:</label>
+                        <select id="talla${tallaCount}" name="tallas[]" class="form-control" required>
+                            <option value="">Seleccione una talla</option>
+                        </select>
+                        <label for="cantidad${tallaCount}" class="form-label">Cantidad:</label>
+                        <input type="number" id="cantidad${tallaCount}" name="cantidades[]" class="form-control" required>
+                    </div>
+                `;
+                $('#tallas-container').append(nuevaTalla);
+                actualizarTallas(`#talla${tallaCount}`, $('#producto').find(':selected').data('categoria'));
+            });
 
-            // Agregar opciones de talla según la categoría seleccionada
-            const categoria = document.getElementById('id_producto').options[document.getElementById('id_producto').selectedIndex].getAttribute('data-categoria');
-            actualizarTallas(newDiv.querySelector('select[name="tallas[]"]'), categoria);
-        });
+            function actualizarTallas(selector, categoria) {
+                const tallasSelect = $(selector);
+                tallasSelect.empty(); // Limpia las opciones actuales
 
-        function actualizarTallas(selector, categoria) {
-            const tallasSelect = document.querySelector(selector);
-            tallasSelect.innerHTML = ''; // Limpia las opciones actuales
-
-            if (tallasPorCategoria[categoria]) {
-                tallasPorCategoria[categoria].forEach(talla => {
-                    const option = new Option(talla, talla);
-                    tallasSelect.appendChild(option);
-                });
+                if (tallasPorCategoria[categoria]) {
+                    tallasSelect.append(new Option('Seleccione una talla', ''));
+                    tallasPorCategoria[categoria].forEach(talla => {
+                        tallasSelect.append(new Option(talla, talla));
+                    });
+                } else {
+                    tallasSelect.append(new Option('Seleccione una talla', ''));
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
-
-<?php
-mysqli_close($conectar);
-?>
