@@ -41,52 +41,35 @@ $resultado = mysqli_query($conectar, $sql_select);
     <link rel="stylesheet" href="../style.css">
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
     <style>
         #confirmDeleteModal .modal-body,
         #confirmDeleteModal .modal-title {
-            color: black !important;}
-            .dark-mode .dataTables_length label,
-.dark-mode .dataTables_info,
-.dark-mode .dataTables_filter label {
-    color: white;
-}
-
-
-.dark-mode .dataTables_length select,
-.dark-mode .dataTables_filter input {
-    color: white;
-    background-color: #333; 
-    border-color: #555;
-
-.dark-mode .dataTables_length label,
-.dark-mode .dataTables_info,
-.dark-mode .dataTables_filter label,
-.dark-mode .dataTables_paginate a {
-    color: white;
-}
-
-
-.dark-mode .dataTables_length select,
-.dark-mode .dataTables_filter input {
-    color: white;
-    background-color: #333; 
-    border-color: #555; 
-}
-
-.dark-mode .dataTables_paginate .paginate_button {
-    color: white;
-    background-color: #333;
-    border: 1px solid #555; 
-}
-
-.dark-mode .dataTables_paginate .paginate_button:hover {
-    background-color: #555; 
-    color: white;
-}
-
+            color: black !important;
+        }
+        .dark-mode .dataTables_length label,
+        .dark-mode .dataTables_info,
+        .dark-mode .dataTables_filter label,
+        .dark-mode .dataTables_paginate a {
+            color: white;
+        }
+        .dark-mode .dataTables_length select,
+        .dark-mode .dataTables_filter input {
+            color: white;
+            background-color: #333; 
+            border-color: #555; 
+        }
+        .dark-mode .dataTables_paginate .paginate_button {
+            color: white;
+            background-color: #333;
+            border: 1px solid #555; 
+        }
+        .dark-mode .dataTables_paginate .paginate_button:hover {
+            background-color: #555; 
+            color: white;
+        }
     </style>
+</head>
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="../menuV.php">
@@ -143,7 +126,8 @@ $resultado = mysqli_query($conectar, $sql_select);
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
+                                <i class="fas fa-tags"></i> Marca
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -184,25 +168,31 @@ $resultado = mysqli_query($conectar, $sql_select);
 
                     if (count($productos) > 0) {
                         echo "<table id='tablaInventario' class='display'>";
-                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></thead><tbody>";
+                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th><th>Acciones</th></tr></thead><tbody>";
 
                         foreach ($productos as $id => $producto) {
                             echo "<tr id='row-" . $id . "'>";
                             echo "<td><img src='" . $producto['imagen'] . "' alt='" . $producto['nombre'] . "' style='width: 50px; height: 50px;'></td>";
-                            echo "<td style='color: black;'>" . $producto['nombre'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['estado'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['precio'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['marca'] . "</td>";
+                            echo "<td>" . $producto['nombre'] . "</td>";
+                            echo "<td>" . $producto['estado'] . "</td>";
+                            echo "<td>" . $producto['precio'] . "</td>";
+                            echo "<td>" . $producto['marca'] . "</td>";
 
                             $tallas_html = "";
                             foreach ($producto['tallas'] as $talla) {
                                 $tallas_html .= "Talla: " . $talla['talla'] . ", Cantidad: " . $talla['cantidad'] . "<br>";
                             }
 
-                            echo "<td style='color: black;'>" . $tallas_html . "</td>";
+                            echo "<td>" . $tallas_html . "</td>";
                             echo "<td class='column-actions'>";
                             echo "<div class='btn-group' role='group'>";
                             
+                            // Botón de Editar
+                            echo "<a href='./editarInventario.php?id_producto=" . $id . "' class='btn btn-warning'><i class='fas fa-edit'></i> Editar</a>";
+                            
+                            // Botón de Eliminar
+                            echo "<button class='btn btn-danger' onclick='confirmDelete(" . $id . ")'><i class='fas fa-trash-alt'></i> Eliminar</button>";
+
                             echo "</div>";
                             echo "</td>";
                             echo "</tr>";
@@ -213,19 +203,24 @@ $resultado = mysqli_query($conectar, $sql_select);
                     }
                     ?>
                 </div>
-
                 <div class="mt-4">
                     <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Producto</a>
                 </div>
                 <div class="mt-4">
                     <a href="./crearProductoExistente.php" class="btn btn-primary">Agregar Producto Existente</a>
                 </div>
-                
+
+                <div class="mt-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- Aquí puedes agregar los enlaces de paginación si es necesario -->
+                        </ul>
+                    </nav>
+                </div>
             </main>
         </div>
     </div>
 
-    <!-- Confirmación de Eliminación -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -238,8 +233,8 @@ $resultado = mysqli_query($conectar, $sql_select);
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form method="post" id="deleteForm">
-                        <input type="hidden" name="eliminar_id" id="eliminar_id" value="">
+                    <form id="deleteForm" method="POST">
+                        <input type="hidden" name="eliminar_id" id="eliminar_id">
                         <button type="submit" class="btn btn-danger">Eliminar</button>
                     </form>
                 </div>
@@ -247,18 +242,30 @@ $resultado = mysqli_query($conectar, $sql_select);
         </div>
     </div>
 
+    <script>
+        function confirmDelete(id) {
+            document.getElementById('eliminar_id').value = id;
+            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#tablaInventario').DataTable();
-        });
+        $(document).ready(function () {
+            $('#tablaInventario').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+                }
+            });
 
-        function confirmDelete(id) {
-            $('#eliminar_id').val(id);
-            $('#confirmDeleteModal').modal('show');
-        }
+            // Toggle dark mode
+            $('#darkModeToggle').click(function () {
+                $('body').toggleClass('dark-mode');
+            });
+        });
     </script>
 </body>
 </html>

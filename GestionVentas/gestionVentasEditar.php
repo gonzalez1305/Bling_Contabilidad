@@ -5,8 +5,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
+
 require '../conexion.php'; // Conexión a la base de datos
 
 // Consultas para obtener los ID de Detalles Pedido y Vendedores
@@ -25,7 +24,7 @@ $result_vendedores = mysqli_query($conectar, $query_vendedores);
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
     $id_gestion_venta = $_POST['id_gestion_venta'];
     $id_detalles_pedido = $_POST['id_detalles_pedido'];
-    $id_vendedor = $_POST['id_vendedor'];
+  
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
@@ -35,10 +34,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
         echo "<script>alert('Las fechas no pueden ser futuras.'); window.history.back();</script>";
         exit;
     }
+    if ($fecha_registro <= $fecha_venta) {
+        echo "<script>alert('La fecha de registro debe ser mayor que la fecha de venta.'); window.history.back();</script>";
+        exit;
+    }
 
     // Actualizar el registro de gestión de ventas
     $sql_update = "UPDATE gestion_ventas 
-                   SET id_detalles_pedido='$id_detalles_pedido', id_vendedor='$id_vendedor', fecha_venta='$fecha_venta', fecha_registro='$fecha_registro'
+                   SET id_detalles_pedido='$id_detalles_pedido', fecha_venta='$fecha_venta', fecha_registro='$fecha_registro'
                    WHERE id_gestion_venta='$id_gestion_venta'";
 
     if (mysqli_query($conectar, $sql_update)) {
@@ -52,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
 if (isset($_GET['id'])) {
     $id_gestion_venta = $_GET['id'];
     $sql_select = "
-        SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.id_vendedor, gv.fecha_venta, gv.fecha_registro,
+        SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.fecha_venta, gv.fecha_registro,
                dp.precio_total
         FROM gestion_ventas gv
         JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
@@ -153,9 +156,9 @@ if (isset($_GET['id'])) {
                         <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link" href="../Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
-                        </li>
+                        <a class="nav-link" href="../Marca/listaMarcas.php">
+                            <i class="fas fa-credit-card"></i> Marca</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -170,23 +173,10 @@ if (isset($_GET['id'])) {
                         <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
                         <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
                             <?php
-                            // Volver a cargar las opciones y marcar la opción seleccionadaa
+                            // Volver a cargar las opciones y marcar la opción seleccionada
                             while($row = mysqli_fetch_assoc($result_detalles_pedido)) {
                                 $selected = ($row['id_detalles_pedido'] == $venta['id_detalles_pedido']) ? 'selected' : '';
                                 echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . " - Precio Total: " . number_format($row['precio_total'], 2) . " COP</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="id_vendedor" class="form-label">ID Vendedor:</label>
-                        <select name="id_vendedor" id="id_vendedor" class="form-select" required>
-                            <?php
-                            // Volver a cargar las opciones y marcar la opción seleccionada
-                            while($row = mysqli_fetch_assoc($result_vendedores)) {
-                                $selected = ($row['id_vendedor'] == $venta['id_vendedor']) ? 'selected' : '';
-                                echo "<option value='" . $row['id_vendedor'] . "' $selected>" . $row['id_vendedor'] . "</option>";
                             }
                             ?>
                         </select>
@@ -214,3 +204,7 @@ if (isset($_GET['id'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<?php
+mysqli_close($conectar);
+?>

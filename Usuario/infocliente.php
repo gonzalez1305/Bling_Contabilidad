@@ -164,10 +164,10 @@ if (!$usuario) {
             <p><strong>Dirección:</strong> <?php echo htmlspecialchars($usuario['direccion']); ?></p>
             <p><strong>Fecha de Nacimiento:</strong> <?php echo htmlspecialchars($usuario['fecha_de_nacimiento']); ?></p>
             <p><strong>Correo:</strong> <?php echo htmlspecialchars($usuario['correo']); ?></p>
-            <p><strong>Estado:</strong> <?php echo htmlspecialchars($usuario['estado']); ?></p>
+            
             <a href="editar_usuario_cliente.php" class="btn btn-primary btn-custom">Editar Información</a>
             <a href="../menuC.php" class="btn btn-secondary btn-custom">Volver</a>
-            <a href="confirmar_eliminacion.php" class="btn btn-danger btn-custom">Eliminar Cuenta</a>
+            
         </div>
     </div>
 </div>

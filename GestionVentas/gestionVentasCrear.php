@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
@@ -6,8 +5,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
+
 require '../conexion.php'; // Conexión a la base de datos
 
 // Consultas para obtener los ID de Detalles Pedido con precio_total solo si el pedido está en situación "entregado"
@@ -26,18 +24,22 @@ $result_vendedores = mysqli_query($conectar, $query_vendedores);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir y validar los datos del formularios
     $id_detalles_pedido = $_POST['id_detalles_pedido'];
-    $id_vendedor = $_POST['id_vendedor'];
+    
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
     // Validar fechas
     $fecha_actual = date('Y-m-d');
-    if ($fecha_venta > $fecha_actual || $fecha_registro > $fecha_actual) {
-        echo "<script>alert('La fecha de venta y la fecha de registro deben ser menores o iguales a la fecha actual.');</script>";
+    if ($fecha_venta > $fecha_actual) {
+        echo "<script>alert('La fecha de venta no puede ser mayor a la fecha actual.');</script>";
+    } elseif ($fecha_registro > $fecha_actual) {
+        echo "<script>alert('La fecha de registro no puede ser mayor a la fecha actual.');</script>";
+    } elseif ($fecha_registro <= $fecha_venta) {
+        echo "<script>alert('La fecha de registro debe ser mayor que la fecha de venta.');</script>";
     } else {
         // Crear el SQL para insertar el nuevo registro
-        $sql = "INSERT INTO gestion_ventas (id_detalles_pedido, id_vendedor, fecha_venta, fecha_registro)
-                VALUES ('$id_detalles_pedido', '$id_vendedor', '$fecha_venta', '$fecha_registro')";
+        $sql = "INSERT INTO gestion_ventas (id_detalles_pedido, fecha_venta, fecha_registro)
+                VALUES ('$id_detalles_pedido', '$fecha_venta', '$fecha_registro')";
 
         if (mysqli_query($conectar, $sql)) {
             echo "<script>alert('Nuevo registro creado exitosamente'); window.location.href='gestionVentasLista.php';</script>";
@@ -148,9 +150,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link" href="./Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
-                        </li>
+                        <a class="nav-link" href="./Marca/listaMarcas.php">
+                            <i class="fas fa-credit-card"></i> Marca</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -175,17 +177,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div id="precio_total" class="form-control" readonly>
                             Seleccione un ID Detalles Pedido
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="id_vendedor" class="form-label">ID Vendedor:</label>
-                        <select name="id_vendedor" id="id_vendedor" class="form-select" required>
-                            <?php while($row = mysqli_fetch_assoc($result_vendedores)): ?>
-                                <option value="<?php echo $row['id_vendedor']; ?>">
-                                    <?php echo $row['id_vendedor']; ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
                     </div>
 
                     <div class="mb-3">
