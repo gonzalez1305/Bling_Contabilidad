@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Uso</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/imgs/logo.png">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
+            color: #333;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode {
+            background: linear-gradient(to bottom, #2c2b33, #1a1a1a, #000000);
+            color: #ffffff;
+        }
+
+        h1, h2, p {
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1 {
+            color: #007bff;
+        }
+
+        .dark-mode h2 {
+            color: #0056b3;
+        }
+
+        .dark-mode p {
+            color: #dddddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .toggle-btn i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .dark-mode .back-btn {
+            background-color: #0056b3;
+        }
+
+        .dark-mode .back-btn:hover {
+            background-color: #003f7f;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+        }
+
+        ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        ul li a:hover {
+            color: #0056b3;
+        }
+
+        .dark-mode ul li a {
+            color: #66b2ff;
+        }
+
+        .dark-mode ul li a:hover {
+            color: #3399ff;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleMode()"><i class="fa-solid fa-sun"></i></button>
+
+    <div class="container">
+        <h1>Manual de Uso</h1>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/9GFcheNNnAc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <ul>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=24" target="_blank">00:24 - ¿Por qué no puedo ver el catálogo?</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=38" target="_blank">00:38 - Conoce más sobre la empresa</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=50" target="_blank">00:50 - Dudas, servicio, términos de uso, términos de venta, aviso legal, política de privacidad</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=75" target="_blank">01:15 - Contactar a través de nuestras redes sociales y correo electrónico</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=120" target="_blank">02:00 - ¿Cómo utilizo el modo oscuro?</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=145" target="_blank">02:25 - Registro</a></li>
+            <li><a href="https://youtu.be/9GFcheNNnAc?t=170" target="_blank">02:50 - Inicio de sesión</a></li>
+        </ul>
+        <a href="menu.html" class="back-btn">Volver al Menú</a>
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-btn i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
+</body>
+</html>

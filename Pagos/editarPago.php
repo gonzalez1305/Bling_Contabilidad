@@ -60,6 +60,20 @@ mysqli_close($conectar);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
 </head>
 <body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="../menuV.php">
@@ -118,25 +132,7 @@ mysqli_close($conectar);
                 </div>
             </nav>
 
-            <div class="container">
-    <h1 class="my-4">Editar Pago</h1>
-
-    <!-- Mostrar formulario de edición -->
-    <form method="POST" action="editarPago.php?id=<?php echo $id_pago; ?>">
-        <div class="mb-3">
-            <label for="fecha_pago" class="form-label">Fecha de Pago</label>
-            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo htmlspecialchars($fecha_pago); ?>" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="monto" class="form-label">Monto</label>
-            <input type="number" step="0.01" class="form-control" id="monto" name="monto" value="<?php echo htmlspecialchars($monto); ?>" required>
-        </div>
-
-        <button type="submit" name="actualizar" class="btn btn-primary">Actualizar</button>
-        <a href="verPago.php" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+            
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

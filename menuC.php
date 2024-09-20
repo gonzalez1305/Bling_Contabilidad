@@ -155,7 +155,8 @@ include 'session_check.php';
                   <a href="Ayuda/TerminosUso.html" class="text-decoration-none">Términos de uso</a><br><br>
                   <a href="Ayuda/TerminosVenta.html" class="text-decoration-none">Términos de venta</a><br><br>
                   <a href="Ayuda/AvisoLegal.html" class="text-decoration-none">Aviso Legal</a><br><br>
-                  <a href="Ayuda/PoliticaPrivacidad.html" class="text-decoration-none">Política de privacidad y cookies</a>
+                  <a href="Ayuda/PoliticaPrivacidad.html" class="text-decoration-none">Política de privacidad y cookies</a><br><br>
+                  <a href="manualusuarioc.php" class="text-decoration-none">Manual usuario</a>
                 </p>
               </div>
               
