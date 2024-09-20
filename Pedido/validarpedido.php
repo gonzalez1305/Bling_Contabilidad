@@ -5,8 +5,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
 
 require '../conexion.php';
 use PHPMailer\PHPMailer\PHPMailer;
@@ -84,15 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <style>
-
-
 body.dark-mode .dataTables_wrapper .dataTables_filter label {
     color: #ffffff; /* Color del texto en la etiqueta de búsqueda */
 }
-
-
-
-
 </style>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -180,11 +172,10 @@ body.dark-mode .dataTables_wrapper .dataTables_filter label {
                                 $sql = "SELECT 
                                 u.nombre AS cliente,
                                 DATE(p.fecha) AS fecha,
-                                TIME(p.fecha) AS hora,
                                 p.situacion,
+                                p.id_pedido,
                                 SUM(dp.unidades) AS total_unidades,
-                                SUM(dp.precio_total) AS total_precio,
-                                MIN(dp.id_detalles_pedido) AS id_detalles_pedido
+                                SUM(dp.precio_total) AS total_precio
                             FROM 
                                 pedido p
                             INNER JOIN 
@@ -192,21 +183,21 @@ body.dark-mode .dataTables_wrapper .dataTables_filter label {
                             INNER JOIN 
                                 usuario u ON p.fk_id_usuario = u.id_usuario
                             GROUP BY 
-                                u.nombre, DATE(p.fecha), TIME(p.fecha), p.situacion
+                                u.nombre, DATE(p.fecha), p.situacion, p.id_pedido
                             ORDER BY 
-                                fecha DESC, hora DESC";
+                                fecha DESC";
                                 $resultado = mysqli_query($conectar, $sql);
                                 while ($filas = mysqli_fetch_assoc($resultado)) {
                             ?>
                                 <tr>
-                                    <<td style='color: black;'><?php echo htmlspecialchars($filas['cliente']) ?></td>
+                                    <td style='color: black;'><?php echo htmlspecialchars($filas['cliente']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['fecha']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['situacion']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['total_unidades']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['total_precio']) ?></td>
                                     <td>
-                                        <a href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-warning btn-sm'>Editar</a>
-                                        <a href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-danger btn-sm' onclick='return confirmar()'>Eliminar</a>
+                                        <a href='editar.php?id_detalles_pedido=<?php echo $filas['id_pedido'] ?>' class='btn btn-warning btn-sm'>Editar</a>
+                                        <a href='eliminar.php?id_pedido=<?php echo $filas['id_pedido'] ?>' class='btn btn-danger btn-sm' onclick='return confirmar()'>Eliminar</a>
                                     </td>
                                 </tr>
                             <?php
@@ -215,13 +206,13 @@ body.dark-mode .dataTables_wrapper .dataTables_filter label {
                         </tbody>
                     </table>
                     <a href="../menuV.php" class="btn btn-primary">Volver</a><br><br>
-                    <a href="./detallesPedido.php" class="btn btn-primary">Ver detalles de los pedidos</a><br><br>
+                    <!--<a href="./detallesPedido.php" class="btn btn-primary">Ver detalles de los pedidos</a><br><br>-->
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Scripts dlae DataTables -->
+    <!-- Scripts para DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>

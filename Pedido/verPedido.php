@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
 
-// Inicialización de lala respuesta en caso de error
+// Inicialización de la respuesta en caso de error
 $response = ['status' => 'error', 'message' => 'Error desconocido'];
 
 // Verificar si el formulario fue enviado por método POST
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $idPedido = $stmtPedido->insert_id;  // Obtener el ID del pedido creado
 
         // Consultar los productos del carrito
-        $consultaCarrito = "SELECT fk_id_producto, cantidad FROM carrito WHERE fk_id_usuario = ?";
+        $consultaCarrito = "SELECT fk_id_producto, cantidad, talla FROM carrito WHERE fk_id_usuario = ?";
         $stmtCarrito = $conectar->prepare($consultaCarrito);
         $stmtCarrito->bind_param('i', $idUsuario);
         $stmtCarrito->execute();
@@ -37,12 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($resultadoCarrito->num_rows > 0) {
             // Preparar la inserción de los detalles del pedido
-            $insertarDetalle = "INSERT INTO detalles_pedido (fk_id_pedido, fk_id_producto, unidades, precio_total) VALUES (?, ?, ?, ?)";
+            $insertarDetalle = "INSERT INTO detalles_pedido (fk_id_pedido, fk_id_producto, unidades, precio_total, talla) VALUES (?, ?, ?, ?, ?)";
             $stmtDetalle = $conectar->prepare($insertarDetalle);
 
             while ($producto = $resultadoCarrito->fetch_assoc()) {
                 $idProducto = $producto['fk_id_producto'];
                 $cantidad = $producto['cantidad'];
+                $tallaSeleccionada = $producto['talla']; // Obtener la talla del carrito
 
                 // Obtener el precio del producto
                 $consultaPrecio = "SELECT precio_unitario FROM producto WHERE id_producto = ?";
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $precioTotal = $cantidad * $precioProducto; // Calcular el precio total
 
                 // Insertar cada producto del carrito en la tabla de detalles de pedido
-                $stmtDetalle->bind_param('iiid', $idPedido, $idProducto, $cantidad, $precioTotal);
+                $stmtDetalle->bind_param('iiids', $idPedido, $idProducto, $cantidad, $precioTotal, $tallaSeleccionada);
                 $stmtDetalle->execute();
             }
 
@@ -214,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../verDetallesCarrito.php" class="btn btn-secondary">Ver pedidos</a>
         </div>
         <div class="text-center mt-4">
-            <a href="../menuC.php" class="btn btn-secondary">Volver al menu</a>
+            <a href="../menuC.php" class="btn btn-secondary">Volver al menú</a>
         </div>
     </div>
 
@@ -222,9 +223,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         function toggleMode() {
             document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.toggle-btn i');
-            icon.classList.toggle('fa-sun');
-            icon.classList.toggle('fa-moon');
+            const btn = document.querySelector('.toggle-btn i');
+            btn.classList.toggle('fa-sun');
+            btn.classList.toggle('fa-moon');
         }
     </script>
 </body>

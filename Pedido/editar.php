@@ -5,8 +5,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
+
 include("../conexion.php");
 
 // Inicializar variables
@@ -119,7 +118,7 @@ if (isset($_POST['enviar'])) {
             border-color: #545b62;
         }
         .h2 {
-            color: black; /* Mantener el color del título negrola */
+            color: black; /* Mantener el color del título negro */
         }
     </style>
 </head>
@@ -185,12 +184,19 @@ if (isset($_POST['enviar'])) {
                     <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" readonly>
                 </div>
                 <button type="submit" name="enviar" class="btn btn-primary">ACTUALIZAR</button>
-                <a href="validarpedido.php" class="btn btn-secondary ms-2">Regresar</a>
+                <a href="validarpedido.php" class="btn btn-secondary">CANCELAR</a>
             </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Código para el modo oscuro (si lo necesitas)
+        document.getElementById('darkModeToggle').onclick = function() {
+            document.body.classList.toggle('bg-dark');
+            document.body.classList.toggle('text-white');
+        };
+    </script>
 </body>
 </html>

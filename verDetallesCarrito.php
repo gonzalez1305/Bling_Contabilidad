@@ -51,13 +51,13 @@ while ($row = $result->fetch_assoc()) {
     $idPedido = $row['id_pedido'];
     $totalPrecio = $row['total_precio'];
 
-    // Obtener los productos del pedido
+    // Obtener los productos del pedido junto con la talla elegida
     $queryDetalles = "
-        SELECT p.nombre, p.talla, dp.unidades, dp.precio_total
-        FROM detalles_pedido dp
-        JOIN producto p ON dp.fk_id_producto = p.id_producto
-        WHERE dp.fk_id_pedido = ?
-    ";
+    SELECT p.nombre, dp.talla, dp.unidades, dp.precio_total
+    FROM detalles_pedido dp
+    JOIN producto p ON dp.fk_id_producto = p.id_producto
+    WHERE dp.fk_id_pedido = ?
+";
     $stmtDetalles = $conectar->prepare($queryDetalles);
     $stmtDetalles->bind_param('i', $idPedido);
     $stmtDetalles->execute();
@@ -90,7 +90,6 @@ while ($row = $result->fetch_assoc()) {
             margin: 0;
             padding-bottom: 50px;
         }
-
         .container {
             background-color: rgba(255, 255, 255, 0.9);
             padding: 30px;
@@ -100,17 +99,14 @@ while ($row = $result->fetch_assoc()) {
             width: 100%;
             text-align: center;
         }
-
         .btn-primary {
             background-color: #007bff;
             border: none;
             color: #ffffff;
         }
-
         .btn-primary:hover {
             background-color: #0056b3;
         }
-
         .pagination {
             margin: 20px 0;
         }
@@ -119,9 +115,6 @@ while ($row = $result->fetch_assoc()) {
 <body>
     <div class="container">
         <h2 class="mb-4">Detalles del Carrito</h2>
-        <div>
-        
-        </div>
 
         <!-- Filtros -->
         <form method="GET" class="mb-4">

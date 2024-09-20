@@ -14,9 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $stmt_delete->bind_param("i", $id_producto);
 
     if ($stmt_delete->execute()) {
-        echo "<script>alert('Inventario eliminado correctamente');</script>";
+        echo "<script>alert('Producto eliminado correctamente');</script>";
     } else {
-        echo "Error al eliminar el inventario: " . $stmt_delete->error;
+        echo "Error al eliminar el producto: " . $stmt_delete->error;
     }
 
     $stmt_delete->close();
@@ -44,49 +44,32 @@ $resultado = mysqli_query($conectar, $sql_select);
 </head>
 <body>
     <style>
-        #confirmDeleteModal .modal-body,
-        #confirmDeleteModal .modal-title {
-            color: black !important;}
-            .dark-mode .dataTables_length label,
-.dark-mode .dataTables_info,
-.dark-mode .dataTables_filter label {
-    color: white;
-}
+        /* Estilos para modo oscuro en DataTables */
+        .dark-mode .dataTables_length label,
+        .dark-mode .dataTables_info,
+        .dark-mode .dataTables_filter label {
+            color: white;
+        }
 
+        .dark-mode .dataTables_length select,
+        .dark-mode .dataTables_filter input {
+            color: white;
+            background-color: #333;
+            border-color: #555;
+        }
 
-.dark-mode .dataTables_length select,
-.dark-mode .dataTables_filter input {
-    color: white;
-    background-color: #333; 
-    border-color: #555;
+        .dark-mode .dataTables_paginate .paginate_button {
+            color: white;
+            background-color: #333;
+            border: 1px solid #555;
+        }
 
-.dark-mode .dataTables_length label,
-.dark-mode .dataTables_info,
-.dark-mode .dataTables_filter label,
-.dark-mode .dataTables_paginate a {
-    color: white;
-}
-
-
-.dark-mode .dataTables_length select,
-.dark-mode .dataTables_filter input {
-    color: white;
-    background-color: #333; 
-    border-color: #555; 
-}
-
-.dark-mode .dataTables_paginate .paginate_button {
-    color: white;
-    background-color: #333;
-    border: 1px solid #555; 
-}
-
-.dark-mode .dataTables_paginate .paginate_button:hover {
-    background-color: #555; 
-    color: white;
-}
-
+        .dark-mode .dataTables_paginate .paginate_button:hover {
+            background-color: #555;
+            color: white;
+        }
     </style>
+
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="../menuV.php">
@@ -116,6 +99,7 @@ $resultado = mysqli_query($conectar, $sql_select);
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="position-sticky">
                     <ul class="nav flex-column">
+                        <!-- Menú de Navegación -->
                         <li class="nav-item">
                             <a class="nav-link" href="../Usuario/validarusuario.php">
                                 <i class="fas fa-users"></i> Usuarios
@@ -153,11 +137,6 @@ $resultado = mysqli_query($conectar, $sql_select);
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Listado de Productos</h1>
                 </div>
-                <div class="btn-back">
-                    <a class="btn btn-light text-primary" href="../menuV.php" role="button">Volver al Menú</a>
-                </div>
-                <a class="btn btn-success" href="../reporteP.php" role="button">Reporte Productos</a>
-                <a class="btn btn-success" href="../reporteGraficoP.php" role="button">Reporte Productos Gráfico</a>
 
                 <div class="table-responsive">
                     <?php
@@ -184,29 +163,30 @@ $resultado = mysqli_query($conectar, $sql_select);
 
                     if (count($productos) > 0) {
                         echo "<table id='tablaInventario' class='display'>";
-                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></thead><tbody>";
+                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></tr></thead><tbody>";
 
                         foreach ($productos as $id => $producto) {
                             echo "<tr id='row-" . $id . "'>";
                             echo "<td><img src='" . $producto['imagen'] . "' alt='" . $producto['nombre'] . "' style='width: 50px; height: 50px;'></td>";
-                            echo "<td style='color: black;'>" . $producto['nombre'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['estado'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['precio'] . "</td>";
-                            echo "<td style='color: black;'>" . $producto['marca'] . "</td>";
+                            echo "<td>" . $producto['nombre'] . "</td>";
+                            echo "<td>" . $producto['estado'] . "</td>";
+                            echo "<td>" . $producto['precio'] . "</td>";
+                            echo "<td>" . $producto['marca'] . "</td>";
 
                             $tallas_html = "";
                             foreach ($producto['tallas'] as $talla) {
                                 $tallas_html .= "Talla: " . $talla['talla'] . ", Cantidad: " . $talla['cantidad'] . "<br>";
                             }
 
-                            echo "<td style='color: black;'>" . $tallas_html . "</td>";
+                            echo "<td>" . $tallas_html . "</td>";
                             echo "<td class='column-actions'>";
                             echo "<div class='btn-group' role='group'>";
-                            
+                            //echo "<button type='button' class='btn btn-danger' onclick='confirmDelete(" . $id . ")'>Eliminar</button>";
                             echo "</div>";
                             echo "</td>";
                             echo "</tr>";
                         }
+
                         echo "</tbody></table>";
                     } else {
                         echo "<p>No se encontraron registros de Productos.</p>";
@@ -220,36 +200,15 @@ $resultado = mysqli_query($conectar, $sql_select);
                 <div class="mt-4">
                     <a href="./crearProductoExistente.php" class="btn btn-primary">Agregar Producto Existente</a>
                 </div>
-                
+
             </main>
         </div>
     </div>
-
-    <!-- Confirmación de Eliminación -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Estás seguro de que deseas eliminar este producto?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form method="post" id="deleteForm">
-                        <input type="hidden" name="eliminar_id" id="eliminar_id" value="">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/darkMode.js"></script>
+
     <script>
         $(document).ready(function() {
             $('#tablaInventario').DataTable();
