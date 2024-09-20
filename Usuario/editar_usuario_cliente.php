@@ -35,11 +35,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha_de_nacimiento = $_POST['fecha_de_nacimiento'] ?? $usuario['fecha_de_nacimiento'];
     $correo = filter_var($_POST['correo'] ?? $usuario['correo'], FILTER_SANITIZE_EMAIL);
 
-
     // Validar la fecha de nacimiento
     $fecha_de_nacimiento = DateTime::createFromFormat('Y-m-d', $fecha_de_nacimiento);
     if (!$fecha_de_nacimiento || $fecha_de_nacimiento->format('Y-m-d') != $_POST['fecha_de_nacimiento']) {
         echo "Fecha de nacimiento inválida.";
+        exit();
+    }
+
+    // Verificar si el usuario es mayor de 18 años
+    $hoy = new DateTime();
+    $edad = $hoy->diff($fecha_de_nacimiento)->y;
+    if ($edad < 18) {
+        echo "Debes ser mayor de 18 años para actualizar la información.";
         exit();
     }
 
@@ -253,11 +260,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="fecha_de_nacimiento" class="form-label">Fecha de Nacimiento</label>
                     <input type="date" class="form-control" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?php echo htmlspecialchars($usuario['fecha_de_nacimiento']); ?>" required>
                 </div>
-                <div class="mb-1">
-                    <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
-                </div>
-
                 <div class="mb-1">
                     <label for="imagen" class="form-label">Imagen</label>
                     <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
