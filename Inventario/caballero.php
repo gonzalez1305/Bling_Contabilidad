@@ -247,7 +247,7 @@ $result = mysqli_query($conectar, $query);
         // Recargar la página para actualizar el carrito
         setTimeout(function() {
             location.reload();
-        }, 10); 
+        }, 1000); // Dale un poco más de tiempo antes de recargar
     } else {
         $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
         setTimeout(function() {
@@ -287,29 +287,30 @@ $result = mysqli_query($conectar, $query);
         </div>
         <div class="col-md-6">
             <div class="container">
-            <h2>Contacto</h2>
-    <ul class="social-icons list-unstyled d-flex flex-column align-items-center">
-        <li>
-            <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
-                <i class="bi bi-instagram fs-3"></i> Instagram
-            </a>
-        </li>
-        <li>
-            <a href="https://wa.me/573222465996" class="text-decoration-none text-light">
-                <i class="bi bi-whatsapp fs-3"></i> WhatsApp
-            </a>
-        </li>
-        <li>
-            <a href="https://www.youtube.com/channel/UCoJhZ0ileMMnQ2Wkp1bFnCA" class="text-decoration-none text-light">
-                <i class="bi bi-youtube fs-3"></i> YouTube
-            </a>
-        </li>
-        <li>
-            <a href="formularioCorreo.php" class="text-decoration-none text-light">
-                <i class="bi bi-envelope-fill fs-3"></i> Email
-            </a>
-        </li>
-    </ul
+                <h2>Contacto</h2>
+                <ul class="social-icons list-unstyled d-flex flex-column align-items-start">
+                  <li>
+                    <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
+                      <i class="bi bi-instagram fs-3"></i> Instagram
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://wa.me/573222465996" class="text-decoration-none text-light">
+                      <i class="bi bi-whatsapp fs-3"></i> WhatsApp
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.youtube.com/channel/UCoJhZ0ileMMnQ2Wkp1bFnCA" class="text-decoration-none text-light">
+                      <i class="bi bi-youtube fs-3"></i> YouTube
+                    </a>
+                  </li>
+                  <li>
+                    <a href="formularioCorreo.php" class="text-decoration-none text-light">
+                      <i class="bi bi-envelope-fill fs-3"></i> Email
+                    </a>
+                  </li>
+                </ul>
+              
                 <h2>Ayuda</h2>
                 <p>
                   <a href="../Ayuda/TerminosUso.html" class="text-decoration-none">Términos de uso</a><br><br>
