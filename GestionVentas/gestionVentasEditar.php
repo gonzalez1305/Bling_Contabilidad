@@ -146,31 +146,43 @@ if (isset($_GET['id'])) {
             </nav
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="../dashboard_v.html">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Marca/listaMarcas.php">
-                            <i class="fas fa-credit-card"></i> Marca</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Usuario/validarusuario.php">
+                                <i class="fas fa-users"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./gestionVentasLista.php">
+                                <i class="fas fa-chart-line"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Inventario/listaInventario.php">
+                                <i class="fas fa-box"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pedido/validarpedido.php">
+                                <i class="fas fa-clipboard-list"></i> Pedidos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pagos/verPago.php">
+                                <i class="fas fa-credit-card"></i> Pagos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="container">

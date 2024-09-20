@@ -125,79 +125,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </nav>
 
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="../dashboard_v.html">Ventas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./Marca/listaMarcas.php">Marca</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <div class="container">
-                <h1 class="h2">Crear Nueva Venta</h1>
-                <form action="" method="post">
-                    <div class="mb-3">
-                        <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
-                        <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
-                            <?php while($row = mysqli_fetch_assoc($result_detalles_pedido)): ?>
-                                <option value="<?php echo $row['id_detalles_pedido']; ?>" data-price="<?php echo number_format($row['precio_total'], 2); ?>">
-                                    <?php echo $row['id_detalles_pedido']; ?> - Precio Total: <?php echo number_format($row['precio_total'], 2); ?> COP
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="precio_total" class="form-label">Precio Total:</label>
-                        <div id="precio_total" class="form-control" readonly>
-                            Seleccione un ID Detalles Pedido
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
+                <div class="container">
+                    <h1 class="h2">Crear Nueva Venta</h1>
+                    <form action="" method="post">
+                        <div class="mb-3">
+                            <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
+                            <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
+                                <?php while($row = mysqli_fetch_assoc($result_detalles_pedido)): ?>
+                                    <option value="<?php echo $row['id_detalles_pedido']; ?>" data-price="<?php echo number_format($row['precio_total'], 2); ?>">
+                                        <?php echo $row['id_detalles_pedido']; ?> - Precio Total: <?php echo number_format($row['precio_total'], 2); ?> COP
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
-                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" required>
-                    </div>
+                        <div class="mb-3">
+                            <label for="precio_total" class="form-label">Precio Total:</label>
+                            <div id="precio_total" class="form-control" readonly>
+                                Seleccione un ID Detalles Pedido
+                            </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="fecha_registro" class="form-label">Fecha de Registro:</label>
-                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" required>
-                    </div>
+                        <div class="mb-3">
+                            <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
+                            <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" required>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary">Crear Registro</button>
-                    <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver al Listado</a>
-                </form>
-            </div>
-        </main>
+                        <div class="mb-3">
+                            <label for="fecha_registro" class="form-label">Fecha de Registro:</label>
+                            <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Crear Registro</button>
+                        <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver al Listado</a>
+                    </form>
+                </div>
+            </main>
+        </div>
     </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../script.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Cuando el select cambia de valor, actualiza el precio total
+            $('#id_detalles_pedido').on('change', function() {
+                // Obtiene el precio de la opción seleccionada
+                var selectedPrice = $(this).find('option:selected').data('price');
+                
+                // Actualiza el campo de precio total
+                $('#precio_total').text(selectedPrice + ' COP');
+            });
+            
+            // Inicializa el precio total con la primera opción seleccionada
+            var initialPrice = $('#id_detalles_pedido').find('option:selected').data('price');
+            $('#precio_total').text(initialPrice + ' COP');
+        });
+    </script>
 </body>
 </html>
-
-<?php
-mysqli_close($conectar);
-?>
