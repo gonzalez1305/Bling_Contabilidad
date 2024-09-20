@@ -1,18 +1,14 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
-    // Si no está logueado o no es un administrador, redirigir al login
     header("Location: index.php");
     exit();
 }
-?>
-<?php
-require '../conexion.php';
 
+require '../conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $id_producto = $_POST['eliminar_id'];
-
 
     $stmt_delete = $conectar->prepare("DELETE FROM producto WHERE id_producto = ?");
     $stmt_delete->bind_param("i", $id_producto);
@@ -26,13 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $stmt_delete->close();
 }
 
-$where_sql = isset($where_sql) ? $where_sql : "";
+$sql_select = "SELECT p.id_producto, p.nombre, p.estado, p.precio_unitario, p.imagen, m.nombre_marca, t.talla, t.cantidad 
+               FROM producto p 
+               JOIN marca m ON p.fk_id_marca = m.id_marca 
+               JOIN tallas t ON p.id_producto = t.fk_id_producto";
 
-// Consulta de selección para incluir la marca
-$sql_select = "SELECT producto.*, marca.nombre_marca 
-               FROM producto 
-               JOIN marca ON producto.fk_id_marca = marca.id_marca 
-               $where_sql";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
 
@@ -50,9 +44,10 @@ $resultado = mysqli_query($conectar, $sql_select);
 </head>
 <body>
     <style>
-                #confirmDeleteModal .modal-body,
+        #confirmDeleteModal .modal-body,
         #confirmDeleteModal .modal-title {
-            color: black !important;}
+            color: black !important;
+        }
     </style>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
@@ -128,26 +123,48 @@ $resultado = mysqli_query($conectar, $sql_select);
 
                 <div class="table-responsive">
                     <?php
-                    // Verificar si hay registros
-                    if (mysqli_num_rows($resultado) > 0) {
+                    $productos = [];
+                    while ($fila = mysqli_fetch_assoc($resultado)) {
+                        $id_producto = $fila['id_producto'];
+
+                        if (!isset($productos[$id_producto])) {
+                            $productos[$id_producto] = [
+                                'nombre' => htmlspecialchars($fila['nombre']),
+                                'estado' => htmlspecialchars($fila['estado']),
+                                'precio' => htmlspecialchars($fila['precio_unitario']),
+                                'imagen' => htmlspecialchars($fila['imagen']),
+                                'marca' => htmlspecialchars($fila['nombre_marca']),
+                                'tallas' => []
+                            ];
+                        }
+
+                        $productos[$id_producto]['tallas'][] = [
+                            'talla' => htmlspecialchars($fila['talla']),
+                            'cantidad' => htmlspecialchars($fila['cantidad'])
+                        ];
+                    }
+
+                    if (count($productos) > 0) {
                         echo "<table id='tablaInventario' class='display'>";
-                        echo "<thead><tr><th>Talla</th><th>Color</th><th>Cantidad Disponible</th><th>Nombre</th><th>Estado</th><th>Categoria</th><th>Precio</th><th>Marca</th><th>Imagen</th><th class='column-actions'>Acciones</th></tr></thead><tbody>";
-                        while ($fila = mysqli_fetch_assoc($resultado)) {
-                            echo "<tr id='row-" . $fila['id_producto'] . "'>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['talla']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['color']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['cantidad']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['nombre']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['estado']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['categorias']) . "</td>";
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['precio_unitario']) . "</td>";
-                            // Mostrar la marca
-                            echo "<td style='color: black;'>" . htmlspecialchars($fila['nombre_marca']) . "</td>";
-                            echo "<td><img src='" . htmlspecialchars($fila['imagen']) . "' alt='Imagen' style='max-width: 100px;'></td>";
+                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></thead><tbody>";
+
+                        foreach ($productos as $id => $producto) {
+                            echo "<tr id='row-" . $id . "'>";
+                            echo "<td><img src='" . $producto['imagen'] . "' alt='" . $producto['nombre'] . "' style='width: 50px; height: 50px;'></td>";
+                            echo "<td style='color: black;'>" . $producto['nombre'] . "</td>";
+                            echo "<td style='color: black;'>" . $producto['estado'] . "</td>";
+                            echo "<td style='color: black;'>" . $producto['precio'] . "</td>";
+                            echo "<td style='color: black;'>" . $producto['marca'] . "</td>";
+
+                            $tallas_html = "";
+                            foreach ($producto['tallas'] as $talla) {
+                                $tallas_html .= "Talla: " . $talla['talla'] . ", Cantidad: " . $talla['cantidad'] . "<br>";
+                            }
+
+                            echo "<td style='color: black;'>" . $tallas_html . "</td>";
                             echo "<td class='column-actions'>";
                             echo "<div class='btn-group' role='group'>";
-                            echo "<a href='editarInventario.php?id=" . htmlspecialchars($fila['id_producto']) . "' class='btn btn-warning btn-sm'>Editar</a>";
-                            echo "<button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $fila['id_producto'] . ")'>Eliminar</button>";
+                            
                             echo "</div>";
                             echo "</td>";
                             echo "</tr>";
@@ -162,11 +179,15 @@ $resultado = mysqli_query($conectar, $sql_select);
                 <div class="mt-4">
                     <a href="./crearInventario.php" class="btn btn-primary">Agregar Nuevo Producto</a>
                 </div>
+                <div class="mt-4">
+                    <a href="./crearProductoExistente.php" class="btn btn-primary">Agregar Producto Existente</a>
+                </div>
+                
             </main>
         </div>
     </div>
 
-    <!-- Confirmación de Elaliminación -->
+    <!-- Confirmación de Eliminación -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -175,14 +196,14 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="deleteForm" method="POST" action="">
-                        <input type="hidden" id="eliminar_id" name="eliminar_id">
-                        <p>  ¿Está seguro de que desea eliminar este producto?</p>
-                    </form>
+                    ¿Estás seguro de que deseas eliminar este producto?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="deleteForm" class="btn btn-danger">Eliminar</button>
+                    <form method="post" id="deleteForm">
+                        <input type="hidden" name="eliminar_id" id="eliminar_id" value="">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -191,24 +212,15 @@ $resultado = mysqli_query($conectar, $sql_select);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
     <script>
         $(document).ready(function() {
-            $('#tablaInventario').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                }
-            });
+            $('#tablaInventario').DataTable();
         });
 
-        function confirmDelete(id_producto) {
-            $('#eliminar_id').val(id_producto);
+        function confirmDelete(id) {
+            $('#eliminar_id').val(id);
             $('#confirmDeleteModal').modal('show');
         }
     </script>
 </body>
 </html>
-
-<?php
-mysqli_close($conectar);
-?>
