@@ -216,7 +216,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <a href="index.php">Iniciar sesión</a>
       <br>
       <a href="menu.html" class="btn btn-custom mt-2">Volver al Menú</a>
+      
     </div>
+    <a href='reenviar_codigo.html'>Reenviar código de verificación</a>
   </div>
 
   <!-- Script de cambio de modo -->

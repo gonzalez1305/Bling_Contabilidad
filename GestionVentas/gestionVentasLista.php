@@ -5,25 +5,34 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
+
 require '../conexion.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
     $id_gestion_venta = $_POST['eliminar_id'];
 
+    // Verificar si hay pagos asociados
+    $sql_check_pagos = "SELECT COUNT(*) as total FROM pagos WHERE id_gestion_venta = '$id_gestion_venta'";
+    $result_check = mysqli_query($conectar, $sql_check_pagos);
+    $row_check = mysqli_fetch_assoc($result_check);
 
-    $sql_delete_gestion_venta = "DELETE FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
-    
-    if (mysqli_query($conectar, $sql_delete_gestion_venta)) {
-        echo "<script>alert('Gestión de Venta eliminada correctamente');</script>";
+    if ($row_check['total'] > 0) {
+        // Hay pagos asociados, mostrar alerta
+        echo "<script>alert('No se puede eliminar la venta porque tiene un pago asociado. Por favor, elimine el pago primero.');</script>";
     } else {
-        echo "Error al eliminar la gestión de venta: " . mysqli_error($conectar);
+        // No hay pagos, proceder a eliminar
+        $sql_delete_gestion_venta = "DELETE FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
+        
+        if (mysqli_query($conectar, $sql_delete_gestion_venta)) {
+            echo "<script>alert('Gestión de Venta eliminada correctamente');</script>";
+        } else {
+            echo "Error al eliminar la gestión de venta: " . mysqli_error($conectar);
+        }
     }
 }
 
 $sql_select = "
-    SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.id_vendedor, gv.fecha_venta, gv.fecha_registro,
+    SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.fecha_venta, gv.fecha_registro,
            dp.precio_total
     FROM gestion_ventas gv
     JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
@@ -32,6 +41,7 @@ $sql_select = "
 ";
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -147,15 +157,12 @@ $resultado = mysqli_query($conectar, $sql_select);
                                 echo "<tr><td colspan='4'>No hay ventas registradas</td></tr>";
                             }
                             ?>
-                            
                         </tbody>
                     </table>
                     <a class="btn btn-success" href="gestionVentasCrear.php">Crear Venta</a>
-
                 </div>
             </main>
         </div>
-        
     </div>
 
     <!-- Confirmación de Eliminación -->
@@ -180,28 +187,21 @@ $resultado = mysqli_query($conectar, $sql_select);
         </div>
     </div>
 
+    <script>
+        function confirmDelete(id) {
+            document.getElementById('eliminar_id').value = id;
+            var myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'), {});
+            myModal.show();
+        }
+    </script>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
     <script>
         $(document).ready(function() {
-            $('#ventasTable').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                }
-            });
+            $('#ventasTable').DataTable();
         });
-
-        function confirmDelete(id_gestion_venta) {
-            $('#eliminar_id').val(id_gestion_venta);
-            $('#confirmDeleteModal').modal('show');
-        }
     </script>
 </body>
 </html>
-
-<?php
-// Cerrar la conexión a la base de datos
-mysqli_close($conectar);
-?>

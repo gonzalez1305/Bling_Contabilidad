@@ -163,8 +163,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
             <li><a href="https://youtu.be/AdOgTOxhmVE?si=ryXETeKfsF_4iTLv&t=75" target="_blank">01:15 - Contactar a través de nuestras redes sociales y correo electrónico</a></li>
             <li><a href="https://youtu.be/AdOgTOxhmVE?si=ryXETeKfsF_4iTLv&t=145" target="_blank">02:25 - Agregar cualquier cosa</a></li>
         </ul>
+        <iframe src="https://www.youtube.com/embed/zcSE85gj-2c" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <p>Es de suma importancia ver el video completo para entender todos los procesos.</p>
         <a href="menuV.php" class="back-btn">Volver al Menú</a>
     </div>
+    
 
     <script>
         function toggleMode() {

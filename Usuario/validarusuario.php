@@ -18,14 +18,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .profile-image img {
-            max-width: 50px;
-            max-height: 50px;
-            width: auto;
-            height: auto;
-            border-radius: 50%;
-            object-fit: cover;
-        }
         .table-responsive {
             margin-top: 20px;
         }
@@ -63,7 +55,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
         body.dark-mode .modal-body {
             color: white;
         }
-        /* Estilo específico para el texto del modal de confirmación de eliminación */
         #confirmDeleteModal .modal-body,
         #confirmDeleteModal .modal-title {
             color: black !important;
@@ -127,7 +118,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
+                                <i class="fas fa-tag"></i> Marca</a>
                         </li>
                     </ul>
                 </div>
@@ -145,7 +136,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
 
                 <?php
                     include("../conexion.php");
-                    $sql = "SELECT id_usuario, nombre, apellido, telefono, direccion, fecha_de_nacimiento, correo, tipo_usuario, imagen FROM usuario";
+                    $sql = "SELECT u.id_usuario, u.nombre, u.apellido, u.telefono, u.direccion, u.fecha_de_nacimiento, u.correo, u.tipo_usuario, r.nombre AS nombre_rol 
+                            FROM usuario u 
+                            JOIN roles r ON u.tipo_usuario = r.id_rol";
                     $resultado = mysqli_query($conectar, $sql);
                 ?>
 
@@ -153,7 +146,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
                     <table id="pedidosTable" class="display table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>Imagen</th>
+                                <th>Tipo de Usuario</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Teléfono</th>
@@ -166,15 +159,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
                         <tbody>
                             <?php while ($filas = mysqli_fetch_assoc($resultado)) { ?>
                                 <tr id="row-<?php echo $filas['id_usuario']; ?>">
-                                    <td>
-                                        <div class="profile-image">
-                                            <?php if (!empty($filas['imagen']) && file_exists("../usuariofoto/" . $filas['imagen'])): ?>
-                                                <img src="../usuariofoto/<?php echo htmlspecialchars($filas['imagen']); ?>" alt="Imagen de perfil">
-                                            <?php else: ?>
-                                                <i class="bi bi-person-circle"></i>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
+                                    <td><?php echo htmlspecialchars($filas['nombre_rol']); ?></td>
                                     <td><?php echo htmlspecialchars($filas['nombre']); ?></td>
                                     <td><?php echo htmlspecialchars($filas['apellido']); ?></td>
                                     <td><?php echo htmlspecialchars($filas['telefono']); ?></td>
@@ -221,20 +206,24 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
     <script>
         $(document).ready(function() {
             $('#pedidosTable').DataTable({
                 language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es.json'
                 }
             });
         });
 
-        function confirmDelete(id_usuario) {
-            $('#id_usuario').val(id_usuario);
+        function confirmDelete(id) {
+            $('#id_usuario').val(id);
             $('#confirmDeleteModal').modal('show');
         }
+
+        $('#darkModeToggle').click(function() {
+            $('body').toggleClass('dark-mode');
+            $(this).find('i').toggleClass('fa-moon fa-sun');
+        });
     </script>
 </body>
 </html>

@@ -176,9 +176,15 @@ mysqli_close($conectar);
                         <input type="text" id="nombre" name="nombre" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="estado" class="form-label">Estado:</label>
-                        <input type="text" id="estado" name="estado" class="form-control" required>
-                    </div>
+    <label for="estado" class="form-label">Estado:</label>
+    <select id="estado" name="estado" class="form-control" required>
+        <option value="">Seleccione un estado</option>
+        <option value="Disponible">Disponible</option>
+       
+    </select>
+</div>
+
+
                     <div class="mb-3">
                         <label for="categorias" class="form-label">Categoría:</label>
                         <select id="categorias" name="categorias" class="form-control" required>
