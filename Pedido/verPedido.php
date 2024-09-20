@@ -213,6 +213,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="text-center mt-4">
             <a href="../verDetallesCarrito.php" class="btn btn-secondary">Ver pedidos</a>
         </div>
+        <div class="text-center mt-4">
+            <a href="../menuC.php" class="btn btn-secondary">Volver al menu</a>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

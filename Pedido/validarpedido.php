@@ -152,7 +152,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <a class="btn btn-success" href="../reportePedido.php" role="button">Reporte Pedidos</a>
                 <a class="btn btn-success" href="../reporteGraficoPedidos.html" role="button">Reporte Pedidos Gráfico</a>
-
                 <div class="pedido-container">
                     <table id="pedidosTable" class="display">
                         <thead>
@@ -168,30 +167,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <tbody>
                             <?php
                                 $sql = "SELECT 
-                                    p.id_pedido, 
-                                    p.fecha, 
-                                    p.situacion, 
-                                    dp.unidades, 
-                                    dp.precio_total, 
-                                    u.nombre AS cliente,
-                                    dp.id_detalles_pedido
-                                FROM 
-                                    pedido p
-                                INNER JOIN 
-                                    detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
-                                INNER JOIN 
-                                    producto pr ON dp.fk_id_producto = pr.id_producto
-                                INNER JOIN 
-                                    usuario u ON p.fk_id_usuario = u.id_usuario";
+                                u.nombre AS cliente,
+                                DATE(p.fecha) AS fecha,
+                                TIME(p.fecha) AS hora,
+                                p.situacion,
+                                SUM(dp.unidades) AS total_unidades,
+                                SUM(dp.precio_total) AS total_precio,
+                                MIN(dp.id_detalles_pedido) AS id_detalles_pedido
+                            FROM 
+                                pedido p
+                            INNER JOIN 
+                                detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
+                            INNER JOIN 
+                                usuario u ON p.fk_id_usuario = u.id_usuario
+                            GROUP BY 
+                                u.nombre, DATE(p.fecha), TIME(p.fecha), p.situacion
+                            ORDER BY 
+                                fecha DESC, hora DESC";
                                 $resultado = mysqli_query($conectar, $sql);
                                 while ($filas = mysqli_fetch_assoc($resultado)) {
                             ?>
                                 <tr>
-                                    <td style='color: black;'><?php echo htmlspecialchars($filas['cliente']) ?></td>
+                                    <<td style='color: black;'><?php echo htmlspecialchars($filas['cliente']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['fecha']) ?></td>
                                     <td style='color: black;'><?php echo htmlspecialchars($filas['situacion']) ?></td>
-                                    <td style='color: black;'><?php echo htmlspecialchars($filas['unidades']) ?></td>
-                                    <td style='color: black;'><?php echo htmlspecialchars($filas['precio_total']) ?></td>
+                                    <td style='color: black;'><?php echo htmlspecialchars($filas['total_unidades']) ?></td>
+                                    <td style='color: black;'><?php echo htmlspecialchars($filas['total_precio']) ?></td>
                                     <td>
                                         <a href='editar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-warning btn-sm'>Editar</a>
                                         <a href='eliminar.php?id_detalles_pedido=<?php echo $filas['id_detalles_pedido'] ?>' class='btn btn-danger btn-sm' onclick='return confirmar()'>Eliminar</a>
@@ -202,7 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             ?>
                         </tbody>
                     </table>
-                    <a href="../menuV.php" class="btn btn-light">Volver</a><br><br>
+                    <a href="../menuV.php" class="btn btn-primary">Volver</a><br><br>
                 </div>
             </main>
         </div>

@@ -128,7 +128,7 @@ include 'session_check.php';
         <div class="col-md-6">
             <div class="container">
                 <h2>Contacto</h2>
-                <ul class="social-icons list-unstyled d-flex flex-column align-items-start">
+                <ul class="social-icons list-unstyled d-flex flex-column align-items-medium">
                   <li>
                     <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
                       <i class="bi bi-instagram fs-3"></i> Instagram
