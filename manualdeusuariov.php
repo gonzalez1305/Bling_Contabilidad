@@ -165,6 +165,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
         </ul>
         <a href="menuV.php" class="back-btn">Volver al Menú</a>
     </div>
+    
 
     <script>
         function toggleMode() {

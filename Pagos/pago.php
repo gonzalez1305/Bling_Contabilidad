@@ -156,6 +156,7 @@ $ventasResult = mysqli_query($conectar, $ventasQuery);
                     </div>
 
                     <button type="submit" class="btn btn-success">Realizar Pago</button>
+                    <a class="btn btn-success" href="verPago.php" role="button">Volver a pagos</a>
                 </form>
             </main>
         </div>
