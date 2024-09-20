@@ -1,17 +1,13 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
-    // Si no está logueado o no es un administrador, redirigir al login
     header("Location: index.php");
     exit();
 }
-?>
-<?php
+
 require '../conexion.php'; // Conexión
 
-$talla = '';
 $color = '';
-$cantidad = '';
 $nombre = '';
 $estado = '';
 $categorias = '';
@@ -28,15 +24,12 @@ $sql_marcas = "SELECT id_marca, nombre_marca FROM marca";
 $resultado_marcas = mysqli_query($conectar, $sql_marcas);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    $talla = mysqli_real_escape_string($conectar, $_POST['talla']);
     $color = mysqli_real_escape_string($conectar, $_POST['color']);
-    $cantidad = mysqli_real_escape_string($conectar, $_POST['cantidad']);
     $nombre = mysqli_real_escape_string($conectar, $_POST['nombre']);
     $estado = mysqli_real_escape_string($conectar, $_POST['estado']);
     $categorias = mysqli_real_escape_string($conectar, $_POST['categorias']);
     $precio_unitario = mysqli_real_escape_string($conectar, $_POST['precio_unitario']);
-    $fk_id_marca = mysqli_real_escape_string($conectar, $_POST['marca']); // Captura de la marca seleccionada
+    $fk_id_marca = mysqli_real_escape_string($conectar, $_POST['marca']);
     
     // Manejo de la imagen
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
@@ -44,35 +37,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $imagen_tmp = $_FILES['imagen']['tmp_name'];
         $imagen_ruta = 'uploads/' . basename($imagen_nombre);
         
-        if (move_uploaded_file($imagen_tmp, $imagen_ruta)) {
-            // Imagen subida corrlaectamente
-        } else {
+        if (!move_uploaded_file($imagen_tmp, $imagen_ruta)) {
             echo "Error al subir la imagen. Verifica que la carpeta exista y tenga permisos adecuados.";
             exit;
         }
     }
 
     // Inserción de los datos en la tabla producto
-    $sql_insert_producto = "INSERT INTO producto (talla, color, cantidad, nombre, fk_id_marca, estado, categorias, precio_unitario, imagen)
-                            VALUES ('$talla', '$color', '$cantidad', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
+    $sql_insert_producto = "INSERT INTO producto (color, nombre, fk_id_marca, estado, categorias, precio_unitario, imagen)
+                            VALUES ('$color', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
 
     if (mysqli_query($conectar, $sql_insert_producto)) {
-        // Obtener el ID del nuevo producto
         $id_producto = mysqli_insert_id($conectar);
 
-        // Insertar en la tabla intermedia marca_producto
         $sql_insert_marca_producto = "INSERT INTO marca_producto (fk_id_producto, fk_id_marca)
                                       VALUES ('$id_producto', '$fk_id_marca')";
 
         if (mysqli_query($conectar, $sql_insert_marca_producto)) {
-            echo "<script>alert('Inventario registrado correctamente');</script>";
+            $tallas = $_POST['tallas'];
+            $cantidades = $_POST['cantidades'];
+
+            for ($i = 0; $i < count($tallas); $i++) {
+                $talla = mysqli_real_escape_string($conectar, $tallas[$i]);
+                $cantidad = mysqli_real_escape_string($conectar, $cantidades[$i]);
+
+                $sql_insert_talla = "INSERT INTO tallas (fk_id_producto, talla, cantidad)
+                                     VALUES ('$id_producto', '$talla', '$cantidad')";
+
+                if (!mysqli_query($conectar, $sql_insert_talla)) {
+                    echo "Error al registrar la talla: " . mysqli_error($conectar);
+                }
+            }
+
+            echo "<script>alert('Producto y tallas registrados correctamente');</script>";
             echo "<script>window.location.href = 'listaInventario.php';</script>";
             exit;
         } else {
             echo "Error al registrar la relación marca-producto: " . mysqli_error($conectar);
         }
     } else {
-        echo "Error al registrar el inventario: " . mysqli_error($conectar);
+        echo "Error al registrar el producto: " . mysqli_error($conectar);
     }
 }
 
@@ -160,16 +164,8 @@ mysqli_close($conectar);
                 </div>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="talla" class="form-label">Talla:</label>
-                        <input type="text" id="talla" name="talla" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="color" class="form-label">Color:</label>
                         <input type="text" id="color" name="color" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cantidad" class="form-label">Cantidad:</label>
-                        <input type="number" id="cantidad" name="cantidad" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre:</label>
@@ -180,54 +176,92 @@ mysqli_close($conectar);
                         <input type="text" id="estado" name="estado" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="categorias" class="form-label">Categorias:</label>
-                        <input type="text" id="categorias" name="categorias" class="form-control" required>
+                        <label for="categorias" class="form-label">Categoría:</label>
+                        <select id="categorias" name="categorias" class="form-control" required>
+                            <option value="">Seleccione una categoría</option>
+                            <option value="Caballero">Caballero</option>
+                            <option value="Dama">Dama</option>
+                            <option value="Niño">Niño</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="marca" class="form-label">Marca:</label>
                         <select id="marca" name="marca" class="form-control" required>
                             <option value="">Seleccione una marca</option>
                             <?php while ($fila_marca = mysqli_fetch_assoc($resultado_marcas)) { ?>
-                                <option value="<?php echo $fila_marca['id_marca']; ?>">
-                                    <?php echo $fila_marca['nombre_marca']; ?>
-                                </option>
+                                <option value="<?php echo $fila_marca['id_marca']; ?>"><?php echo $fila_marca['nombre_marca']; ?></option>
                             <?php } ?>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="precio_unitario" class="form-label">Precio Unitario:</label>
-                        <input type="text" id="precio_unitario" name="precio_unitario" class="form-control" required>
+                        <input type="number" id="precio_unitario" name="precio_unitario" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="imagen" class="form-label">Imagen:</label>
-                        <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
+                        <input type="file" id="imagen" name="imagen" accept="image/*" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Registrar Producto</button>
+
+                    <div id="tallas-container">
+                        <div class="mb-3">
+                            <label for="talla1" class="form-label">Talla:</label>
+                            <select id="talla1" name="tallas[]" class="form-control" required>
+                                <!-- Opciones se llenarán dinámicamente -->
+                            </select>
+                            <label for="cantidad1" class="form-label">Cantidad:</label>
+                            <input type="number" id="cantidad1" name="cantidades[]" class="form-control" required>
+                        </div>
+                    </div>
+                    <button type="button" id="agregar-talla" class="btn btn-secondary">Agregar otra talla</button>
+                    <br><br>
+                    <button type="submit" class="btn btn-primary">Guardar Producto</button>
                 </form>
-                <div class="mt-4">
-                    <a href="listaInventario.php" class="btn btn-secondary">Volver a Inventario</a>
-                </div>
             </main>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
     <script>
         $(document).ready(function() {
-            $('#tablaInventario').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                }
-            });
-        });
+            const tallasPorCategoria = {
+                'Caballero': Array.from({length: 7}, (_, i) => i + 38),
+                'Dama': Array.from({length: 6}, (_, i) => i + 35),
+                'Niño': Array.from({length: 12}, (_, i) => i + 22)
+            };
 
-        function confirmDelete(id_producto) {
-            $('#eliminar_id').val(id_producto);
-            $('#confirmDeleteModal').modal('show');
-        }
+            $('#categorias').on('change', function() {
+                const categoriaSeleccionada = $(this).val();
+                actualizarTallas('#talla1', categoriaSeleccionada);
+            });
+
+            $('#agregar-talla').on('click', function() {
+                const tallaCount = $('#tallas-container').children().length + 1;
+                const nuevaTalla = `
+                    <div class="mb-3">
+                        <label for="talla${tallaCount}" class="form-label">Talla:</label>
+                        <select id="talla${tallaCount}" name="tallas[]" class="form-control" required>
+                            <!-- Opciones se llenarán dinámicamente -->
+                        </select>
+                        <label for="cantidad${tallaCount}" class="form-label">Cantidad:</label>
+                        <input type="number" id="cantidad${tallaCount}" name="cantidades[]" class="form-control" required>
+                    </div>
+                `;
+                $('#tallas-container').append(nuevaTalla);
+                actualizarTallas(`#talla${tallaCount}`, $('#categorias').val());
+            });
+
+            function actualizarTallas(selector, categoria) {
+                const tallasSelect = $(selector);
+                tallasSelect.empty(); // Limpia las opciones actuales
+
+                if (tallasPorCategoria[categoria]) {
+                    tallasPorCategoria[categoria].forEach(talla => {
+                        tallasSelect.append(new Option(talla, talla));
+                    });
+                }
+            }
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

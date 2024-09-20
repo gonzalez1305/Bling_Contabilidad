@@ -1,12 +1,79 @@
 <?php
 session_start();
-if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
-    // Si no está logueado o no es un administrador, redirigir al login
-    header("Location: index.php");
+include '../conexion.php';
+
+// Verificar si el usuario está logueado
+if (!isset($_SESSION['id_usuario'])) {
+    echo 'No estás logueado.';
     exit();
 }
 
-require '../conexion.php';
+$idUsuario = $_SESSION['id_usuario'];
+
+// Configuración de paginación
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10; // Límites de 10, 50, 100
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$offset = ($page - 1) * $limit;
+
+// Consultar los pedidos en proceso para el usuario logueado
+$query = "
+    SELECT p.id_pedido, SUM(dp.precio_total) AS total_precio
+    FROM pedido p
+    JOIN detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
+    WHERE p.fk_id_usuario = ? 
+    AND p.situacion = 'en proceso'
+    GROUP BY p.id_pedido
+    LIMIT ? OFFSET ?
+";
+$stmt = $conectar->prepare($query);
+$stmt->bind_param('iii', $idUsuario, $limit, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Obtener el total de pedidos
+$totalQuery = "
+    SELECT COUNT(*) as total
+    FROM pedido p
+    WHERE p.fk_id_usuario = ? 
+    AND p.situacion = 'en proceso'
+";
+$totalStmt = $conectar->prepare($totalQuery);
+$totalStmt->bind_param('i', $idUsuario);
+$totalStmt->execute();
+$totalResult = $totalStmt->get_result();
+$totalRow = $totalResult->fetch_assoc();
+$totalPedidos = $totalRow['total'];
+$totalPages = ceil($totalPedidos / $limit);
+
+// Consulta para obtener los detalles del pedido
+$pedidos = [];
+while ($row = $result->fetch_assoc()) {
+    $idPedido = $row['id_pedido'];
+    $totalPrecio = $row['total_precio'];
+
+    // Obtener los productos del pedido
+    $queryDetalles = "
+        SELECT p.nombre, p.talla, dp.unidades, dp.precio_total
+        FROM detalles_pedido dp
+        JOIN producto p ON dp.fk_id_producto = p.id_producto
+        WHERE dp.fk_id_pedido = ?
+    ";
+    $stmtDetalles = $conectar->prepare($queryDetalles);
+    $stmtDetalles->bind_param('i', $idPedido);
+    $stmtDetalles->execute();
+    $resultDetalles = $stmtDetalles->get_result();
+
+    $productos = [];
+    while ($detalle = $resultDetalles->fetch_assoc()) {
+        $productos[] = $detalle;
+    }
+
+    $pedidos[] = [
+        'id_pedido' => $idPedido,
+        'total_precio' => $totalPrecio,
+        'productos' => $productos
+    ];
+}
 ?>
 
 <!DOCTYPE html>
@@ -14,97 +81,107 @@ require '../conexion.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles de Pedidos - Bling Compra</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../imgs/logo.png">
+    <title>Detalles del Carrito</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="icon" href="imgs/logo.png">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
+            margin: 0;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../menuV.php">
-                <img src="../imgs/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-top">
-                Bling Compra
-            </a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Cerrar Sesión</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="container">
+        <h2 class="mb-4">Detalles del Pedido</h2>
 
-    <div class="container-fluid mt-5">
-        <h1 class="mt-4">Detalles de Pedidos</h1>
-        <div class="pedido-container">
-            <table id="detallesTable" class="display">
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>Cliente</th>
-                        <th>Fecha</th>
-                        <th>Situación</th>
-                        <th>Producto</th>
-                        <th>Unidades</th>
-                        <th>Precio Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT 
-                                p.id_pedido,
-                                u.nombre AS cliente,
-                                DATE(p.fecha) AS fecha,
-                                p.situacion,
-                                dp.fk_id_producto,
-                                dp.unidades,
-                                dp.precio_total
-                            FROM 
-                                pedido p
-                            INNER JOIN 
-                                detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
-                            INNER JOIN 
-                                usuario u ON p.fk_id_usuario = u.id_usuario
-                            ORDER BY 
-                                p.fecha DESC";
-                    $resultado = mysqli_query($conectar, $sql);
-                    while ($filas = mysqli_fetch_assoc($resultado)) {
-                    ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($filas['id_pedido']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['cliente']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['fecha']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['situacion']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['fk_id_producto']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['unidades']); ?></td>
-                            <td><?php echo htmlspecialchars($filas['precio_total']); ?></td>
-                        </tr>
-                    <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
-            <a href="../menuV.php" class="btn btn-primary mt-3">Volver</a>
-        </div>
+        <!-- Filtros -->
+        <form method="GET" class="mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="limit" class="form-label">Mostrar:</label> 
+                    <select name="limit" id="limit" class="form-select" onchange="this.form.submit()">
+                        <option value="10" <?php echo $limit == 10 ? 'selected' : ''; ?>>10</option>
+                        <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
+                        <option value="100" <?php echo $limit == 100 ? 'selected' : ''; ?>>100</option>
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" name="page" value="1">
+        </form>
+
+        <?php if (!empty($pedidos)): ?>
+            <?php foreach ($pedidos as $pedido): ?>
+                <div class="mb-4 border rounded p-3">
+                    <h4>Pedido ID: <?php echo htmlspecialchars($pedido['id_pedido']); ?></h4>
+                    <p><strong>Total Precio: </strong><?php echo number_format($pedido['total_precio'], 2); ?> COP</p>
+                    
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Producto</th>
+                                <th>Talla</th>
+                                <th>Unidades</th>
+                                <th>Precio Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pedido['productos'] as $producto): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
+                                    <td><?php echo htmlspecialchars($producto['talla']); ?></td>
+                                    <td><?php echo htmlspecialchars($producto['unidades']); ?></td>
+                                    <td><?php echo number_format($producto['precio_total'], 2); ?> COP</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>No tienes pedidos confirmados en este momento.</p>
+        <?php endif; ?>
+
+        <!-- Paginación -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&limit=<?php echo $limit; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+
+        <a href="../menuV.php" class="btn btn-primary">Volver al menú</a>
+        
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#detallesTable').DataTable({
-                language: {
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "No se encontraron registros",
-                    "info": "Mostrando página _PAGE_ de _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ registros totales)"
-                }
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

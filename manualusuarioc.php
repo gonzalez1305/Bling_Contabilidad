@@ -12,12 +12,16 @@ include 'session_check.php';
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
             background: linear-gradient(to bottom, #9ec8d6, #d5e5ea, #ffffff);
             color: #333;
             transition: background 0.5s, color 0.5s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .dark-mode {
@@ -43,11 +47,11 @@ include 'session_check.php';
 
         .container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px;
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             transition: background 0.5s, color 0.5s;
         }
 
@@ -131,6 +135,14 @@ include 'session_check.php';
         .dark-mode ul li a:hover {
             color: #3399ff;
         }
+
+        iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -138,15 +150,12 @@ include 'session_check.php';
 
     <div class="container">
         <h1>Manual de Uso</h1>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/9GFcheNNnAc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/qzQfSE5tc5k?si=6ea1kM-0nV96RaC5" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         <ul>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=24" target="_blank">00:24 - ¿Por qué no puedo ver el catálogo?</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=38" target="_blank">00:38 - Conoce más sobre la empresa</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=50" target="_blank">00:50 - Dudas, servicio, términos de uso, términos de venta, aviso legal, política de privacidad</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=75" target="_blank">01:15 - Contactar a través de nuestras redes sociales y correo electrónico</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=120" target="_blank">02:00 - ¿Cómo utilizo el modo oscuro?</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=145" target="_blank">02:25 - Registro</a></li>
-            <li><a href="https://youtu.be/9GFcheNNnAc?t=170" target="_blank">02:50 - Inicio de sesión</a></li>
+            <li><a href="https://youtu.be/qzQfSE5tc5k?si=6ea1kM-0nV96RaC5&t=20" target="_blank">00:20 - Editar usuario</a></li>
+            <li><a href="https://youtu.be/qzQfSE5tc5k?si=6ea1kM-0nV96RaC5&t=60" target="_blank">01:00 - Cambiar contraseña</a></li>
+            <li><a href="https://youtu.be/qzQfSE5tc5k?si=6ea1kM-0nV96RaC5&t=85" target="_blank">01:25 - Ver catálogo y comprar / Uso del carrito</a></li>
+            <li><a href="https://youtu.be/qzQfSE5tc5k?si=6ea1kM-0nV96RaC5&t=160" target="_blank">02:40 - Recuperar contraseña o código</a></li>
         </ul>
         <a href="menuC.php" class="back-btn">Volver al Menú</a>
     </div>
