@@ -163,7 +163,7 @@ if (isset($_POST['enviar'])) {
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><strong>Fecha:</strong></label>
-                    <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" required>
+                    <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" readonly>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><strong>Situación:</strong></label>
@@ -174,15 +174,15 @@ if (isset($_POST['enviar'])) {
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><strong>Nombre del Producto:</strong></label>
-                    <input type="text" name="nombre" value="<?php echo $pedidoDetalles['nombre']; ?>" class="form-control" required>
+                    <input type="text" name="nombre" value="<?php echo $pedidoDetalles['nombre']; ?>" class="form-control" readonly>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><strong>Precio Total:</strong></label>
-                    <input type="text" name="precio_total" value="<?php echo $pedidoDetalles['precio_total']; ?>" class="form-control" required>
+                    <input type="text" name="precio_total" value="<?php echo $pedidoDetalles['precio_total']; ?>" class="form-control" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="unidades" class="form-label"><strong>Unidades:</strong></label>
-                    <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" required>
+                    <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" readonly>
                 </div>
                 <button type="submit" name="enviar" class="btn btn-primary">ACTUALIZAR</button>
                 <a href="validarpedido.php" class="btn btn-secondary ms-2">Regresar</a>

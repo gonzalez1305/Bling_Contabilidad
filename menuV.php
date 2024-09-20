@@ -16,6 +16,29 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="imgs/logo.png">
+    <style>
+        .manual-link {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .manual-link:hover {
+            color: #0056b3;
+        }
+
+        .dark-mode .manual-link {
+            color: #66b2ff;
+        }
+
+        .dark-mode .manual-link:hover {
+            color: #3399ff;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -155,6 +178,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
             </main>
         </div>
     </div>
+
+    <a href="manualdeusuariov.php" class="manual-link">Manual de Usuario</a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>

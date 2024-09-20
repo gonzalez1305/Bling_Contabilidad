@@ -128,7 +128,7 @@ include 'session_check.php';
         <div class="col-md-6">
             <div class="container">
                 <h2>Contacto</h2>
-                <ul class="social-icons list-unstyled d-flex flex-column align-items-start">
+                <ul class="social-icons list-unstyled d-flex flex-column align-items-medium">
                   <li>
                     <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
                       <i class="bi bi-instagram fs-3"></i> Instagram
@@ -156,7 +156,8 @@ include 'session_check.php';
                   <a href="Ayuda/TerminosUso.html" class="text-decoration-none">Términos de uso</a><br><br>
                   <a href="Ayuda/TerminosVenta.html" class="text-decoration-none">Términos de venta</a><br><br>
                   <a href="Ayuda/AvisoLegal.html" class="text-decoration-none">Aviso Legal</a><br><br>
-                  <a href="Ayuda/PoliticaPrivacidad.html" class="text-decoration-none">Política de privacidad y cookies</a>
+                  <a href="Ayuda/PoliticaPrivacidad.html" class="text-decoration-none">Política de privacidad y cookies</a><br><br>
+                  <a href="manualusuarioc.php" class="text-decoration-none">Manual usuario</a>
                 </p>
               </div>
               

@@ -150,13 +150,13 @@ $result = mysqli_query($conectar, $query);
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
                             echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
-                            echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
+                            //echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
                             echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
                             echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
                             echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
                             echo '<div class="mb-3">';
-                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
+                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad(Máximo 20):</label>';
+                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="20" required>';
                             echo '</div>';
                             echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
                             echo '</form>';
@@ -237,23 +237,24 @@ $result = mysqli_query($conectar, $query);
                     url: '../pruebaCarrito.php',
                     data: formData,
                     success: function(response) {
-                        if (response.status === 'success') {
-                            $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
+    response = JSON.parse(response); // Asegúrate de parsear la respuesta
+    if (response.status === 'success') {
+        $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
 
-                            // Recargar la página para actualizar el carrito
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
-                        }
-                    }
+        // Recargar la página para actualizar el carrito
+        setTimeout(function() {
+            location.reload();
+        }, 10); 
+    } else {
+        $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
+    }
+}
                 });
             });
 
@@ -286,30 +287,29 @@ $result = mysqli_query($conectar, $query);
         </div>
         <div class="col-md-6">
             <div class="container">
-                <h2>Contacto</h2>
-                <ul class="social-icons list-unstyled d-flex flex-column align-items-start">
-                  <li>
-                    <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
-                      <i class="bi bi-instagram fs-3"></i> Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <a href="https://wa.me/573222465996" class="text-decoration-none text-light">
-                      <i class="bi bi-whatsapp fs-3"></i> WhatsApp
-                    </a>
-                  </li>
-                  <li>
-                    <a href="https://www.youtube.com/channel/UCoJhZ0ileMMnQ2Wkp1bFnCA" class="text-decoration-none text-light">
-                      <i class="bi bi-youtube fs-3"></i> YouTube
-                    </a>
-                  </li>
-                  <li>
-                    <a href="formularioCorreo.php" class="text-decoration-none text-light">
-                      <i class="bi bi-envelope-fill fs-3"></i> Email
-                    </a>
-                  </li>
-                </ul>
-              
+            <h2>Contacto</h2>
+    <ul class="social-icons list-unstyled d-flex flex-column align-items-center">
+        <li>
+            <a href="https://www.instagram.com/blingcontabilidad/" class="text-decoration-none text-light">
+                <i class="bi bi-instagram fs-3"></i> Instagram
+            </a>
+        </li>
+        <li>
+            <a href="https://wa.me/573222465996" class="text-decoration-none text-light">
+                <i class="bi bi-whatsapp fs-3"></i> WhatsApp
+            </a>
+        </li>
+        <li>
+            <a href="https://www.youtube.com/channel/UCoJhZ0ileMMnQ2Wkp1bFnCA" class="text-decoration-none text-light">
+                <i class="bi bi-youtube fs-3"></i> YouTube
+            </a>
+        </li>
+        <li>
+            <a href="formularioCorreo.php" class="text-decoration-none text-light">
+                <i class="bi bi-envelope-fill fs-3"></i> Email
+            </a>
+        </li>
+    </ul
                 <h2>Ayuda</h2>
                 <p>
                   <a href="../Ayuda/TerminosUso.html" class="text-decoration-none">Términos de uso</a><br><br>

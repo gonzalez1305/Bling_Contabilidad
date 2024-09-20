@@ -46,8 +46,46 @@ $resultado = mysqli_query($conectar, $sql_select);
     <style>
         #confirmDeleteModal .modal-body,
         #confirmDeleteModal .modal-title {
-            color: black !important;
-        }
+            color: black !important;}
+            .dark-mode .dataTables_length label,
+.dark-mode .dataTables_info,
+.dark-mode .dataTables_filter label {
+    color: white;
+}
+
+
+.dark-mode .dataTables_length select,
+.dark-mode .dataTables_filter input {
+    color: white;
+    background-color: #333; 
+    border-color: #555;
+
+.dark-mode .dataTables_length label,
+.dark-mode .dataTables_info,
+.dark-mode .dataTables_filter label,
+.dark-mode .dataTables_paginate a {
+    color: white;
+}
+
+
+.dark-mode .dataTables_length select,
+.dark-mode .dataTables_filter input {
+    color: white;
+    background-color: #333; 
+    border-color: #555; 
+}
+
+.dark-mode .dataTables_paginate .paginate_button {
+    color: white;
+    background-color: #333;
+    border: 1px solid #555; 
+}
+
+.dark-mode .dataTables_paginate .paginate_button:hover {
+    background-color: #555; 
+    color: white;
+}
+
     </style>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">

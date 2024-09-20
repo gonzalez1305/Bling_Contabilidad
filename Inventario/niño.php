@@ -139,13 +139,13 @@ $result = mysqli_query($conectar, $query);
                         echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                         echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
                         echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
-                        echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
+                        //echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
                         echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
                         echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
                         echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
                         echo '<div class="mb-3">';
-                        echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                        echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
+                        echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad(Máximo 20):</label>';
+                        echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="20" required>';
                         echo '</div>';
                         echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
                         echo '</form>';
@@ -285,23 +285,25 @@ $result = mysqli_query($conectar, $query);
                     url: '../pruebaCarrito.php',
                     data: formData,
                     success: function(response) {
-                        if (response.status === 'success') {
-                            $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
+    response = JSON.parse(response); // Asegúrate de parsear la respuesta
+    if (response.status === 'success') {
+        $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
 
-                            // Recargar la página para actualizar el carrito
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
-                        }
-                    }
+        // Recargar la página para actualizar el carrito
+        setTimeout(function() {
+            location.reload();
+        }, 10); // Dale un poco más de tiempo antes de recargar
+    } else {
+        $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
+    }
+}
+
                 });
             });
 
@@ -327,16 +329,5 @@ $result = mysqli_query($conectar, $query);
 
   
 
-    <div class="theme-switch-wrapper">
-      <div class="theme-switch">
-        <input type="checkbox" id="theme-switch">
-        <label for="theme-switch"></label>
-        <i class="bi bi-sun icon"></i>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <script src="../js/theme-switch.js"></script>
   </body>
 </html>
