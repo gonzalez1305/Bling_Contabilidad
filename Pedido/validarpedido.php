@@ -215,6 +215,7 @@ body.dark-mode .dataTables_wrapper .dataTables_filter label {
                         </tbody>
                     </table>
                     <a href="../menuV.php" class="btn btn-primary">Volver</a><br><br>
+                    <a href="./detallesPedido.php" class="btn btn-primary">Ver detalles de los pedidos</a><br><br>
                 </div>
             </main>
         </div>
