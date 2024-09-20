@@ -143,9 +143,13 @@ $resultado = mysqli_query($conectar, $sql_select);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../Pagos/pago.php">
+                            <a class="nav-link" href="../Pagos/verPago.php">
                                 <i class="fas fa-credit-card"></i> Pagos
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
                         </li>
                     </ul>
                 </div>

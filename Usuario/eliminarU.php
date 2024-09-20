@@ -8,6 +8,61 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validar que el ID de usuario no esté vacío
     if (!empty($id_usuario)) {
+        // Comprobar si el usuario tiene pedidos asociados y verificar su estado
+        $sql = "SELECT situacion FROM pedido WHERE fk_id_usuario = ?";
+        $stmt = $conectar->prepare($sql);
+        if ($stmt === false) {
+            die("Error en la preparación de la consulta: " . $conectar->error);
+        }
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $pedidos_en_proceso = false;
+
+        // Verificar los estados de los pedidos
+        while ($pedido = $result->fetch_assoc()) {
+            if ($pedido['situacion'] == 'en proceso') {
+                $pedidos_en_proceso = true;
+                break; // Si encontramos un pedido en proceso, no necesitamos seguir buscando
+            }
+        }
+
+        // Si tiene pedidos en proceso, no permitimos la eliminación
+        if ($pedidos_en_proceso) {
+            echo "<script>
+                    alert('No se puede eliminar el usuario porque tiene pedidos en proceso.');
+                    window.location.href = './validarusuario.php';
+                  </script>";
+            exit();
+        }
+
+        // Eliminar los detalles de los pedidos asociados al usuario
+        $sql = "DELETE FROM detalles_pedido WHERE fk_id_pedido IN (SELECT id_pedido FROM pedido WHERE fk_id_usuario = ?)";
+        $stmt = $conectar->prepare($sql);
+        if ($stmt === false) {
+            die("Error en la preparación de la consulta: " . $conectar->error);
+        }
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
+        // Eliminar los pedidos asociados al usuario
+        $sql = "DELETE FROM pedido WHERE fk_id_usuario = ?";
+        $stmt = $conectar->prepare($sql);
+        if ($stmt === false) {
+            die("Error en la preparación de la consulta: " . $conectar->error);
+        }
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
+        // Eliminar los registros del carrito asociados al usuario
+        $sql = "DELETE FROM carrito WHERE fk_id_usuario = ?";
+        $stmt = $conectar->prepare($sql);
+        if ($stmt === false) {
+            die("Error en la preparación de la consulta: " . $conectar->error);
+        }
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
         // Consultar la imagen del usuario antes de eliminar
         $sql = "SELECT imagen FROM usuario WHERE id_usuario = ?";
         $stmt = $conectar->prepare($sql);
@@ -18,8 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute();
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
-
-     
 
         // Eliminar el usuario de la base de datos
         $sql = "DELETE FROM usuario WHERE id_usuario = ?";

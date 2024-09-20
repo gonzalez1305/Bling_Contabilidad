@@ -5,48 +5,26 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
+?>
+<?php
 require '../conexion.php'; // Conexión a la base de datos
 
-// Verificar si se recibió el ID del pago a editar
-if (isset($_GET['id'])) {
-    $id_pago = intval($_GET['id']);
+// Consulta para obtener las marcas
+$query_marcas = "SELECT id_marca, nombre_marca FROM marca";
+$result_marcas = mysqli_query($conectar, $query_marcas);
 
-    // Obtener la información actual del pago
-    $pagoQuery = "SELECT fecha_pago, monto FROM pagos WHERE id_pago = $id_pago";
-    $pagoResult = mysqli_query($conectar, $pagoQuery);
+if (isset($_GET['delete'])) {
+    $id_marca = $_GET['delete'];
 
-    // Verificar si el pago existe
-    if (mysqli_num_rows($pagoResult) == 1) {
-        $pago = mysqli_fetch_assoc($pagoResult);
-        $fecha_pago = $pago['fecha_pago'];
-        $monto = $pago['monto'];
+    // Consulta para eliminar la marca
+    $delete_query = "DELETE FROM marca WHERE id_marca = $id_marca";
+
+    if (mysqli_query($conectar, $delete_query)) {
+        echo "<script>alert('Marca eliminada exitosamente'); window.location.href='listaMarcas.php';</script>";
     } else {
-        echo "<script>alert('Pago no encontrado'); window.location.href='verPago.php';</script>";
-        exit();
-    }
-} else {
-    echo "<script>alert('ID de pago no proporcionado'); window.location.href='verPago.php';</script>";
-    exit();
-}
-
-// Actualizar el pago si se envió el formulario
-if (isset($_POST['actualizar'])) {
-    $nueva_fecha_pago = mysqli_real_escape_string($conectar, $_POST['fecha_pago']);
-    $nuevo_monto = floatval($_POST['monto']);
-
-    if (!empty($nueva_fecha_pago) && $nuevo_monto > 0) {
-        $updateQuery = "UPDATE pagos SET fecha_pago = '$nueva_fecha_pago', monto = $nuevo_monto WHERE id_pago = $id_pago";
-        if (mysqli_query($conectar, $updateQuery)) {
-            echo "<script>alert('Pago actualizado exitosamente'); window.location.href='verPago.php';</script>";
-        } else {
-            echo "<script>alert('Error al actualizar el pago');</script>";
-        }
-    } else {
-        echo "<script>alert('Por favor, complete todos los campos correctamente');</script>";
+        echo "<script>alert('Error al eliminar la marca');</script>";
     }
 }
-
-mysqli_close($conectar);
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +32,7 @@ mysqli_close($conectar);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Pago - Bling Compra</title>
+    <title>Lista de Marcas - Bling Compra</title>
     <link rel="icon" href="../imgs/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -88,12 +66,8 @@ mysqli_close($conectar);
         .content {
             padding: 20px;
         }
-        .form-container {
+        .table-container {
             margin-top: 20px;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -124,19 +98,20 @@ mysqli_close($conectar);
                         <a class="nav-link" href="../Usuario/validarusuario.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">Ventas</a>
+                        <a class="nav-link active" href="../dashboard_v.html">Ventas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../Inventario/listaInventario.php">Inventario</a>
+                        <a class="nav-link" href="../dashboard_I.html">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../Pedido/validarpedido.php">Pedidos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="./verPago.php">Pagos</a>
+                        <a class="nav-link" href="../Pagos/verPago.php">Pagos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="../Marca/listaMarcas.php">Marca</a>
+                            <a class="nav-link" href="listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
                     </li>
                 </ul>
             </div>
@@ -144,21 +119,31 @@ mysqli_close($conectar);
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
             <div class="container">
-                <h1 class="h2">Editar Pago</h1>
-                <div class="form-container">
-                    <form action="editarPago.php?id=<?php echo $id_pago; ?>" method="POST">
-                        <div class="mb-3">
-                            <label for="fecha_pago" class="form-label">Fecha de Pago</label>
-                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo htmlspecialchars($fecha_pago); ?>" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="monto" class="form-label">Monto</label>
-                            <input type="number" step="0.01" class="form-control" id="monto" name="monto" value="<?php echo htmlspecialchars($monto); ?>" required>
-                        </div>
-                        <button type="submit" name="actualizar" class="btn btn-primary">Actualizar</button>
-                        <a href="verPago.php" class="btn btn-secondary">Cancelar</a>
-                    </form>
+                <h1 class="h2">Lista de Marcas</h1>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID Marca</th>
+                                <th>Nombre Marca</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($row = mysqli_fetch_assoc($result_marcas)): ?>
+                                <tr>
+                                    <td><?php echo $row['id_marca']; ?></td>
+                                    <td><?php echo $row['nombre_marca']; ?></td>
+                                    <td>
+                                        <a href="editarMarca.php?id=<?php echo $row['id_marca']; ?>" class="btn btn-primary btn-sm">Editar</a>
+                                        <a href="listaMarcas.php?delete=<?php echo $row['id_marca']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar esta marca?');">Eliminar</a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
                 </div>
+                <a href="agregarMarca.php" class="btn btn-success">Agregar Nueva Marca</a>
             </div>
         </main>
     </div>
@@ -166,6 +151,9 @@ mysqli_close($conectar);
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
+
+<?php
+mysqli_close($conectar);
+?>

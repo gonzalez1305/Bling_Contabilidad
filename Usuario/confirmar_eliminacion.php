@@ -26,7 +26,7 @@ if (!isset($_SESSION['id_usuario'])) {
             <p>¿Está seguro de que desea eliminar su cuenta? Esta acción es irreversible.</p>
             <form action="eliminar_cuenta.php" method="post">
                 <button type="submit" class="btn btn-danger">Eliminar Cuenta</button>
-                <a href="mi_cuenta.php" class="btn btn-secondary">Cancelar</a>
+                <a href="infocliente.php" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
     </div>

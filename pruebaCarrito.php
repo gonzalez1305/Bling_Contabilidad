@@ -32,65 +32,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Verificar si la cantidad es válida
         if ($cantidad > 0 && $cantidad <= $cantidadDisponible) {
             // Añadir o actualizar el producto en el carrito
-            $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) 
-                                VALUES (?, ?, ?) 
-                                ON DUPLICATE KEY UPDATE cantidad = cantidad + ?";
+            $insertCartQuery = "INSERT INTO carrito (fk_id_producto, cantidad, fk_id_usuario) VALUES (?, ?, ?)
+                                ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)";
             $stmt = $conectar->prepare($insertCartQuery);
-            $stmt->bind_param('iiii', $idProducto, $cantidad, $idUsuario, $cantidad);
-            $stmt->execute();
-
-            /* Actualizar la cantidad del producto en el inventario
-            $updateProductQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
-            $stmt = $conectar->prepare($updateProductQuery);
-            $stmt->bind_param('ii', $cantidad, $idProducto);
-            $stmt->execute();
-            */
-
-            if ($stmt->affected_rows > 0) {
-                $response = ['status' => 'success', 'message' => 'Producto añadido al carrito'];
+            $stmt->bind_param('iii', $idProducto, $cantidad, $idUsuario);
+            if ($stmt->execute()) {
+                // Actualizar la cantidad disponible del producto
+                $updateQuantityQuery = "UPDATE producto SET cantidad = cantidad - ? WHERE id_producto = ?";
+                $stmt = $conectar->prepare($updateQuantityQuery);
+                $stmt->bind_param('ii', $cantidad, $idProducto);
+                if ($stmt->execute()) {
+                    $response['status'] = 'success';
+                    $response['message'] = 'Producto añadido al carrito con éxito.';
+                } else {
+                    $response['message'] = 'Error al actualizar la cantidad del producto.';
+                }
             } else {
-                $response['message'] = 'No se pudo actualizar el producto.';
+                $response['message'] = 'Error al añadir el producto al carrito.';
             }
         } else {
             $response['message'] = 'Cantidad no válida o insuficiente.';
         }
-
-        // Obtener el nuevo estado del carrito
-        $cartQuery = "SELECT p.nombre, SUM(c.cantidad) as cantidad, p.precio_unitario 
-                      FROM carrito c
-                      JOIN producto p ON c.fk_id_producto = p.id_producto
-                      WHERE c.fk_id_usuario = ?
-                      GROUP BY p.id_producto";
-        $stmt = $conectar->prepare($cartQuery);
-        $stmt->bind_param('i', $idUsuario);
-        $stmt->execute();
-        $cartResult = $stmt->get_result();
-
-        $cartItems = [];
-        $total = 0; // Inicializar el total
-
-        while ($row = $cartResult->fetch_assoc()) {
-            $subtotal = $row['precio_unitario'] * $row['cantidad'];
-            $total += $subtotal; // Acumulando el total
-            $cartItems[] = [
-                'nombre' => htmlspecialchars($row['nombre']),
-                'cantidad' => $row['cantidad'],
-                'precio_unitario' => $row['precio_unitario'],
-                'subtotal' => $subtotal
-            ];
-        }
-
-        $response['carrito'] = $cartItems;
-        $response['total'] = $total; // Enviar el total sin formato
     } else {
         $response['message'] = 'Producto no encontrado.';
     }
 
-    $stmt->close();
+    echo json_encode($response);
 }
-
-header('Content-Type: application/json');
-echo json_encode($response);
-
-$conectar->close();
 ?>

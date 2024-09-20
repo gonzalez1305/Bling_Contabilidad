@@ -150,13 +150,13 @@ $result = mysqli_query($conectar, $query);
                             echo '<h5 class="card-title">' . htmlspecialchars($row['nombre']) . '</h5>';
                             echo '<p class="card-text">Talla: ' . htmlspecialchars($row['talla']) . '</p>';
                             echo '<p class="card-text">Precio: $' . number_format($row['precio_unitario'], 2, ',', '.') . '</p>';
-                            echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
+                            //echo '<p class="card-text">Cantidad Disponible: ' . htmlspecialchars($row['cantidad']) . '</p>';
                             echo '<form method="POST" action="../pruebaCarrito.php" class="add-to-cart-form">';
                             echo '<input type="hidden" name="idProducto" value="' . htmlspecialchars($row['id_producto']) . '">';
                             echo '<input type="hidden" name="idUsuario" value="' . htmlspecialchars($idUsuario) . '">';
                             echo '<div class="mb-3">';
-                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad:</label>';
-                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="' . htmlspecialchars($row['cantidad']) . '" required>';
+                            echo '<label for="cantidad' . $row['id_producto'] . '" class="form-label">Cantidad(Máximo 20):</label>';
+                            echo '<input type="number" name="cantidad" id="cantidad' . $row['id_producto'] . '" class="form-control" value="1" min="1" max="20" required>';
                             echo '</div>';
                             echo '<button type="submit" class="btn btn-primary">Agregar al Carrito</button>';
                             echo '</form>';
@@ -197,7 +197,7 @@ $result = mysqli_query($conectar, $query);
                         
                                 // Mostrar detalles del producto en el carrito
                                 echo '<p>' . htmlspecialchars($row['nombre']) . ' - Cantidad: ' . $row['cantidad'] . ' - Precio Total: $' . number_format($subtotal, 2, ',', '.') . '</p>';
-                                echo '<form method="POST" action="../eliminarCarritoCaballero.php">';
+                                echo '<form method="POST" action="../eliminarProductoCarrito.php">';
                                 echo '<input type="hidden" name="idProducto" value="' . $row['id_producto'] . '">';
                                 echo '<button type="submit" class="btn btn-danger">Eliminar</button>';
                                 echo '</form>';
@@ -211,7 +211,7 @@ $result = mysqli_query($conectar, $query);
                     </div>
                     <a href="../menuC.php" class="btn btn-primary mt-3">Seguir comprando</a>
                     <!-- Confirmar Pedido -->
-                    <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php">
+                    <form id="confirmarPedidoForm" method="POST" action="../Pedido/verPedido.php" action="verDetallesCarrito.php">
                       <button type="button" id="confirmarPedidoBtn" class="btn btn-danger mt-3">Confirmar Pedido</button>
                     </form>
                 </div>
@@ -237,23 +237,24 @@ $result = mysqli_query($conectar, $query);
                     url: '../pruebaCarrito.php',
                     data: formData,
                     success: function(response) {
-                        if (response.status === 'success') {
-                            $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
+    response = JSON.parse(response); // Asegúrate de parsear la respuesta
+    if (response.status === 'success') {
+        $('#notification').text(response.message).removeClass('alert-danger').addClass('alert-success').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
 
-                            // Recargar la página para actualizar el carrito
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
-                            setTimeout(function() {
-                                $('#notification').fadeOut();
-                            }, 2000);
-                        }
-                    }
+        // Recargar la página para actualizar el carrito
+        setTimeout(function() {
+            location.reload();
+        }, 10); 
+    } else {
+        $('#notification').text(response.message).removeClass('alert-success').addClass('alert-danger').show();
+        setTimeout(function() {
+            $('#notification').fadeOut();
+        }, 2000);
+    }
+}
                 });
             });
 
