@@ -53,7 +53,7 @@ while ($row = $result->fetch_assoc()) {
 
     // Obtener los productos del pedido
     $queryDetalles = "
-        SELECT p.nombre, p.talla, dp.unidades, dp.precio_total
+        SELECT p.nombre, dp.talla, dp.unidades, dp.precio_total
         FROM detalles_pedido dp
         JOIN producto p ON dp.fk_id_producto = p.id_producto
         WHERE dp.fk_id_pedido = ?
@@ -154,7 +154,7 @@ while ($row = $result->fetch_assoc()) {
                             <?php foreach ($pedido['productos'] as $producto): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
-                                    <td><?php echo htmlspecialchars($producto['talla']); ?></td>
+                                    <td><?php echo htmlspecialchars($producto['talla']); ?></td> <!-- Aquí se muestra la talla -->
                                     <td><?php echo htmlspecialchars($producto['unidades']); ?></td>
                                     <td><?php echo number_format($producto['precio_total'], 2); ?> COP</td>
                                 </tr>

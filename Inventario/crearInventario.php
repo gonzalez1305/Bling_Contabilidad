@@ -29,6 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $estado = mysqli_real_escape_string($conectar, $_POST['estado']);
     $categorias = mysqli_real_escape_string($conectar, $_POST['categorias']);
     $precio_unitario = mysqli_real_escape_string($conectar, $_POST['precio_unitario']);
+    $precio_entrada = mysqli_real_escape_string($conectar, $_POST['precio_entrada']);
+
+
     $fk_id_marca = mysqli_real_escape_string($conectar, $_POST['marca']);
     
     // Manejo de la imagen
@@ -44,8 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Inserción de los datos en la tabla producto
-    $sql_insert_producto = "INSERT INTO producto (color, nombre, fk_id_marca, estado, categorias, precio_unitario, imagen)
-                            VALUES ('$color', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$imagen_ruta')";
+    $sql_insert_producto = "INSERT INTO producto (color, nombre, fk_id_marca, estado, categorias, precio_unitario, precio_entrada, imagen)
+                        VALUES ('$color', '$nombre', '$fk_id_marca', '$estado', '$categorias', '$precio_unitario', '$precio_entrada', '$imagen_ruta')";
+
 
     if (mysqli_query($conectar, $sql_insert_producto)) {
         $id_producto = mysqli_insert_id($conectar);
@@ -202,6 +206,10 @@ mysqli_close($conectar);
                     <div class="mb-3">
                         <label for="precio_unitario" class="form-label">Precio Unitario:</label>
                         <input type="number" id="precio_unitario" name="precio_unitario" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio_entrada" class="form-label">Precio de Entrada:</label>
+                        <input type="number" id="precio_entrada" name="precio_entrada" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="imagen" class="form-label">Imagen:</label>
