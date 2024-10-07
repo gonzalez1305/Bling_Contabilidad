@@ -1,78 +1,57 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
-    // Si no está logueado o no es un administrador, redirigir al login
-    header("Location: index.php");
+    // Redirige al login si no es administrador
+    header("Location: ../index.php");
     exit();
 }
 
-include("../conexion.php");
+require '../conexion.php';
 
-// Inicializar variables
-$pedidoDetalles = array(); // Inicializa un array vacío para evitar advertencias
+$id_pedido = $_GET['id_detalles_pedido'];
 
-if (isset($_POST['enviar'])) {
-    // Si se ha enviado el formulario
-    $unidades = $_POST["unidades"];
-    $id_detalles_pedido = $_POST["id_detalles_pedido"];
-    $situacion = $_POST["situacion"];
-    $id_pedido = $_POST["id_pedido"];
+$sql = "SELECT 
+            u.nombre AS cliente,
+            DATE(p.fecha) AS fecha,
+            p.situacion,
+            SUM(dp.unidades) AS total_unidades,
+            SUM(dp.precio_total) AS total_precio
+        FROM 
+            pedido p
+        INNER JOIN 
+            detalles_pedido dp ON p.id_pedido = dp.fk_id_pedido
+        INNER JOIN 
+            usuario u ON p.fk_id_usuario = u.id_usuario
+        WHERE 
+            p.id_pedido = '$id_pedido'
+        GROUP BY 
+            u.nombre, DATE(p.fecha), p.situacion";
 
-    // Obtén el precio unitario del producto
-    $sqlPrecioUnitario = "SELECT precio_unitario FROM producto WHERE id_producto = (SELECT fk_id_producto FROM detalles_pedido WHERE id_detalles_pedido = '".$id_detalles_pedido."')";
-    $resultadoPrecioUnitario = mysqli_query($conectar, $sqlPrecioUnitario);
+$result = mysqli_query($conectar, $sql);
+$pedido = mysqli_fetch_assoc($result);
 
-    if ($resultadoPrecioUnitario && mysqli_num_rows($resultadoPrecioUnitario) > 0) {
-        $filaPrecioUnitario = mysqli_fetch_assoc($resultadoPrecioUnitario);
-        $precioUnitario = $filaPrecioUnitario['precio_unitario'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $situacion = $_POST['situacion'];
+    $unidades = $_POST['unidades'];
+    $precio_total = $_POST['precio_total'];
 
-        // Calcula el nuevo precio total
-        $nuevoPrecioTotal = $precioUnitario * $unidades;
+    // Actualiza los datos del pedido
+    $updateSql = "UPDATE detalles_pedido dp
+                  INNER JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+                  SET dp.unidades = '$unidades', dp.precio_total = '$precio_total', p.situacion = '$situacion'
+                  WHERE p.id_pedido = '$id_pedido'";
 
-        // Actualiza las unidades y el precio total en la base de datos
-        $sqlDetallesPedido = "UPDATE detalles_pedido SET unidades='".$unidades."', precio_total='".$nuevoPrecioTotal."' WHERE id_detalles_pedido = '".$id_detalles_pedido."'";
-        $resultadoDetalles = mysqli_query($conectar, $sqlDetallesPedido);
-
-        // Actualiza la situación del pedido en la base de datos
-        $sqlSituacionPedido = "UPDATE pedido SET situacion='".$situacion."' WHERE id_pedido='".$id_pedido."'";
-        $resultadoSituacion = mysqli_query($conectar, $sqlSituacionPedido);
-
-        if ($resultadoDetalles && $resultadoSituacion) {
-            echo "<script language='javascript'>";
-            echo "alert('Los datos se actualizaron correctamente');";
-            echo "location.assign('validarpedido.php');";
-            echo "</script>";
-        } else {
-            echo "<script language='javascript'>";
-            echo "alert('Los datos NO se actualizaron correctamente');";
-            echo "location.assign('validarpedido.php');";
-            echo "</script>";
+    if (mysqli_query($conectar, $updateSql)) {
+        // Si la situación del pedido se cambia a "Entregado", agrega una venta
+        if ($situacion === "Entregado") {
+            $fecha_venta = date('Y-m-d H:i:s'); // Obtiene la fecha y hora actuales
+            $insertVentaSql = "INSERT INTO gestion_ventas (fecha_venta, id_pedido) VALUES ('$fecha_venta', '$id_pedido')";
+            mysqli_query($conectar, $insertVentaSql);
         }
-    } else {
-        echo "Error al obtener el precio unitario del producto.";
-    }
 
-    mysqli_close($conectar);
-} else {
-    // Si no se ha enviado el formulario
-    if (isset($_GET['id_detalles_pedido'])) {
-        $id_detalles_pedido = $_GET['id_detalles_pedido'];
-        $sql = "SELECT * FROM pedido
-                INNER JOIN detalles_pedido ON pedido.id_pedido = detalles_pedido.fk_id_pedido
-                INNER JOIN producto ON detalles_pedido.fk_id_producto = producto.id_producto
-                WHERE detalles_pedido.id_detalles_pedido = '".$id_detalles_pedido."'";
-        $resultado = mysqli_query($conectar, $sql);
-
-        if ($resultado && mysqli_num_rows($resultado) > 0) {
-            $pedidoDetalles = mysqli_fetch_assoc($resultado);
-            $id_detalles_pedido = $pedidoDetalles['id_detalles_pedido'];
-            $unidades = $pedidoDetalles['unidades'];
-        } else {
-            echo "Error al recuperar datos de la base de datos.";
-        }
+        echo "<script>alert('Pedido actualizado correctamente.'); window.location.href = 'validarpedido.php';</script>";
     } else {
-        echo "Error: No se proporcionó el ID del pedido a editar.";
-        exit; // Termina el script si no hay ID de pedido
+        echo "<script>alert('Error al actualizar el pedido.'); window.history.back();</script>";
     }
 }
 ?>
@@ -83,42 +62,63 @@ if (isset($_POST['enviar'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Pedido - Bling Compra</title>
-    <link rel="icon" href="../imgs/logo.png">
+    <!-- CSS de Bootstrap y DataTables -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.6.0/css/searchBuilder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.1/css/dataTables.dateTime.min.css">
     <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        body.dark-mode .dataTables_wrapper .dataTables_filter label {
+            color: #ffffff; /* Color del texto en la etiqueta de búsqueda */
+        }
         .form-container {
-            background-color: #f8f9fa;
-            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: black; /* Texto negro */
         }
-        .form-label {
+        .form-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
             font-weight: bold;
-            color: black; /* Mantener el color del texto negro */
+            text-align: center;
+            color: black; /* Texto negro */
         }
-        .form-control {
+        .form-container .form-label {
+            font-weight: bold;
+            color: black; /* Texto negro */
+        }
+        .form-container .form-control {
             border-radius: 5px;
+            color: black; /* Texto negro */
         }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .form-container .btn-container {
+            display: flex;
+            justify-content: space-between;
         }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+        .form-container .btn {
+            border-radius: 5px;
+            color: black; /* Texto negro */
         }
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+        .form-container .mb-3 {
+            margin-bottom: 1.5rem;
+            color: black; /* Texto negro */
         }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-        }
-        .h2 {
-            color: black; /* Mantener el color del título negro */
+        .form-container .toggle-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black; /* Texto negro */
         }
     </style>
 </head>
@@ -147,56 +147,87 @@ if (isset($_POST['enviar'])) {
         </div>
     </nav>
 
-    <div class="container mt-5 pt-5">
-        <div class="form-container">
-            <h1 class="h2">Editar Pedido</h1>
-            <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post" class="p-4 border rounded-3 bg-light">
-                <input type="hidden" name="id_detalles_pedido" value="<?php echo $id_detalles_pedido; ?>">
-                <div class="mb-3">
-                    <label class="form-label"><strong>ID Pedido:</strong></label>
-                    <input type="text" name="id_pedido" value="<?php echo $pedidoDetalles['id_pedido']; ?>" class="form-control" readonly>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Usuario/validarusuario.php">
+                                <i class="fas fa-users"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">
+                                <i class="fas fa-chart-line"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Inventario/listaInventario.php">
+                                <i class="fas fa-box"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./validarpedido.php">
+                                <i class="fas fa-clipboard-list"></i> Pedidos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pagos/verPago.php">
+                                <i class="fas fa-credit-card"></i> Pagos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Marca/listaMarcas.php">
+                                <i class="fas fa-credit-card"></i> Marca</a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>ID Usuario:</strong></label>
-                    <input type="text" name="fk_id_usuario" value="<?php echo $pedidoDetalles['fk_id_usuario']; ?>" class="form-control" readonly>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="form-container mt-5 pt-5">
+                    <h1 class="mt-4">Editar Pedido</h1>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="cliente" class="form-label">Cliente</label>
+                            <input type="text" class="form-control" id="cliente" value="<?php echo htmlspecialchars($pedido['cliente']); ?>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="text" class="form-control" id="fecha" value="<?php echo htmlspecialchars($pedido['fecha']); ?>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="situacion" class="form-label">Situación</label>
+                            <select class="form-select" id="situacion" name="situacion">
+                                <option value="En proceso" <?php echo ($pedido['situacion'] == 'En proceso') ? 'selected' : ''; ?>>En proceso</option>
+                                <option value="Entregado" <?php echo ($pedido['situacion'] == 'Entregado') ? 'selected' : ''; ?>>Entregado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidades" class="form-label">Unidades</label>
+                            <input type="number" class="form-control" id="unidades" name="unidades" value="<?php echo htmlspecialchars($pedido['total_unidades']); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio_total" class="form-label">Precio Total</label>
+                            <input type="number" class="form-control" id="precio_total" name="precio_total" value="<?php echo htmlspecialchars($pedido['total_precio']); ?>" required>
+                        </div>
+                        <div class="btn-container">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <a href="validarpedido.php" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Fecha:</strong></label>
-                    <input type="text" name="fecha" value="<?php echo $pedidoDetalles['fecha']; ?>" class="form-control" readonly>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Situación:</strong></label>
-                    <select name="situacion" class="form-control" required>
-                        <option value="En proceso" <?php echo ($pedidoDetalles['situacion'] == 'En proceso') ? 'selected' : ''; ?>>En proceso</option>
-                        <option value="Entregado" <?php echo ($pedidoDetalles['situacion'] == 'Entregado') ? 'selected' : ''; ?>>Entregado</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Nombre del Producto:</strong></label>
-                    <input type="text" name="nombre" value="<?php echo $pedidoDetalles['nombre']; ?>" class="form-control" readonly>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Precio Total:</strong></label>
-                    <input type="text" name="precio_total" value="<?php echo $pedidoDetalles['precio_total']; ?>" class="form-control" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="unidades" class="form-label"><strong>Unidades:</strong></label>
-                    <input type="text" name="unidades" value="<?php echo $unidades; ?>" class="form-control" readonly>
-                </div>
-                <button type="submit" name="enviar" class="btn btn-primary">ACTUALIZAR</button>
-                <a href="validarpedido.php" class="btn btn-secondary">CANCELAR</a>
-            </form>
+            </main>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-    <script>
-        // Código para el modo oscuro (si lo necesitas)
-        document.getElementById('darkModeToggle').onclick = function() {
-            document.body.classList.toggle('bg-dark');
-            document.body.classList.toggle('text-white');
-        };
-    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/searchBuilder.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@
         $(document).ready(function () {
             // Obtener los datos de la base de datos
             $.ajax({
-                url: 'get_data_ventas.php',
+                url: 'get_data_pago.php',
                 method: 'GET',
                 success: function (data) {
                     const parsedData = JSON.parse(data);

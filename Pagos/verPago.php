@@ -143,7 +143,7 @@ if (isset($_SESSION['mensaje'])) {
                     <a class="btn btn-light text-primary" href="../menuV.php" role="button">Volver al Menú</a>
                 </div>
                 <a class="btn btn-success" href="../reportePago.php" role="button">Reporte Pago</a>
-                <a class="btn btn-success" href="../reporteGraficoPago.html" role="button">Reporte Gráfico Pago</a>
+
                 <a class="btn btn-success" href="pago.php" role="button">Nuevo pago</a>
 
 

@@ -38,61 +38,191 @@ mysqli_close($conectar);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Tallas - Bling Compra</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <title>Agregar Tallas a Producto - Bling Compra</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
     <link rel="icon" href="../imgs/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
+        body.dark-mode {
+            background-color: #121212;
+            color: white;
         }
-        .container-fluid {
-            margin-top: 20px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+        body.dark-mode .form-control {
+            background-color: #333;
+            color: black; /* Texto negro en modo oscuro */
+            border-color: #555;
+        }
+        body.dark-mode .form-label,
+        body.dark-mode .form-container,
+        body.dark-mode .form-container h1,
+        body.dark-mode .form-container .form-control,
+        body.dark-mode .form-container .btn,
+        body.dark-mode .form-container .mb-3,
+        body.dark-mode .form-container .toggle-btn {
+            color: black; /* Texto negro en modo oscuro */
+        }
+        body.dark-mode .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        body.dark-mode .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
             padding: 20px;
-            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: black; /* Texto negro */
         }
-        .btn-container {
+        .form-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: black; /* Texto negro */
+        }
+        .form-container .form-label {
+            font-weight: bold;
+            color: black; /* Texto negro */
+        }
+        .form-container .form-control {
+            border-radius: 5px;
+            color: black; /* Texto negro */
+        }
+        .form-container .btn-container {
             display: flex;
             justify-content: space-between;
+        }
+        .form-container .btn {
+            border-radius: 5px;
+            color: black; /* Texto negro */
+        }
+        .form-container .mb-3 {
+            margin-bottom: 1.5rem;
+            color: black; /* Texto negro */
+        }
+        .form-container .toggle-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black; /* Texto negro */
         }
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../menuV.php">
+                <img src="../imgs/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-top">
+                Bling Compra
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-light toggle-btn">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../logout.php"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container-fluid">
-        <h1 class="mt-4">Agregar Tallas a Producto</h1>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="mb-3">
-                <label for="producto" class="form-label">Producto:</label>
-                <select id="producto" name="producto" class="form-control" required>
-                    <option value="">Seleccione un producto</option>
-                    <?php while ($producto = mysqli_fetch_assoc($resultado_productos)): ?>
-                        <option value="<?php echo $producto['id_producto']; ?>" data-categoria="<?php echo $producto['categorias']; ?>">
-                            <?php echo $producto['nombre'] . ' - ' . $producto['categorias']; ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-            <div id="tallas-container">
-                <h3>Tallas</h3>
-                <div class="mb-3">
-                    <label for="talla1" class="form-label">Talla:</label>
-                    <select id="talla1" name="tallas[]" class="form-control" required>
-                        <option value="">Seleccione una talla</option>
-                    </select>
-                    <label for="cantidad1" class="form-label">Cantidad:</label>
-                    <input type="number" id="cantidad1" name="cantidades[]" class="form-control" required>
+        <div class="row">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <!-- Menú de Navegación -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Usuario/validarusuario.php">
+                                <i class="fas fa-users"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">
+                                <i class="fas fa-chart-line"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./listaInventario.php">
+                                <i class="fas fa-box"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pedido/validarpedido.php">
+                                <i class="fas fa-clipboard-list"></i> Pedidos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Pagos/verPago.php">
+                                <i class="fas fa-credit-card"></i> Pagos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../Marca/listaMarcas.php">
+                                <i class="fas fa-tags"></i> Marca
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-            <button type="button" id="agregar-talla" class="btn btn-secondary mb-3">Agregar Talla</button>
-            <div class="btn-container">
-                <button type="submit" class="btn btn-primary">Registrar Tallas</button>
-                <a href="./listaInventario.php" class="btn btn-primary">Volver al Menu</a>
-            </div>
-        </form>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="form-container mt-5 pt-5">
+                    <h1 class="mt-4">Agregar Tallas a Producto</h1>
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <div class="mb-3">
+                            <label for="producto" class="form-label">Producto:</label>
+                            <select id="producto" name="producto" class="form-control" required>
+                                <option value="">Seleccione un producto</option>
+                                <?php while ($producto = mysqli_fetch_assoc($resultado_productos)): ?>
+                                    <option value="<?php echo $producto['id_producto']; ?>" data-categoria="<?php echo $producto['categorias']; ?>">
+                                        <?php echo $producto['nombre'] . ' - ' . $producto['categorias']; ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div id="tallas-container">
+                            <h3>Tallas</h3>
+                            <div class="mb-3">
+                                <label for="talla1" class="form-label">Talla:</label>
+                                <select id="talla1" name="tallas[]" class="form-control" required>
+                                    <option value="">Seleccione una talla</option>
+                                </select>
+                                <label for="cantidad1" class="form-label">Cantidad:</label>
+                                <input type="number" id="cantidad1" name="cantidades[]" class="form-control" required>
+                            </div>
+                        </div>
+                        <button type="button" id="agregar-talla" class="btn btn-secondary mb-3">Agregar Talla</button>
+                        <div class="btn-container">
+                            <button type="submit" class="btn btn-primary">Registrar Tallas</button>
+                            <a href="./listaInventario.php" class="btn btn-primary">Volver al Menu</a>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../script.js"></script>
+
     <script>
         $(document).ready(function() {
             const tallasPorCategoria = {
@@ -135,6 +265,11 @@ mysqli_close($conectar);
                     tallasSelect.append(new Option('Seleccione una talla', ''));
                 }
             }
+
+            // Toggle dark mode
+            $('#darkModeToggle').click(function () {
+                $('body').toggleClass('dark-mode');
+            });
         });
     </script>
 </body>

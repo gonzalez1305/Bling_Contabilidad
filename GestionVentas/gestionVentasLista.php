@@ -32,13 +32,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar_id'])) {
 }
 
 $sql_select = "
-    SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.fecha_venta, gv.fecha_registro,
-           dp.precio_total
+    SELECT gv.id_gestion_venta, gv.id_pedido, gv.fecha_venta, 
+           SUM(dp.precio_total) as precio_total
     FROM gestion_ventas gv
-    JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
-    JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
+    JOIN detalles_pedido dp ON gv.id_pedido = dp.fk_id_pedido
+    JOIN pedido p ON gv.id_pedido = p.id_pedido
     WHERE p.situacion = 'entregado'
+    GROUP BY gv.id_gestion_venta, gv.id_pedido, gv.fecha_venta
 ";
+
+
+
 $resultado = mysqli_query($conectar, $sql_select);
 ?>
 
@@ -132,7 +136,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                         <thead>
                             <tr>
                                 <th>Fecha de Venta</th>
-                                <th>Fecha de Registro</th>
+                    
                                 <th>Precio Total</th>
                                 <th class="column-actions">Acciones</th>
                             </tr>
@@ -143,7 +147,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                                 while ($row = mysqli_fetch_assoc($resultado)) {
                                     echo "<tr id='row-" . $row['id_gestion_venta'] . "'>";
                                     echo "<td style='color: black;'>" . htmlspecialchars($row['fecha_venta']) . "</td>";
-                                    echo "<td style='color: black;'>" . htmlspecialchars($row['fecha_registro']) . "</td>";
+                                  
                                     echo "<td style='color: black;'>" . number_format($row['precio_total'], 2) . " COP</td>";
                                     echo "<td class='column-actions'>";
                                     echo "<div class='btn-group' role='group'>";
@@ -159,7 +163,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                             ?>
                         </tbody>
                     </table>
-                    <a class="btn btn-success" href="gestionVentasCrear.php">Crear Venta</a>
+                  
                 </div>
             </main>
         </div>
@@ -196,6 +200,7 @@ $resultado = mysqli_query($conectar, $sql_select);
     </script>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../script.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>

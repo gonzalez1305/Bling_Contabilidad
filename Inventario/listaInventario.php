@@ -42,34 +42,6 @@ $resultado = mysqli_query($conectar, $sql_select);
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-<<<<<<< HEAD
-        /* Estilos para modo oscuro en DataTables */
-        .dark-mode .dataTables_length label,
-        .dark-mode .dataTables_info,
-        .dark-mode .dataTables_filter label {
-            color: white;
-        }
-
-        .dark-mode .dataTables_length select,
-        .dark-mode .dataTables_filter input {
-            color: white;
-            background-color: #333;
-            border-color: #555;
-        }
-
-        .dark-mode .dataTables_paginate .paginate_button {
-            color: white;
-            background-color: #333;
-            border: 1px solid #555;
-        }
-
-        .dark-mode .dataTables_paginate .paginate_button:hover {
-            background-color: #555;
-            color: white;
-        }
-    </style>
-
-=======
         #confirmDeleteModal .modal-body,
         #confirmDeleteModal .modal-title {
             color: black !important;
@@ -95,10 +67,12 @@ $resultado = mysqli_query($conectar, $sql_select);
             background-color: #555; 
             color: white;
         }
+        body.dark-mode .report-content {
+            color: black !important;
+        }
     </style>
 </head>
 <body>
->>>>>>> main
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="../menuV.php">
@@ -168,7 +142,7 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <h1 class="h2">Listado de Productos</h1>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive report-content">
                     <?php
                     $productos = [];
                     while ($fila = mysqli_fetch_assoc($resultado)) {
@@ -193,11 +167,7 @@ $resultado = mysqli_query($conectar, $sql_select);
 
                     if (count($productos) > 0) {
                         echo "<table id='tablaInventario' class='display'>";
-<<<<<<< HEAD
-                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></tr></thead><tbody>";
-=======
-                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th><th>Acciones</th></tr></thead><tbody>";
->>>>>>> main
+                        echo "<thead><tr><th>Imagen</th><th>Nombre</th><th>Estado</th><th>Precio</th><th>Marca</th><th>Tallas y Cantidades</th></thead><tbody>";
 
                         foreach ($productos as $id => $producto) {
                             echo "<tr id='row-" . $id . "'>";
@@ -215,17 +185,9 @@ $resultado = mysqli_query($conectar, $sql_select);
                             echo "<td>" . $tallas_html . "</td>";
                             echo "<td class='column-actions'>";
                             echo "<div class='btn-group' role='group'>";
-<<<<<<< HEAD
-                            //echo "<button type='button' class='btn btn-danger' onclick='confirmDelete(" . $id . ")'>Eliminar</button>";
-=======
                             
-                            // Botón de Editar
-                            echo "<a href='./editarInventario.php?id_producto=" . $id . "' class='btn btn-warning'><i class='fas fa-edit'></i> Editar</a>";
-                            
-                            // Botón de Eliminar
-                            echo "<button class='btn btn-danger' onclick='confirmDelete(" . $id . ")'><i class='fas fa-trash-alt'></i> Eliminar</button>";
+  
 
->>>>>>> main
                             echo "</div>";
                             echo "</td>";
                             echo "</tr>";
@@ -244,12 +206,6 @@ $resultado = mysqli_query($conectar, $sql_select);
                     <a href="./crearProductoExistente.php" class="btn btn-primary">Agregar Producto Existente</a>
                 </div>
 
-<<<<<<< HEAD
-            </main>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-=======
                 <div class="mt-4">
                     <nav aria-label="Page navigation">
                         <ul class="pagination">
@@ -291,10 +247,10 @@ $resultado = mysqli_query($conectar, $sql_select);
     </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
->>>>>>> main
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/darkMode.js"></script>
+    
+    <script src="../script.js"></script>
 
     <script>
         $(document).ready(function () {

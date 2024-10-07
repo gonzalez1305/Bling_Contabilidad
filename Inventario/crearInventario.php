@@ -229,12 +229,15 @@ mysqli_close($conectar);
                     <button type="button" id="agregar-talla" class="btn btn-secondary">Agregar otra talla</button>
                     <br><br>
                     <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                    <a href="listainventario.php" class="btn btn-primary">Volver</a><br><br>
                 </form>
             </main>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../script.js"></script>
+
     <script>
         $(document).ready(function() {
             const tallasPorCategoria = {

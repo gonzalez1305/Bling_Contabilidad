@@ -1,72 +1,36 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
-    // Si no está logueado o no es un administrador, redirigir al login
     header("Location: index.php");
     exit();
 }
 
-require '../conexion.php'; // Conexión a la base de datos
+require '../conexion.php';
 
-// Consultas para obtener los ID de Detalles Pedido y Vendedores
-$query_detalles_pedido = "
-    SELECT dp.id_detalles_pedido, dp.precio_total 
-    FROM detalles_pedido dp
-    JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
-    WHERE p.situacion = 'entregado'
-";
-$result_detalles_pedido = mysqli_query($conectar, $query_detalles_pedido);
-
-$query_vendedores = "SELECT id_vendedor FROM administrador";
-$result_vendedores = mysqli_query($conectar, $query_vendedores);
-
-// Verificar si se ha enviado una solicitud de edición
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_gestion_venta'])) {
     $id_gestion_venta = $_POST['id_gestion_venta'];
-    $id_detalles_pedido = $_POST['id_detalles_pedido'];
-  
     $fecha_venta = $_POST['fecha_venta'];
     $fecha_registro = $_POST['fecha_registro'];
 
-    // Validar fechas
-    $today = date('Y-m-d');
-    if ($fecha_venta > $today || $fecha_registro > $today) {
-        echo "<script>alert('Las fechas no pueden ser futuras.'); window.history.back();</script>";
-        exit;
-    }
-    if ($fecha_registro <= $fecha_venta) {
-        echo "<script>alert('La fecha de registro debe ser mayor que la fecha de venta.'); window.history.back();</script>";
-        exit;
-    }
-
-    // Actualizar el registro de gestión de ventas
-    $sql_update = "UPDATE gestion_ventas 
-                   SET id_detalles_pedido='$id_detalles_pedido', fecha_venta='$fecha_venta', fecha_registro='$fecha_registro'
-                   WHERE id_gestion_venta='$id_gestion_venta'";
+    // Actualizar los datos en la base de datos
+    $sql_update = "UPDATE gestion_ventas SET fecha_venta = '$fecha_venta', fecha_registro = '$fecha_registro' WHERE id_gestion_venta = '$id_gestion_venta'";
 
     if (mysqli_query($conectar, $sql_update)) {
-        echo "<script>alert('Registro actualizado correctamente'); window.location.href='gestionVentasLista.php';</script>";
+        echo "<script>alert('Gestión de Venta actualizada correctamente');</script>";
+        echo "<script>window.location.href = 'gestionVentasLista.php';</script>";
     } else {
-        echo "Error: " . $sql_update . "<br>" . mysqli_error($conectar);
+        echo "Error al actualizar la gestión de venta: " . mysqli_error($conectar);
     }
 }
 
-// Obtener el ID de gestión de venta a editar
-if (isset($_GET['id'])) {
-    $id_gestion_venta = $_GET['id'];
-    $sql_select = "
-        SELECT gv.id_gestion_venta, gv.id_detalles_pedido, gv.fecha_venta, gv.fecha_registro,
-               dp.precio_total
-        FROM gestion_ventas gv
-        JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido
-        JOIN pedido p ON dp.fk_id_pedido = p.id_pedido
-        WHERE p.situacion = 'entregado' AND gv.id_gestion_venta = '$id_gestion_venta'
-    ";
-    $result = mysqli_query($conectar, $sql_select);
-    $venta = mysqli_fetch_assoc($result);
+$id_gestion_venta = $_GET['id'] ?? null;
+if ($id_gestion_venta) {
+    $sql_select = "SELECT * FROM gestion_ventas WHERE id_gestion_venta = '$id_gestion_venta'";
+    $resultado = mysqli_query($conectar, $sql_select);
+    $venta = mysqli_fetch_assoc($resultado);
 } else {
-    echo "ID de gestión de venta no proporcionado.";
-    exit;
+    echo "ID de gestión de venta no especificado.";
+    exit();
 }
 ?>
 
@@ -75,12 +39,77 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Ventas - Bling Compra</title>
+    <title>Editar Venta - Bling Compra</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <link rel="icon" href="../imgs/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       .form-container {
+    max-width: 600px;
+    margin: 50px auto 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.form-container h1 {
+    margin-bottom: 20px;
+    font-size: 1.75rem;
+    font-weight: 500;
+}
+.form-container .form-label {
+    font-weight: 500;
+}
+.form-container .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.form-container .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+.form-container .btn-light {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+.form-container .btn-light:hover {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+/* Estilos para modo oscuro */
+body.dark-mode .form-container {
+    background-color: #343a40;
+    color: #fff; /* Texto negro en modo oscuro */
+}
+body.dark-mode .form-container .form-label {
+    color: #fff; /* Texto negro en modo oscuro */
+}
+body.dark-mode .form-container .form-control {
+    background-color: #495057;
+    color: #fff; /* Texto negro en modo oscuro */
+    border-color: #6c757d;
+}
+body.dark-mode .form-container .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+body.dark-mode .form-container .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+body.dark-mode .form-container .btn-light {
+    background-color: #6c757d;
+    border-color: #ced4da;
+}
+body.dark-mode .form-container .btn-light:hover {
+    background-color: #5a6268;
+    border-color: #dae0e5;
+}
+    </style>
+    
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -143,93 +172,52 @@ if (isset($_GET['id'])) {
                         </li>
                     </ul>
                 </div>
-            </nav
-<div class="container-fluid">
-    <div class="row">
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
-                <div class="position-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Usuario/validarusuario.php">
-                                <i class="fas fa-users"></i> Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="./gestionVentasLista.php">
-                                <i class="fas fa-chart-line"></i> Ventas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Inventario/listaInventario.php">
-                                <i class="fas fa-box"></i> Inventario
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Pedido/validarpedido.php">
-                                <i class="fas fa-clipboard-list"></i> Pedidos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Pagos/verPago.php">
-                                <i class="fas fa-credit-card"></i> Pagos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
-                        </li>
-                    </ul>
-                </div>
             </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-            <div class="container">
-                <h1 class="h2">Editar Venta</h1>
-                <form action="" method="post">
-                    <input type="hidden" name="id_gestion_venta" value="<?php echo $venta['id_gestion_venta']; ?>">
-
-                    <div class="mb-3">
-                        <label for="id_detalles_pedido" class="form-label">ID Detalles Pedido:</label>
-                        <select name="id_detalles_pedido" id="id_detalles_pedido" class="form-select" required>
-                            <?php
-                            // Volver a cargar las opciones y marcar la opción seleccionada
-                            while($row = mysqli_fetch_assoc($result_detalles_pedido)) {
-                                $selected = ($row['id_detalles_pedido'] == $venta['id_detalles_pedido']) ? 'selected' : '';
-                                echo "<option value='" . $row['id_detalles_pedido'] . "' $selected>" . $row['id_detalles_pedido'] . " - Precio Total: " . number_format($row['precio_total'], 2) . " COP</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
-                        <input type="date" name="fecha_venta" id="fecha_venta" class="form-control" value="<?php echo $venta['fecha_venta']; ?>" max="<?php echo date('Y-m-d'); ?>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="fecha_registro" class="form-label">Fecha de Registro:</label>
-                        <input type="date" name="fecha_registro" id="fecha_registro" class="form-control" value="<?php echo $venta['fecha_registro']; ?>" max="<?php echo date('Y-m-d'); ?>" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Actualizar Registro</button>
-                    <a href="gestionVentasLista.php" class="btn btn-secondary volver-btn">Volver</a>
-                </form>
-            </div>
-        </main>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="form-container mt-5 pt-5">
+                    <h1 class="h2">Editar Venta</h1>
+                    <form method="POST" action="" onsubmit="return validateDates();">
+                        <input type="hidden" name="id_gestion_venta" value="<?php echo htmlspecialchars($venta['id_gestion_venta']); ?>">
+                        <div class="mb-3">
+                            <label for="fecha_venta" class="form-label">Fecha de Venta</label>
+                            <input type="date" class="form-control" id="fecha_venta" name="fecha_venta" value="<?php echo htmlspecialchars($venta['fecha_venta']); ?>" required>
+                        </div>
+                     
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <a class="btn btn-light" href="gestionVentasLista.php">Cancelar</a>
+                    </form>
+                </div>
+            </main>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        function validateDates() {
+            const fechaVenta = new Date(document.getElementById('fecha_venta').value);
+            const fechaRegistro = new Date(document.getElementById('fecha_registro').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Asegurarse de que la comparación sea solo de fechas
+
+            if (fechaVenta > today) {
+                alert("La fecha de venta no puede ser mayor a la fecha actual.");
+                return false;
+            }
+
+            if (fechaRegistro < fechaVenta) {
+                alert("La fecha de registro no puede ser menor a la fecha de venta.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Toggle dark mode
+        document.getElementById('darkModeToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+        <script src="../script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
 </body>
 </html>
-
-<?php
-mysqli_close($conectar);
-?>

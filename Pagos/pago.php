@@ -5,43 +5,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] != 1) {
     header("Location: index.php");
     exit();
 }
-?>
-<?php
-require '../conexion.php'; // Conexión a la base de datos
 
-// Inicializa un mensaje de resultado vacío
-$resultado = "";
+require '../conexion.php'; 
 
-// Verifica si el formulario ha sido enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_gestion_venta = $_POST['id_gestion_venta'];
-    $monto = $_POST['monto_pago'];
-    $metodo_pago = $_POST['metodo_pago'];
-    $fecha_pago = date('Y-m-d');
+    $fecha_pago = $_POST['fecha_pago'];
+    $monto = $_POST['monto'];
 
-    // Inserta el pago en la tabla 'pagos'
-    $pagoQuery = "INSERT INTO pagos (id_gestion_venta, fecha_pago, monto, metodo_pago) 
-                  VALUES ('$id_gestion_venta', '$fecha_pago', '$monto', '$metodo_pago')";
+    $sql_insert_pago = "INSERT INTO pagos (id_gestion_venta, fecha_pago, monto) VALUES ('$id_gestion_venta', '$fecha_pago', '$monto')";
 
-    if (mysqli_query($conectar, $pagoQuery)) {
-        session_start();
-        $_SESSION['mensaje'] = "El pago ha sido registrado exitosamente.";
-        header("Location: pago.php");
+    if (mysqli_query($conectar, $sql_insert_pago)) {
+        $_SESSION['mensaje'] = "Pago registrado correctamente";
+        header("Location: verPago.php");
         exit();
     } else {
-        $resultado = "Error al registrar el pago: " . mysqli_error($conectar);
+        echo "Error al registrar el pago: " . mysqli_error($conectar);
     }
 }
 
-// Consulta para obtener las ventas disponibles para el pago
-$ventasQuery = "SELECT gv.id_gestion_venta, dp.precio_total 
-                FROM gestion_ventas gv 
-                JOIN detalles_pedido dp ON gv.id_detalles_pedido = dp.id_detalles_pedido";
-$ventasResult = mysqli_query($conectar, $ventasQuery);
-
-// Verifica si existe un mensaje en la sesión
-
-
+// Obtener las ventas para el desplegable
+$sql_select_ventas = "
+    SELECT gv.id_gestion_venta, gv.fecha_venta, SUM(dp.precio_total) as precio_total
+    FROM gestion_ventas gv
+    JOIN detalles_pedido dp ON gv.id_pedido = dp.fk_id_pedido
+    JOIN pedido p ON gv.id_pedido = p.id_pedido
+    WHERE p.situacion = 'entregado'
+    GROUP BY gv.id_gestion_venta, gv.fecha_venta
+";
+$resultado_ventas = mysqli_query($conectar, $sql_select_ventas);
 ?>
 
 <!DOCTYPE html>
@@ -49,11 +41,10 @@ $ventasResult = mysqli_query($conectar, $ventasQuery);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realizar Pago - Bling Compra</title>
-    <link rel="icon" href="../imgs/logo.png">
+    <title>Registrar Pago - Bling Compra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../imgs/logo.png">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -68,11 +59,6 @@ $ventasResult = mysqli_query($conectar, $ventasQuery);
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <button id="darkModeToggle" class="btn btn-outline-light toggle-btn">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="../logout.php"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     </li>
                 </ul>
@@ -80,102 +66,42 @@ $ventasResult = mysqli_query($conectar, $ventasQuery);
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
-                <div class="position-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Usuario/validarusuario.php">
-                                <i class="fas fa-users"></i> Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../GestionVentas/gestionVentasLista.php">
-                                <i class="fas fa-chart-line"></i> Ventas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Inventario/listaInventario.php">
-                                <i class="fas fa-box"></i> Inventario
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Pedido/validarpedido.php">
-                                <i class="fas fa-clipboard-list"></i> Pedidos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="./pago.php">
-                                <i class="fas fa-credit-card"></i> Pagos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../Marca/listaMarcas.php">
-                                <i class="fas fa-credit-card"></i> Marca</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Realizar Pago</h1>
-                    <a class="btn btn-light text-primary" href="../menuV.php" role="button">Volver al Menú</a>
-                </div>
-
-                <!-- Muestra el mensaje de resultado -->
-                <?php if ($resultado): ?>
-                    <div id="mensaje" class="alert alert-success">
-                        <p><?php echo $resultado; ?></p>
-                    </div>
-                <?php endif; ?>
-
-                <form action="pago.php" method="post">
-                    <div class="mb-3">
-                        <label for="id_gestion_venta" class="form-label">Seleccionar Venta:</label>
-                        <select name="id_gestion_venta" id="id_gestion_venta" class="form-select" required>
-                            <?php while($venta = mysqli_fetch_assoc($ventasResult)): ?>
-                                <option value="<?php echo $venta['id_gestion_venta']; ?>">
-                                    Venta ID: <?php echo $venta['id_gestion_venta']; ?> - Total: <?php echo number_format($venta['precio_total'], 2); ?> COP
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="monto_pago" class="form-label">Monto del Pago:</label>
-                        <input type="number" name="monto_pago" id="monto_pago" class="form-control" required step="0.01">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="metodo_pago" class="form-label">Método de Pago:</label>
-                        <select name="metodo_pago" id="metodo_pago" class="form-select" required>
-                            <option value="Efectivo">Efectivo</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Realizar Pago</button>
-                    <a class="btn btn-success" href="verPago.php" role="button">Volver a pagos</a>
-                </form>
-            </main>
-        </div>
+    <div class="container mt-5">
+        <h1 class="h2">Registrar Nuevo Pago</h1>
+        <form method="POST" action="">
+            <div class="mb-3">
+                <label for="id_gestion_venta" class="form-label">Venta</label>
+                <select class="form-select" id="id_gestion_venta" name="id_gestion_venta" required onchange="updateMonto()">
+                    <option value="" selected disabled>Seleccione una venta</option>
+                    <?php while ($venta = mysqli_fetch_assoc($resultado_ventas)): ?>
+                        <option value="<?php echo $venta['id_gestion_venta']; ?>" data-monto="<?php echo $venta['precio_total']; ?>">
+                            <?php echo "Venta ID: " . $venta['id_gestion_venta'] . " - Fecha: " . $venta['fecha_venta']; ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="fecha_pago" class="form-label">Fecha de Pago</label>
+                <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" required>
+            </div>
+            <div class="mb-3">
+                <label for="monto" class="form-label">Monto</label>
+                <input type="number" step="0.01" class="form-control" id="monto" name="monto" readonly>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar Pago</button>
+            <a class="btn btn-secondary" href="verPago.php">Cancelar</a>
+        </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../script.js"></script>
     <script>
-        // Si hay un mensaje, ocúltalo después de 5 segundos
-        window.onload = function() {
-            var mensaje = document.getElementById('mensaje');
-            if (mensaje) {
-                setTimeout(function() {
-                    mensaje.style.display = 'none';
-                }, 5000); // 5000 milisegundos = 5 segundos
-            }
+        function updateMonto() {
+            var select = document.getElementById('id_gestion_venta');
+            var monto = select.options[select.selectedIndex].getAttribute('data-monto');
+            document.getElementById('monto').value = monto;
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
